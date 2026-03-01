@@ -19,13 +19,15 @@ export default function SymptomCheck() {
   const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
 
   const handleAnswer = (answer: string) => {
-    setAnswers(prev => ({ ...prev, [currentQuestion.id]: answer }));
-    
+    const updatedAnswers = { ...answers, [currentQuestion.id]: answer };
+    setAnswers(updatedAnswers);
+
     if (currentQuestionIndex < currentQuestions.length - 1) {
       setDirection(1);
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       // Finished
+      sessionStorage.setItem('symptomAnswers', JSON.stringify(updatedAnswers));
       router.push('/scan/analysis');
     }
   };
@@ -40,6 +42,7 @@ export default function SymptomCheck() {
   };
 
   const handleSkip = () => {
+    sessionStorage.setItem('symptomAnswers', JSON.stringify(answers));
     router.push('/scan/analysis');
   };
 
@@ -68,8 +71,8 @@ export default function SymptomCheck() {
             <span className="text-xs font-bold text-primary">{Math.round(progress)}%</span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-surface-highlight border border-slate-200 dark:border-white/5">
-            <div 
-              className="h-full rounded-full bg-primary transition-all duration-300 ease-out shadow-[0_0_10px_rgba(6,182,212,0.6)]" 
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300 ease-out shadow-[0_0_10px_rgba(6,182,212,0.6)]"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -91,9 +94,9 @@ export default function SymptomCheck() {
               <div className="mb-8 flex size-28 items-center justify-center rounded-full bg-surface/50 border border-primary/20 text-primary shadow-[0_0_30px_rgba(6,182,212,0.15)] relative">
                 <div className="absolute inset-0 rounded-full bg-primary/5 animate-pulse"></div>
                 <span className="material-symbols-outlined text-[56px] drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">
-                  {currentQuestionIndex < 5 ? 'blur_on' : 
-                   currentQuestionIndex < 9 ? 'healing' : 
-                   currentQuestionIndex < 13 ? 'visibility' : 'history'}
+                  {currentQuestionIndex < 5 ? 'blur_on' :
+                    currentQuestionIndex < 9 ? 'healing' :
+                      currentQuestionIndex < 13 ? 'visibility' : 'history'}
                 </span>
               </div>
 
@@ -109,14 +112,14 @@ export default function SymptomCheck() {
 
               {/* Action Buttons */}
               <div className="flex w-full flex-col gap-4">
-                <button 
+                <button
                   onClick={() => handleAnswer('Yes')}
                   className="group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-primary text-white shadow-[0_0_20px_rgba(6,182,212,0.25)] transition-all active:scale-[0.98] hover:bg-primary-dark hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] border border-primary/20"
                 >
                   <span className="material-symbols-outlined text-[24px]">check</span>
                   <span className="text-xl font-bold tracking-wide">{t.yes}</span>
                 </button>
-                <button 
+                <button
                   onClick={() => handleAnswer('No')}
                   className="group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-surface/50 border border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:text-text-main hover:border-slate-300 dark:hover:border-white/20 transition-all active:scale-[0.98] backdrop-blur-sm"
                 >
@@ -130,14 +133,14 @@ export default function SymptomCheck() {
 
         {/* Bottom Navigation */}
         <div className="mt-auto flex w-full items-center justify-between border-t border-slate-200 dark:border-white/5 bg-surface/50 backdrop-blur-xl p-6 z-20 transition-colors duration-300">
-          <button 
+          <button
             onClick={handleBack}
             className="flex items-center gap-2 rounded-xl py-2 pl-2 pr-4 text-base font-medium text-text-secondary hover:text-text-main transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             {t.back}
           </button>
-          <button 
+          <button
             onClick={handleSkip}
             className="flex items-center gap-2 rounded-xl bg-surface-highlight border border-slate-200 dark:border-white/5 px-6 py-2.5 text-base font-bold text-text-secondary hover:bg-surface hover:text-text-main hover:border-slate-300 dark:hover:border-white/10 transition-colors"
           >

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
@@ -9,16 +9,103 @@ export default function Analysis() {
   const router = useRouter();
   const { t } = useLanguage();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const hasSubmittedRef = useRef(false);
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem('capturedEyeImage');
+    const activeEye = sessionStorage.getItem('activeEye');
+    const patientInfoStr = sessionStorage.getItem('patientInfo');
+    const symptomAnswersStr = sessionStorage.getItem('symptomAnswers');
+
     if (storedImage) {
       setImageSrc(storedImage);
     }
 
+    const patientInfo = patientInfoStr ? JSON.parse(patientInfoStr) : null;
+    const symptomAnswers = symptomAnswersStr ? JSON.parse(symptomAnswersStr) : {};
+
+    const submitData = async () => {
+      try {
+        const formData = new FormData();
+        const patientId = Date.now().toString();
+        formData.append("Patient_ID", patientId);
+        formData.append("Age", patientInfo?.age || "0");
+        formData.append("Gender", patientInfo?.gender === "male" ? "0" : "1");
+        formData.append("Eye_Side", activeEye === "left" ? "0" : "1");
+
+        // Symptom mapping according to the questions list
+        formData.append("Vision_Blurred_Gradual", symptomAnswers[1] === "Yes" ? "1" : "0");
+        formData.append("Vision_Halos_Night", symptomAnswers[2] === "Yes" ? "1" : "0");
+        formData.append("Vision_Sudden_Loss", symptomAnswers[4] === "Yes" ? "1" : "0");
+        formData.append("Vision_Colors_Faded", symptomAnswers[5] === "Yes" ? "1" : "0");
+        formData.append("Vision_Night_Blindness", symptomAnswers[16] === "Yes" ? "1" : "0");
+
+        formData.append("Symptom_Eye_Dryness", symptomAnswers[17] === "Yes" ? "1" : "0");
+        formData.append("Symptom_Gritty_Sensation", symptomAnswers[6] === "Yes" ? "1" : "0");
+        formData.append("Symptom_Deep_Eye_Pain", symptomAnswers[7] === "Yes" ? "1" : "0");
+        formData.append("Symptom_Photophobia", symptomAnswers[8] === "Yes" ? "1" : "0");
+        formData.append("Symptom_Surface_Pain", symptomAnswers[9] === "Yes" ? "1" : "0");
+
+        formData.append("Sign_Redness", symptomAnswers[10] === "Yes" ? "1" : "0");
+        formData.append("Sign_Fleshy_Growth", symptomAnswers[11] === "Yes" ? "1" : "0");
+        formData.append("Sign_Eye_Discharge", symptomAnswers[12] === "Yes" ? "1" : "0");
+        formData.append("Sign_Cornea_White_Spot", symptomAnswers[13] === "Yes" ? "1" : "0");
+        formData.append("Sign_Drooping_Eyelid", symptomAnswers[3] === "Yes" ? "1" : "0");
+
+        formData.append("History_Diabetes", patientInfo?.diabetes ? "1" : "0");
+        formData.append("History_Hypertension", patientInfo?.hypertension ? "1" : "0");
+        formData.append("History_Autoimmune_Disease", symptomAnswers[15] === "Yes" ? "1" : "0");
+        formData.append("History_Contact_Lens", symptomAnswers[14] === "Yes" ? "1" : "0");
+        formData.append("History_Family_Eye_Disease", patientInfo?.familyHistory ? "1" : "0");
+
+        formData.append("Symptom_Duration_Days", patientInfo?.durationDays?.toString() || "0");
+
+        let diagnosisLabel = patientInfo?.diseaseName || "Normal";
+        if (diagnosisLabel && diagnosisLabel !== "Normal") {
+          diagnosisLabel = diagnosisLabel.charAt(0).toUpperCase() + diagnosisLabel.slice(1);
+        }
+        formData.append("Diagnosis_Label", diagnosisLabel);
+
+        let severityNum = "0";
+        if (patientInfo?.severity === 'mild') severityNum = "1";
+        if (patientInfo?.severity === 'moderate') severityNum = "2";
+        if (patientInfo?.severity === 'severe') severityNum = "3";
+        formData.append("Severity_Level", severityNum);
+
+        // Convert base64 dataURL to Blob
+        if (storedImage && storedImage.startsWith('data:image')) {
+          const res = await fetch(storedImage);
+          const blob = await res.blob();
+          const imgFilename = `${patientId}_${diagnosisLabel.toLowerCase()}.jpg`;
+          formData.append("Image_Path", blob, imgFilename);
+        }
+
+        // We aren't awaiting the response here so it doesn't block UI navigation,
+        // but it will fire off the submission while the user sees the analysis UI.
+        console.log("Submitting webhook...");
+        fetch("https://n8n.vps.safone.dev/webhook/eyevlm-data", {
+          method: "POST",
+          body: formData,
+        }).then(response => {
+          console.log("Webhook response status:", response.status);
+        }).catch(err => {
+          console.error("Webhook submission error:", err);
+        });
+
+      } catch (error) {
+        console.error("Error preparing form data:", error);
+      }
+    };
+
+    if (!hasSubmittedRef.current) {
+      hasSubmittedRef.current = true;
+      submitData();
+    }
+
+    // Navigate to results page after analysis dummy timer
     const timer = setTimeout(() => {
       router.push('/scan/results');
-    }, 3000);
+    }, 4500); // slightly longer to ensure requests have time to leave
 
     return () => clearTimeout(timer);
   }, [router]);
@@ -44,15 +131,15 @@ export default function Analysis() {
           {/* Pulsing Rings Effect (Static Representation) */}
           <div className="absolute w-64 h-64 rounded-full border border-primary/20 bg-primary/5 transform scale-125 animate-pulse shadow-[0_0_50px_rgba(6,182,212,0.1)]"></div>
           <div className="absolute w-52 h-52 rounded-full border border-primary/30 bg-primary/10 transform scale-110 animate-pulse delay-75 shadow-[0_0_30px_rgba(6,182,212,0.15)]"></div>
-          
+
           {/* Central Image Container */}
           <div className="relative z-10 w-40 h-40 rounded-full bg-surface shadow-2xl flex items-center justify-center border-2 border-primary/50 overflow-hidden">
             {/* Eye Scanning Graphic Overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/30 to-transparent w-full h-full z-20 animate-[scan-vertical_2s_ease-in-out_infinite]"></div>
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-primary shadow-[0_0_15px_rgba(34,211,238,0.8)] z-30 w-full animate-[scan-line_2s_ease-in-out_infinite]"></div>
-            
+
             {/* User's Eye Image */}
-            <div 
+            <div
               className="w-full h-full bg-cover bg-center opacity-80"
               style={{ backgroundImage: `url("${imageSrc || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJIAB4Lg62y0dGmLErDDZhvi5Z2MjwpGX5ZSgVTmJURWguoxOuqiMu1-cFGRIYh6XRlnmJPIC33iwLVpbUYiFs0tal7H9imJEN6I3o-qnq3PZGov5ihWczjehJkiv0xV0nfbG-neGiGShJ-GnxQS-Xn0fhYwrysQf9JU2ADO4y6DA3py868mgPiHhqfAlpzmSKJVYvRKovMwPXkYXV65xH3zkICQ8r3gw4Rvwt9eeUR7LjIWnuPjXcONYSb7tADSb4UF9d355TcZk'}")` }}
             ></div>
@@ -107,7 +194,7 @@ export default function Analysis() {
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         @keyframes scan-vertical {
           0%, 100% { transform: translateY(-100%); opacity: 0; }

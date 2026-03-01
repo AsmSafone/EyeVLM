@@ -2,15 +2,24 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import CustomSelect from '@/components/CustomSelect';
 
 export default function PatientInfo() {
+  const router = useRouter();
   const { t } = useLanguage();
 
   const [gender, setGender] = useState('');
   const [diseaseName, setDiseaseName] = useState('');
   const [severity, setSeverity] = useState('');
+
+  // New State variables for mapping
+  const [age, setAge] = useState('');
+  const [diabetes, setDiabetes] = useState(false);
+  const [hypertension, setHypertension] = useState(true); // default true per original UI
+  const [familyHistory, setFamilyHistory] = useState(false);
+  const [duration, setDuration] = useState('1To4Weeks'); // lessThan1Week, 1To4Weeks, moreThan1Month
 
   const genderOptions = [
     { value: 'male', label: t.male },
@@ -89,6 +98,8 @@ export default function PatientInfo() {
                   type="number"
                   min="0"
                   max="120"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
                   className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 pl-4 pr-4 placeholder:text-text-secondary/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all text-lg shadow-inner"
                   placeholder="30"
                 />
@@ -150,7 +161,7 @@ export default function PatientInfo() {
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" value="" className="sr-only peer" />
+                <input type="checkbox" checked={diabetes} onChange={(e) => setDiabetes(e.target.checked)} className="sr-only peer" />
                 <div className="w-14 h-7 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
@@ -167,7 +178,24 @@ export default function PatientInfo() {
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                <input type="checkbox" checked={hypertension} onChange={(e) => setHypertension(e.target.checked)} className="sr-only peer" />
+                <div className="w-14 h-7 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            {/* Family History Toggle */}
+            <div className="flex items-center justify-between p-4 bg-surface/40 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm hover:border-slate-300 dark:hover:border-white/10 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 dark:text-purple-400 border border-purple-500/20">
+                  <span className="material-symbols-outlined">family_history</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-text-main text-base font-bold">{t.familyEyeDisease}</span>
+                  <span className="text-text-secondary text-xs">{t.familyRisk}</span>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={familyHistory} onChange={(e) => setFamilyHistory(e.target.checked)} className="sr-only peer" />
                 <div className="w-14 h-7 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
@@ -179,21 +207,21 @@ export default function PatientInfo() {
             <span className="text-text-main text-lg font-bold leading-normal tracking-tight">{t.durationOfSymptoms}</span>
             <div className="grid grid-cols-3 gap-3">
               <label className="cursor-pointer group">
-                <input type="radio" name="duration" className="peer sr-only" />
+                <input type="radio" name="duration" checked={duration === 'lessThan1Week'} onChange={() => setDuration('lessThan1Week')} className="peer sr-only" />
                 <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 p-4 text-center hover:bg-surface-highlight peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary transition-all h-full flex flex-col items-center justify-center gap-1 shadow-sm">
                   <span className="text-xs font-medium text-text-secondary group-hover:text-text-main peer-checked:text-primary/80">{t.lessThan}</span>
                   <span className="text-lg font-bold text-text-main peer-checked:text-primary">{t.oneWeek}</span>
                 </div>
               </label>
               <label className="cursor-pointer group">
-                <input type="radio" name="duration" className="peer sr-only" defaultChecked />
+                <input type="radio" name="duration" checked={duration === '1To4Weeks'} onChange={() => setDuration('1To4Weeks')} className="peer sr-only" />
                 <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 p-4 text-center hover:bg-surface-highlight peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary transition-all h-full flex flex-col items-center justify-center gap-1 shadow-sm">
                   <span className="text-xs font-medium text-text-secondary group-hover:text-text-main peer-checked:text-primary/80">{t.oneToFour}</span>
                   <span className="text-lg font-bold text-text-main peer-checked:text-primary">{t.weeks}</span>
                 </div>
               </label>
               <label className="cursor-pointer group">
-                <input type="radio" name="duration" className="peer sr-only" />
+                <input type="radio" name="duration" checked={duration === 'moreThan1Month'} onChange={() => setDuration('moreThan1Month')} className="peer sr-only" />
                 <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 p-4 text-center hover:bg-surface-highlight peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary transition-all h-full flex flex-col items-center justify-center gap-1 shadow-sm">
                   <span className="text-xs font-medium text-text-secondary group-hover:text-text-main peer-checked:text-primary/80">{t.moreThan}</span>
                   <span className="text-lg font-bold text-text-main peer-checked:text-primary">{t.oneMonth}</span>
@@ -206,10 +234,29 @@ export default function PatientInfo() {
 
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 w-full bg-surface/90 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 p-4 pb-8 safe-area-pb z-50 transition-colors duration-300">
-        <Link href="/scan/symptoms" className="w-full h-14 bg-primary hover:bg-primary-dark text-white rounded-2xl text-lg font-bold shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+        <button
+          onClick={() => {
+            let durationDays = 0;
+            if (duration === 'lessThan1Week') durationDays = 5;
+            else if (duration === '1To4Weeks') durationDays = 14;
+            else if (duration === 'moreThan1Month') durationDays = 45;
+
+            sessionStorage.setItem('patientInfo', JSON.stringify({
+              age,
+              gender,
+              diseaseName,
+              severity,
+              diabetes,
+              hypertension,
+              familyHistory,
+              durationDays
+            }));
+            router.push('/scan/symptoms');
+          }}
+          className="w-full h-14 bg-primary hover:bg-primary-dark text-white rounded-2xl text-lg font-bold shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]">
           {t.nextStep}
           <span className="material-symbols-outlined">arrow_forward</span>
-        </Link>
+        </button>
       </div>
     </div>
   );
