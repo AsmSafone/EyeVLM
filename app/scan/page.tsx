@@ -6,7 +6,8 @@ import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { Camera } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 export default function Scan() {
   const { t } = useLanguage();
@@ -22,6 +23,30 @@ export default function Scan() {
   const [isCropping, setIsCropping] = useState(false);
   const [aspect, setAspect] = useState<number | undefined>(1);
   const [dragModeCrop, setDragModeCrop] = useState(true);
+  const [isNative, setIsNative] = useState(false);
+
+  useEffect(() => {
+    setIsNative(Capacitor.isNativePlatform());
+  }, []);
+
+  const handleNativeCapture = async () => {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 100,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+
+      if (image.dataUrl) {
+        setImageToCrop(image.dataUrl);
+        setIsCropping(true);
+        setAspect(1); // Force square cropper default
+      }
+    } catch (e) {
+      console.log('Native camera cancelled or failed', e);
+    }
+  };
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -80,11 +105,13 @@ export default function Scan() {
   }, []);
 
   useEffect(() => {
-    startCamera(facingMode);
+    if (!isNative) {
+      startCamera(facingMode);
+    }
     return () => {
       stopCamera();
     };
-  }, [facingMode, startCamera, stopCamera]);
+  }, [facingMode, startCamera, stopCamera, isNative]);
 
   const toggleFlash = async () => {
     if (streamRef.current) {
@@ -300,6 +327,62 @@ export default function Scan() {
               </div>
 
             </div>
+          </div>
+        ) : isNative ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 text-center bg-black pt-safe">
+
+            {/* Eye Selection Toggle */}
+            <div className="w-full flex justify-center mt-4">
+              <div className="flex h-14 bg-slate-900/80 backdrop-blur-xl rounded-2xl p-1.5 shadow-lg border border-primary/30 w-full max-w-xs">
+                <label className="flex-1 cursor-pointer relative group">
+                  <input type="radio" name="eye-side" value="left" className="peer sr-only" checked={activeEye === 'left'} onChange={() => setActiveEye('left')} />
+                  <div className="w-full h-full flex items-center justify-center rounded-xl text-base font-bold tracking-wide text-slate-400 hover:text-slate-200 peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    {t.leftEye}
+                  </div>
+                </label>
+                <label className="flex-1 cursor-pointer relative group">
+                  <input type="radio" name="eye-side" value="right" className="peer sr-only" checked={activeEye === 'right'} onChange={() => setActiveEye('right')} />
+                  <div className="w-full h-full flex items-center justify-center rounded-xl text-base font-bold tracking-wide text-slate-400 hover:text-slate-200 peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    {t.rightEye}
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center justify-center gap-10 w-full mb-12">
+              <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.3)] animate-pulse border border-primary/50">
+                <span className="material-symbols-outlined text-6xl text-primary">camera</span>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-md">{t.captureEyeImage || "Capture Eye Image"}</h2>
+                <p className="text-slate-400 max-w-xs mx-auto leading-relaxed">
+                  {t.alignPupil || "Please use your device's native camera to take a clear, high-resolution photo of the eye."}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-6 mt-6">
+                <button
+                  onClick={handleGalleryClick}
+                  className="flex flex-col items-center justify-center gap-2 group"
+                >
+                  <div className="w-14 h-14 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:border-primary/50 transition-all shadow-lg group-active:scale-95">
+                    <span className="material-symbols-outlined text-2xl">photo_library</span>
+                  </div>
+                  <span className="text-xs text-text-secondary font-bold tracking-wider uppercase group-hover:text-primary transition-colors">{t.gallery}</span>
+                </button>
+
+                <button
+                  onClick={handleNativeCapture}
+                  className="px-8 py-4 bg-gradient-to-r from-primary to-cyan-400 hover:from-cyan-400 hover:to-primary text-white text-lg font-bold rounded-full shadow-[0_10px_25px_rgba(6,182,212,0.5)] active:scale-95 transition-all flex items-center gap-3"
+                >
+                  <span className="material-symbols-outlined text-3xl">photo_camera</span>
+                  Launch Camera
+                </button>
+              </div>
+            </div>
+            {/* Hidden Input for generic gallery fallback */}
+            <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleFileChange} />
           </div>
         ) : (
           <>
