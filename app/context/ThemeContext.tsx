@@ -12,18 +12,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) {
-      if (savedTheme !== 'dark') {
+      if (savedTheme !== 'light') {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setTheme(savedTheme);
       }
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 

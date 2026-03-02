@@ -20,7 +20,8 @@ export default function Scan() {
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [isCropping, setIsCropping] = useState(false);
-  const [aspect, setAspect] = useState<number | undefined>(undefined);
+  const [aspect, setAspect] = useState<number | undefined>(1);
+  const [dragModeCrop, setDragModeCrop] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -113,8 +114,13 @@ export default function Scan() {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Ensure we capture a central square block equal to the shortest dimension
+      const size = Math.min(video.videoWidth, video.videoHeight);
+      canvas.width = size;
+      canvas.height = size;
+
+      const xOffset = (video.videoWidth - size) / 2;
+      const yOffset = (video.videoHeight - size) / 2;
 
       const context = canvas.getContext('2d');
       if (context) {
@@ -122,7 +128,8 @@ export default function Scan() {
           context.translate(canvas.width, 0);
           context.scale(-1, 1);
         }
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Draw the square subset of the video onto the entire square canvas
+        context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
         const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
         setImageToCrop(imageDataUrl);
         setIsCropping(true);
@@ -224,7 +231,7 @@ export default function Scan() {
               {/* Aspect Ratios Bar */}
               <div className="bg-surface/90 backdrop-blur-md rounded-t-[20px] px-6 py-4 flex justify-between items-center w-full shadow-[0_-4px_15px_rgba(0,0,0,0.2)] overflow-x-auto gap-4 hide-scrollbar">
                 {[
-                  { label: "Original", value: undefined },
+                  { label: "Original", value: NaN },
                   { label: "Square", value: 1 },
                   { label: "3x2", value: 3 / 2 },
                   { label: "4x3", value: 4 / 3 },
@@ -233,7 +240,7 @@ export default function Scan() {
                   <button
                     key={ratio.label}
                     onClick={() => {
-                      setAspect(ratio.value);
+                      setAspect(isNaN(ratio.value as number) ? undefined : ratio.value);
                       if (cropperRef.current?.cropper) {
                         cropperRef.current.cropper.setAspectRatio(ratio.value as number);
                       }
@@ -250,8 +257,17 @@ export default function Scan() {
 
               {/* Action Bottom Bar */}
               <div className="flex justify-between items-center px-10 py-5 w-full">
-                {/* Crop Cancel/Back (Just visual or mode toggle, usually non-functional if crop mode is active) */}
-                <button onClick={handleCancelCrop} className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors">
+                {/* Drag Mode Toggle / Crop Reset */}
+                <button onClick={() => {
+                  if (cropperRef.current?.cropper) {
+                    const cropper = cropperRef.current.cropper;
+                    setDragModeCrop(prev => {
+                      const newState = !prev;
+                      cropper.setDragMode(newState ? 'crop' : 'move');
+                      return newState;
+                    });
+                  }
+                }} className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors">
                   <span className="material-symbols-outlined text-3xl text-slate-300 font-light">crop</span>
                 </button>
 
