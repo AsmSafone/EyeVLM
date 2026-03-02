@@ -4,13 +4,8 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'README.md'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.env.local'
-      - '.env.example'
-      - '.github/workflows/android-build.yml'
+    paths:
+      - 'package.json'
 
   workflow_dispatch:
 
