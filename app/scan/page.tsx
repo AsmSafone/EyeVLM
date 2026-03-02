@@ -47,12 +47,14 @@ export default function Scan() {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      // 3. Start web stream
+      // 3. Start web stream with highest possible constraints
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          width: { ideal: 4096, max: 8192 },
+          height: { ideal: 4096, max: 8192 },
+          // Request uncompressed raw feed if the browser/OS supports it
+          advanced: [{ resizeMode: "none" } as any]
         }
       });
 
@@ -128,8 +130,13 @@ export default function Scan() {
           context.translate(canvas.width, 0);
           context.scale(-1, 1);
         }
+        // Set image smoothing to high for better downscaling quality if needed
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+
         // Draw the square subset of the video onto the entire square canvas
         context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
+        // Export with 1.0 (maximum) JPEG quality, or use lossless PNG
         const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
         setImageToCrop(imageDataUrl);
         setIsCropping(true);
