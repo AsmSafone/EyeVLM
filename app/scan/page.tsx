@@ -7,6 +7,7 @@ import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { Camera } from '@capacitor/camera';
+import { Torch } from '@capawesome/capacitor-torch';
 
 export default function Scan() {
   const { t } = useLanguage();
@@ -50,8 +51,8 @@ export default function Scan() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          width: { ideal: 4096 },
+          height: { ideal: 4096 }
         }
       });
 
@@ -84,23 +85,16 @@ export default function Scan() {
   }, [facingMode, startCamera, stopCamera]);
 
   const toggleFlash = async () => {
-    if (streamRef.current) {
-      const track = streamRef.current.getVideoTracks()[0];
-      if (track) {
-        try {
-          const capabilities = track.getCapabilities ? track.getCapabilities() : {} as any;
-          if (capabilities.torch) {
-            await track.applyConstraints({
-              advanced: [{ torch: !flashEnabled } as any]
-            });
-            setFlashEnabled(!flashEnabled);
-          } else {
-            console.log("Torch not supported");
-          }
-        } catch (err) {
-          console.error("Error toggling flash:", err);
-        }
+    try {
+      if (flashEnabled) {
+        await Torch.disable();
+        setFlashEnabled(false);
+      } else {
+        await Torch.enable();
+        setFlashEnabled(true);
       }
+    } catch (err) {
+      console.error("Error toggling flash:", err);
     }
   };
 
@@ -118,6 +112,10 @@ export default function Scan() {
 
       const context = canvas.getContext('2d');
       if (context) {
+        if (facingMode === 'user') {
+          context.translate(canvas.width, 0);
+          context.scale(-1, 1);
+        }
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
         setImageToCrop(imageDataUrl);
@@ -295,7 +293,7 @@ export default function Scan() {
                 autoPlay
                 playsInline
                 muted
-                className="absolute inset-0 w-full h-full object-cover"
+                className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
               />
             )}
 
