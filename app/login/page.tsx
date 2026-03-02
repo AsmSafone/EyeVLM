@@ -35,10 +35,10 @@ export default function Login() {
           {/* Email Input */}
           <label className="flex flex-col gap-2 group">
             <span className="text-text-secondary text-sm font-medium tracking-wide ml-1 group-focus-within:text-primary transition-colors">{t.emailOrPhone}</span>
-            <input 
-              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 px-4 text-lg placeholder:text-text-secondary/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none shadow-inner" 
-              placeholder="name@example.com" 
-              type="text" 
+            <input
+              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 px-4 text-lg placeholder:text-text-secondary/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none shadow-inner"
+              placeholder="name@example.com"
+              type="text"
             />
           </label>
 
@@ -46,10 +46,10 @@ export default function Login() {
           <label className="flex flex-col gap-2 group">
             <span className="text-text-secondary text-sm font-medium tracking-wide ml-1 group-focus-within:text-primary transition-colors">{t.password}</span>
             <div className="relative flex w-full items-center">
-              <input 
-                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 pl-4 pr-12 text-lg placeholder:text-text-secondary/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none shadow-inner" 
-                placeholder="Enter your password" 
-                type="password" 
+              <input
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 pl-4 pr-12 text-lg placeholder:text-text-secondary/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none shadow-inner"
+                placeholder={t.enterPassword}
+                type="password"
               />
               <button className="absolute right-0 top-0 h-full px-4 text-text-secondary hover:text-primary transition-colors flex items-center justify-center" type="button">
                 <span className="material-symbols-outlined">visibility_off</span>
@@ -73,7 +73,7 @@ export default function Login() {
           {/* Divider */}
           <div className="relative flex py-2 items-center">
             <div className="flex-grow border-t border-slate-200 dark:border-white/10"></div>
-            <span className="flex-shrink mx-4 text-text-secondary text-sm font-light">Or continue with</span>
+            <span className="flex-shrink mx-4 text-text-secondary text-sm font-light">{t.or}</span>
             <div className="flex-grow border-t border-slate-200 dark:border-white/10"></div>
           </div>
 
@@ -86,7 +86,7 @@ export default function Login() {
               <path d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" fill="#34A853"></path>
               <path d="M0 0h48v48H0z" fill="none"></path>
             </svg>
-            Google
+            {t.continueWithGoogle}
           </button>
 
           {/* Sign Up Link */}

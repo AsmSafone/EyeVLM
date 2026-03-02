@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
@@ -107,14 +106,11 @@ export default function Scan() {
   useEffect(() => {
     if (!isNative) {
       startCamera(facingMode);
-    } else {
-      // Automatically launch native OS camera the moment the page mounts natively
-      handleNativeCapture();
     }
     return () => {
       stopCamera();
     };
-  }, [facingMode, startCamera, stopCamera, isNative, handleNativeCapture]);
+  }, [facingMode, startCamera, stopCamera, isNative]);
 
   const toggleFlash = async () => {
     if (streamRef.current) {
@@ -332,28 +328,53 @@ export default function Scan() {
             </div>
           </div>
         ) : isNative ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 text-center bg-black pt-safe">
-            <div className="flex flex-col items-center justify-center gap-6 animate-pulse">
-              <span className="material-symbols-outlined text-6xl text-primary">photo_camera</span>
-              <p className="text-xl font-bold text-white tracking-wide drop-shadow-md">
-                {t.captureEyeImage || "Launching Camera..."}
-              </p>
-            </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 bg-black pt-safe bg-[url(/noise.svg)]">
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black pointer-events-none opacity-80"></div>
 
-            {/* Fail-safe manual buttons just in case auto-launch gets dismissed */}
-            <div className="flex items-center gap-6 mt-12 opacity-50 hover:opacity-100 transition-opacity">
-              <button onClick={handleGalleryClick} className="flex flex-col items-center justify-center gap-2 group">
-                <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:text-primary transition-all">
-                  <span className="material-symbols-outlined text-xl">photo_library</span>
+            <div className="relative z-10 w-full max-w-sm flex flex-col gap-6 w-full -mt-20">
+
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white tracking-wide">{t.captureEyeImage || "Capture Eye Image"}</h2>
+                <p className="text-slate-400 mt-2 text-sm max-w-xs mx-auto">
+                  {t.alignPupil || "Please provide a clear, high-resolution photo of the eye."}
+                </p>
+              </div>
+
+              {/* Huge Native Camera Button */}
+              <button
+                onClick={handleNativeCapture}
+                className="w-full flex items-center p-6 bg-gradient-to-br from-primary to-cyan-500 hover:from-cyan-400 hover:to-primary rounded-[32px] shadow-[0_15px_35px_rgba(6,182,212,0.3)] hover:shadow-[0_20px_45px_rgba(6,182,212,0.5)] transition-all active:scale-[0.98] group border border-white/10"
+              >
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-4xl text-white">photo_camera</span>
                 </div>
-                <span className="text-[10px] text-text-secondary font-bold tracking-wider uppercase group-hover:text-primary transition-colors">{t.gallery}</span>
+                <div className="flex flex-col ml-6 text-left">
+                  <span className="text-xl font-bold text-white tracking-wide">{t.launchCamera}</span>
+                  <span className="text-sm text-cyan-50 opacity-90 font-medium">{t.takeNewPhotoNatively}</span>
+                </div>
               </button>
 
-              <button onClick={handleNativeCapture} className="px-6 py-3 bg-slate-800 border border-slate-700 hover:border-primary/50 text-white text-sm font-bold rounded-full transition-all flex items-center gap-2">
-                <span className="material-symbols-outlined text-xl">refresh</span>
-                Relaunch Camera
+              <div className="flex items-center gap-4 w-full">
+                <div className="h-px bg-white/10 flex-1"></div>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.or}</span>
+                <div className="h-px bg-white/10 flex-1"></div>
+              </div>
+
+              {/* Huge Native Gallery Button */}
+              <button
+                onClick={handleGalleryClick}
+                className="w-full flex items-center p-6 bg-surface/80 hover:bg-surface backdrop-blur-md rounded-[32px] shadow-lg transition-all active:scale-[0.98] group border border-slate-800 hover:border-slate-600"
+              >
+                <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:text-primary">
+                  <span className="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary transition-colors">photo_library</span>
+                </div>
+                <div className="flex flex-col ml-6 text-left">
+                  <span className="text-xl font-bold text-white tracking-wide">{t.openGallery}</span>
+                  <span className="text-sm text-slate-400 font-medium">{t.selectExistingPhoto}</span>
+                </div>
               </button>
             </div>
+
             {/* Hidden Input for generic gallery fallback */}
             <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleFileChange} />
           </div>
@@ -495,8 +516,6 @@ export default function Scan() {
           </>
         )}
       </main>
-
-      <BottomNav />
     </div>
   );
 }

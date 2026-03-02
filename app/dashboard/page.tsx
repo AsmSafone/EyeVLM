@@ -37,7 +37,7 @@ export default function Dashboard() {
       <main className="p-6 space-y-8 flex-1 overflow-y-auto z-10 w-full overflow-x-hidden">
         {/* Main CTA: Start Scan */}
         <motion.section
-          aria-label="Start New Scan"
+          aria-label={t.startNewScan}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -61,23 +61,19 @@ export default function Dashboard() {
                 <h2 className="text-2xl font-bold tracking-tight text-text-main">{t.startNewScan}</h2>
                 <p className="text-text-secondary text-sm leading-relaxed max-w-[85%] font-light">{t.useCameraDesc}</p>
               </div>
-              <Link href="/scan" className="mt-2 w-full bg-primary hover:bg-primary-dark text-white shadow-md font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                <span>{t.launchCamera}</span>
-                <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </Link>
             </div>
           </div>
         </motion.section>
 
         {/* Dashboard Grid Replacement - Health Overview */}
         <motion.section
-          aria-label="Health Overview"
+          aria-label={t.yourHealth}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-text-main tracking-tight">Daily Progress</h3>
+            <h3 className="text-lg font-bold text-text-main tracking-tight">{t.dailyProgress}</h3>
             <span className="text-xs font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">trending_up</span> Good
             </span>
@@ -113,7 +109,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex-1">
-                <h4 className="font-bold text-text-main text-lg mb-1 tracking-tight">Eye Hydration</h4>
+                <h4 className="font-bold text-text-main text-lg mb-1 tracking-tight">{t.eyeHydration}</h4>
                 <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You've met 75% of your daily water intake goal.</p>
                 <div className="flex items-center gap-2">
                   <button className="bg-cyan-500 text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1">
@@ -133,7 +129,7 @@ export default function Dashboard() {
               <div className="flex flex-col items-center justify-center text-center group/item w-full relative">
                 <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-200 dark:bg-white/10"></div>
                 <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">visibility</span> Blink Rate</p>
-                <p className="font-bold text-emerald-500 transition-colors">Normal</p>
+                <p className="font-bold text-emerald-500 transition-colors">{t.normal}</p>
                 <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-200 dark:bg-white/10"></div>
               </div>
 

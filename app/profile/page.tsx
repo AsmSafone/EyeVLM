@@ -45,9 +45,9 @@ export default function Profile() {
             </div>
             <h2 className="text-xl font-bold text-text-main tracking-tight">John Doe</h2>
             <p className="text-primary/80 text-sm font-medium tracking-wide">john.doe@example.com</p>
-            <button className="mt-5 px-6 py-2 bg-surface-highlight border border-white/10 dark:border-white/10 border-slate-200 text-text-secondary rounded-full text-sm font-semibold hover:bg-surface hover:text-text-main hover:border-primary/20 transition-all shadow-sm">
+            <Link href="/profile/personal-info" className="mt-5 px-6 py-2 bg-surface-highlight border border-white/10 dark:border-white/10 border-slate-200 text-text-secondary rounded-full text-sm font-semibold hover:bg-surface hover:text-text-main hover:border-primary/20 transition-all shadow-sm">
               {t.editProfile}
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -57,15 +57,6 @@ export default function Profile() {
           <section>
             <h3 className="px-2 text-xs font-bold uppercase tracking-widest text-text-secondary mb-3 ml-1">{t.settings}</h3>
             <div className="bg-surface/40 backdrop-blur-md rounded-3xl border border-white/5 dark:border-white/5 border-slate-200 overflow-hidden shadow-sm transition-colors duration-300">
-              <Link href="/profile/personal-info" className="flex items-center gap-4 p-4 hover:bg-surface-highlight transition-colors border-b border-white/5 dark:border-white/5 border-slate-100 group">
-                <div className="size-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined">person</span>
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-text-main group-hover:text-primary transition-colors">{t.personalInfo}</p>
-                </div>
-                <span className="material-symbols-outlined text-text-secondary group-hover:text-blue-500 transition-colors">chevron_right</span>
-              </Link>
               <Link href="/profile/language" className="flex items-center gap-4 p-4 hover:bg-surface-highlight transition-colors border-b border-white/5 dark:border-white/5 border-slate-100 group">
                 <div className="size-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center border border-purple-500/20 group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined">language</span>

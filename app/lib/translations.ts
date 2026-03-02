@@ -11,6 +11,7 @@ export const translations = {
     scans: "Scan",
     history: "History",
     profile: "Profile",
+    progress: "Progress",
 
     // Splash
     initializing: "Initializing",
@@ -36,11 +37,12 @@ export const translations = {
     continueWithGoogle: "Continue with Google",
     dontHaveAccount: "Don't have an account?",
     signUp: "Sign up",
+    enterPassword: "Enter your password",
 
     // Dashboard
     goodMorning: "Good Morning,",
     welcomeBackUser: "Welcome back, John",
-    startNewScan: "Start New Eye Scan",
+    startNewScan: "Test Your Eye Today",
     aiPowered: "AI Powered",
     useCameraDesc: "Use your camera to detect potential issues early with our AI diagnosis tool.",
     launchCamera: "Launch Camera",
@@ -71,6 +73,8 @@ export const translations = {
     stopSmokingDesc: "Quitting smoking lowers your risk of macular degeneration.",
     eyeMakeup: "Safe Eye Makeup",
     eyeMakeupDesc: "Replace eye makeup every 3 months to avoid infections.",
+    dailyProgress: "Daily Progress",
+    eyeHydration: "Eye Hydration",
 
     // Scan
     captureEyeImage: "Capture Eye Image",
@@ -81,6 +85,11 @@ export const translations = {
     flash: "Flash",
     capture: "Capture",
     cameraAccessDenied: "Camera Access Denied",
+    takeNewPhotoNatively: "Take a new photo natively",
+    openGallery: "Open Gallery",
+    selectExistingPhoto: "Select an existing photo",
+    or: "OR",
+    relaunchCamera: "Relaunch Camera",
 
     // Patient Info
     newPatientScan: "New Patient Scan",
@@ -209,6 +218,23 @@ export const translations = {
     english: "English",
     bengali: "Bengali",
     save: "Save",
+
+    // Progress
+    eyeHealthTrends: "Eye Health Trends",
+    trackStatistics: "Track your AI-powered scanning statistics over time.",
+    totalScans: "Total Scans",
+    healthyRate: "Healthy Rate",
+    confidenceScoreTrend: "Confidence Score Trend",
+    last6Months: "Last 6 Months",
+    may: "May",
+    jul: "Jul",
+    sep: "Sep",
+    nov: "Nov",
+    recentMilestones: "Recent Milestones",
+    threeMonthStreak: "3-Month Streak!",
+    streakDesc: "You've successfully completed AI retina scans for 3 consecutive months.",
+    accuracyImproved: "Detection Accuracy Improved",
+    accuracyDesc: "Your general image capture quality has improved by 15%, resulting in higher AI confidence.",
   },
   bn: {
     // Common
@@ -220,6 +246,7 @@ export const translations = {
     scans: "স্ক্যান",
     history: "ইতিহাস",
     profile: "প্রোফাইল",
+    progress: "অগ্রগতি",
 
     // Splash
     initializing: "শুরু হচ্ছে",
@@ -245,11 +272,12 @@ export const translations = {
     continueWithGoogle: "Google দিয়ে চালিয়ে যান",
     dontHaveAccount: "অ্যাকাউন্ট নেই?",
     signUp: "সাইন আপ করুন",
+    enterPassword: "আপনার পাসওয়ার্ড লিখুন",
 
     // Dashboard
     goodMorning: "শুভ সকাল,",
     welcomeBackUser: "স্বাগতম, জন",
-    startNewScan: "নতুন চোখের স্ক্যান শুরু করুন",
+    startNewScan: "আজই আপনার চোখের পরীক্ষা করুন",
     aiPowered: "AI চালিত",
     useCameraDesc: "আমাদের AI ডায়াগনসিস টুলের মাধ্যমে প্রাথমিক সমস্যাগুলি সনাক্ত করতে আপনার ক্যামেরা ব্যবহার করুন।",
     launchCamera: "ক্যামেরা চালু করুন",
@@ -280,6 +308,8 @@ export const translations = {
     stopSmokingDesc: "ধূমপান ত্যাগ আপনার ম্যাকুলার ডিজেনারেশনের ঝুঁকি কমায়।",
     eyeMakeup: "নিরাপদ চোখের মেকআপ",
     eyeMakeupDesc: "সংক্রমণ এড়াতে প্রতি ৩ মাস পর পর চোখের মেকআপ পরিবর্তন করুন।",
+    dailyProgress: "দৈনিক অগ্রগতি",
+    eyeHydration: "চোখের হাইড্রেশন",
 
     // Scan
     captureEyeImage: "চোখের ছবি তুলুন",
@@ -290,6 +320,11 @@ export const translations = {
     flash: "ফ্ল্যাশ",
     capture: "ক্যাপচার",
     cameraAccessDenied: "ক্যামেরা অ্যাক্সেস প্রত্যাখ্যান করা হয়েছে",
+    takeNewPhotoNatively: "নেটিভভাবে একটি নতুন ছবি তুলুন",
+    openGallery: "গ্যালারি খুলুন",
+    selectExistingPhoto: "একটি বিদ্যমান ছবি নির্বাচন করুন",
+    or: "অথবা",
+    relaunchCamera: "ক্যামেরা পুনরায় রিলঞ্চ করুন",
 
     // Patient Info
     newPatientScan: "নতুন রোগীর স্ক্যান",
@@ -418,5 +453,22 @@ export const translations = {
     english: "ইংরেজি",
     bengali: "বাংলা",
     save: "সংরক্ষণ করুন",
+
+    // Progress
+    eyeHealthTrends: "চোখের স্বাস্থ্যের প্রবণতা",
+    trackStatistics: "সম সময়ের সাথে সাথে আপনার এআই-চালিত স্ক্যানিং পরিসংখ্যান ট্র্যাক করুন।",
+    totalScans: "মোট স্ক্যান",
+    healthyRate: "সুস্থতার হার",
+    confidenceScoreTrend: "কনফিডেন্স স্কোর প্রবণতা",
+    last6Months: "গত ৬ মাস",
+    may: "মে",
+    jul: "জুলাই",
+    sep: "সেপ্টে",
+    nov: "নভে",
+    recentMilestones: "সাম্প্রতিক মাইলস্টোন",
+    threeMonthStreak: "৩-মাসের স্ট্রিক!",
+    streakDesc: "আপনি সফলভাবে টানা ৩ মাস এআই রেটিনা স্ক্যান সম্পন্ন করেছেন।",
+    accuracyImproved: "সনাক্তকরণের নির্ভুলতা উন্নত হয়েছে",
+    accuracyDesc: "আপনার সাধারণ চিত্র ধারণের গুণমান ১৫% উন্নত হয়েছে, যার ফলে এআই কনফিডেন্স বেড়েছে।",
   }
 };
