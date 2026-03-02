@@ -35,11 +35,13 @@ export default function Onboarding() {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      localStorage.setItem('onboardingCompleted', 'true');
       router.push('/login');
     }
   };
 
   const handleSkip = () => {
+    localStorage.setItem('onboardingCompleted', 'true');
     router.push('/login');
   };
 

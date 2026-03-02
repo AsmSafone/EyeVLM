@@ -10,7 +10,12 @@ export default function Splash() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push('/onboarding');
+      const hasOnboarded = localStorage.getItem('onboardingCompleted');
+      if (hasOnboarded) {
+        router.push('/login');
+      } else {
+        router.push('/onboarding');
+      }
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -20,21 +25,21 @@ export default function Splash() {
     <div className="bg-background font-sans antialiased text-text-main h-screen w-full overflow-hidden flex flex-col items-center justify-center relative transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-slate-950 to-slate-950 opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      
+
       {/* Grid Pattern */}
-      <div className="absolute inset-0 z-0 opacity-20" 
-           style={{ backgroundImage: 'linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+      <div className="absolute inset-0 z-0 opacity-20"
+        style={{ backgroundImage: 'linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
       </div>
 
       {/* Top abstract shape */}
       <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] animate-pulse"></div>
-      
+
       {/* Bottom abstract shape */}
       <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
 
       {/* Main Content Container */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-md px-6 text-center h-full">
-        
+
         {/* Logo Container with Effects */}
         <div className="relative mb-12 group">
           {/* Pulsing ring background */}
@@ -42,12 +47,12 @@ export default function Splash() {
             <div className="absolute w-full h-full rounded-full border border-blue-500/30 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
             <div className="absolute w-full h-full rounded-full border border-cyan-400/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]" style={{ animationDelay: '0.5s' }}></div>
           </div>
-          
+
           {/* Icon Wrapper */}
           <div className="relative bg-surface/80 backdrop-blur-xl rounded-full p-10 shadow-[0_0_60px_-15px_rgba(56,189,248,0.3)] border border-slate-200 dark:border-white/10 overflow-hidden ring-1 ring-slate-200 dark:ring-white/20 transition-colors duration-300">
             {/* Scan line */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-[scan_2.5s_ease-in-out_infinite] z-10"></div>
-            
+
             {/* Main Icon */}
             <span className="material-symbols-outlined text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-cyan-300 !text-[90px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 48" }}>
               visibility
