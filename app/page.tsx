@@ -3,12 +3,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
+import { Eye } from 'lucide-react';
+import { Camera } from '@capacitor/camera';
 
 export default function Splash() {
   const router = useRouter();
   const { t } = useLanguage();
 
   useEffect(() => {
+    // Request native camera permissions upfront
+    Camera.requestPermissions().catch(err => console.error(err));
+
     const timer = setTimeout(() => {
       const hasOnboarded = localStorage.getItem('onboardingCompleted');
       if (hasOnboarded) {
@@ -54,9 +59,17 @@ export default function Splash() {
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-[scan_2.5s_ease-in-out_infinite] z-10"></div>
 
             {/* Main Icon */}
-            <span className="material-symbols-outlined text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-cyan-300 !text-[90px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 48" }}>
-              visibility
-            </span>
+            <Eye
+              size={80}
+              strokeWidth={1.5}
+              className="text-transparent !stroke-[url(#eyeGradient)]"
+            />
+            <svg width="0" height="0">
+              <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#60A5FA" />
+                <stop offset="100%" stopColor="#67E8F9" />
+              </linearGradient>
+            </svg>
 
             {/* Data overlay accent */}
             <div className="absolute bottom-8 right-8 flex gap-1">

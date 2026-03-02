@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import { Camera } from '@capacitor/camera';
 
 export default function Scan() {
   const { t } = useLanguage();
@@ -29,9 +30,23 @@ export default function Scan() {
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     try {
+      // 1. Check native permissions first (Capacitor)
+      let permStatus = await Camera.checkPermissions();
+
+      if (permStatus.camera === 'prompt' || permStatus.camera === 'prompt-with-rationale') {
+        permStatus = await Camera.requestPermissions();
+      }
+
+      if (permStatus.camera === 'denied') {
+        throw new Error('Native camera permission denied');
+      }
+
+      // 2. Clear old streams
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
+
+      // 3. Start web stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
