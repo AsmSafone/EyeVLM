@@ -3,6 +3,7 @@ import { Lexend } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/app/context/LanguageContext';
 import { ThemeProvider } from '@/app/context/ThemeContext';
+import UpdateChecker from '@/components/UpdateChecker';
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-text-main transition-colors duration-300">
         <ThemeProvider>
           <LanguageProvider>
+            <UpdateChecker />
             {children}
           </LanguageProvider>
         </ThemeProvider>
