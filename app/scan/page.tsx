@@ -72,14 +72,12 @@ export default function Scan() {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      // 3. Start web stream with highest possible constraints
+      // 3. Start web stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
-          width: { ideal: 4096, max: 8192 },
-          height: { ideal: 4096, max: 8192 },
-          // Request uncompressed raw feed if the browser/OS supports it
-          advanced: [{ resizeMode: "none" } as any]
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         }
       });
 
