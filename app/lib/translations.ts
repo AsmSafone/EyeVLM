@@ -8,7 +8,7 @@ export const translations = {
     continue: "Continue",
     cancel: "Cancel",
     home: "Home",
-    scans: "Scans",
+    scans: "Scan",
     history: "History",
     profile: "Profile",
 

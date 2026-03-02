@@ -76,7 +76,7 @@ export default function Scan() {
           const capabilities = track.getCapabilities ? track.getCapabilities() : {} as any;
           if (capabilities.torch) {
             await track.applyConstraints({
-              advanced: [{ torch: !flashEnabled }]
+              advanced: [{ torch: !flashEnabled } as any]
             });
             setFlashEnabled(!flashEnabled);
           } else {
@@ -173,11 +173,11 @@ export default function Scan() {
           <div className="absolute inset-0 z-[100] bg-black flex flex-col pt-safe h-full">
 
             {/* Cropper Header */}
-            <header className="flex items-center justify-between px-6 py-4 bg-black/80 backdrop-blur-sm z-50 shrink-0">
+            <header className="flex items-center justify-between px-6 py-4 bg-slate-950/80 backdrop-blur-sm z-50 shrink-0">
               <button onClick={handleCancelCrop} className="text-white flex items-center gap-1 font-medium bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition">
                 <span className="material-symbols-outlined text-sm">close</span>
               </button>
-              <button onClick={handleConfirmCrop} className="text-white bg-[#f26c24] flex items-center gap-1 font-medium px-4 py-1.5 rounded-full hover:bg-[#d95914] transition shadow-[0_4px_10px_rgba(242,108,36,0.3)]">
+              <button onClick={handleConfirmCrop} className="text-white bg-primary flex items-center gap-1 font-medium px-4 py-1.5 rounded-full hover:brightness-110 transition shadow-[0_4px_10px_rgba(6,182,212,0.3)]">
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </header>
@@ -200,10 +200,10 @@ export default function Scan() {
             </div>
 
             {/* Bottom Controls Area Container */}
-            <div className="bg-[#1f232b] w-full flex flex-col mt-auto z-50 shrink-0">
+            <div className="bg-slate-950 w-full flex flex-col mt-auto z-50 shrink-0 border-t border-white/5">
 
               {/* Aspect Ratios Bar */}
-              <div className="bg-white rounded-t-[20px] px-6 py-4 flex justify-between items-center w-full shadow-[0_-4px_15px_rgba(0,0,0,0.15)] overflow-x-auto gap-4 hide-scrollbar">
+              <div className="bg-surface/90 backdrop-blur-md rounded-t-[20px] px-6 py-4 flex justify-between items-center w-full shadow-[0_-4px_15px_rgba(0,0,0,0.2)] overflow-x-auto gap-4 hide-scrollbar">
                 {[
                   { label: "Original", value: undefined },
                   { label: "Square", value: 1 },
@@ -221,10 +221,10 @@ export default function Scan() {
                     }}
                     className="flex flex-col items-center gap-1.5 group shrink-0"
                   >
-                    <span className={`text-[14px] tracking-tight transition-colors ${aspect === ratio.value ? 'text-[#f26c24] font-semibold' : 'text-slate-600 font-medium'}`}>
+                    <span className={`text-[14px] tracking-tight transition-colors ${aspect === ratio.value ? 'text-primary font-semibold' : 'text-text-secondary font-medium'}`}>
                       {ratio.label}
                     </span>
-                    <div className={`w-1.5 h-1.5 rounded-full transition-opacity ${aspect === ratio.value ? 'bg-[#f26c24] opacity-100' : 'opacity-0'}`}></div>
+                    <div className={`w-1.5 h-1.5 rounded-full transition-opacity ${aspect === ratio.value ? 'bg-primary opacity-100' : 'opacity-0'}`}></div>
                   </button>
                 ))}
               </div>
@@ -306,7 +306,7 @@ export default function Scan() {
 
             {/* Eye Selection Toggle (Floating at top) */}
             <div className="relative z-20 w-full px-4 pt-20 flex justify-center">
-              <div className="flex h-12 bg-surface/60 backdrop-blur-xl rounded-2xl p-1 shadow-lg border border-primary/20 w-full max-w-xs">
+              <div className="flex h-12 bg-slate-900/80 backdrop-blur-xl rounded-2xl p-1 shadow-lg border border-primary/30 w-full max-w-xs">
                 <label className="flex-1 cursor-pointer relative group">
                   <input
                     type="radio"
@@ -316,7 +316,7 @@ export default function Scan() {
                     checked={activeEye === 'left'}
                     onChange={() => setActiveEye('left')}
                   />
-                  <div className="w-full h-full flex items-center justify-center rounded-xl text-sm font-bold tracking-wide text-text-secondary peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                  <div className="w-full h-full flex items-center justify-center rounded-xl text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                     {t.leftEye}
                   </div>
                 </label>
@@ -329,7 +329,7 @@ export default function Scan() {
                     checked={activeEye === 'right'}
                     onChange={() => setActiveEye('right')}
                   />
-                  <div className="w-full h-full flex items-center justify-center rounded-xl text-sm font-bold tracking-wide text-text-secondary peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                  <div className="w-full h-full flex items-center justify-center rounded-xl text-sm font-bold tracking-wide text-slate-400 hover:text-slate-200 peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                     {t.rightEye}
                   </div>
                 </label>
