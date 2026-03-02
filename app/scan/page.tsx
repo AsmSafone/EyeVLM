@@ -367,12 +367,6 @@ export default function Scan() {
                   <div className="absolute top-1/2 left-0 w-full h-0.5 bg-primary/50 -translate-y-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
                   <div className="absolute top-0 left-1/2 h-full w-0.5 bg-primary/50 -translate-x-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
                 </div>
-
-                {/* Dynamic Quality Indicator (Simulated) */}
-                <div className="absolute -bottom-20 bg-surface/80 backdrop-blur-md px-4 py-2 rounded-full border border-primary/30 flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                  <span className="material-symbols-outlined text-primary text-lg animate-pulse">check_circle</span>
-                  <span className="text-primary-dark dark:text-cyan-100 text-sm font-bold tracking-wide uppercase">{t.imageQualityGood}</span>
-                </div>
               </div>
             </div>
 
