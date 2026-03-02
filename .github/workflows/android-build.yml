@@ -44,7 +44,23 @@ jobs:
         run: |
           npx cap sync android
           
+      - name: Extract Version
+        id: extract_version
+        run: |
+          RAW_VERSION=$(node -p "require('./package.json').version")
+          VERSION="v$RAW_VERSION"
+          echo "RAW_VERSION=$RAW_VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "CREATE_RELEASE=false" >> $GITHUB_ENV
+          else
+            echo "CREATE_RELEASE=true" >> $GITHUB_ENV
+          fi
+
       - name: Build Android APK (Debug)
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: ${{ env.RAW_VERSION }}
         run: |
           cd android
           chmod +x gradlew
@@ -55,17 +71,6 @@ jobs:
         with:
           name: eyevlm-app-debug.apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Extract Version
-        id: extract_version
-        run: |
-          VERSION=v$(node -p "require('./package.json').version")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
-            echo "CREATE_RELEASE=false" >> $GITHUB_ENV
-          else
-            echo "CREATE_RELEASE=true" >> $GITHUB_ENV
-          fi
 
       - name: Release APK
         if: env.CREATE_RELEASE == 'true'
