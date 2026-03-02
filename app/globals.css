@@ -53,6 +53,8 @@
 
   body {
     @apply bg-background text-text-main antialiased transition-colors duration-300;
+    user-select: none;
+    -webkit-user-select: none;
   }
 }
 
