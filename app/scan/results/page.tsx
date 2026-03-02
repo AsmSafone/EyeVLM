@@ -19,7 +19,7 @@ export default function Results() {
     <div className="bg-background font-sans antialiased text-text-main min-h-screen flex flex-col relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
 
       {/* Top App Bar */}
       <div className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
@@ -36,18 +36,18 @@ export default function Results() {
         {/* Disease Prediction Card */}
         <div className="bg-surface/50 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group transition-colors duration-300">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50 pointer-events-none"></div>
-          
+
           {/* Image Section with Heatmap Overlay */}
           <div className="relative h-64 w-full bg-slate-950 overflow-hidden">
             {/* Original Image */}
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center opacity-90 group-hover:scale-105 transition-transform duration-700"
               style={{ backgroundImage: `url("${imageSrc || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBwrNjE--bG-lfVCXcAB57iocESZPHwsDZ21P58LKbRvRJ_A9NeQAVSmqmSS2mn-Jah8_ZaZhZ1fYlQ7r1P026t1fy5j4XfUey32fkoeVxu6UhSxQgWkKrqiuNCWiG4kMW2sD-RRcC7uN_erTOi_NO08XdvSPxh3m0NQaVO6APdHlb8TVvRyxsYWsnOqkVUYXLdq4modkCM-Q7_dpeKI1UUXLedQaaqs7eympaQxSaptXb13vUesD7a32APH3z0t4Kwy23K-uxDbkk'}")` }}
             ></div>
             {/* Heatmap Overlay Effect (Simulated with gradients) */}
             <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-gradient-to-br from-blue-500 via-transparent to-red-500"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
-            
+
             <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end z-10">
               <div>
                 <span className="inline-block px-2 py-1 bg-surface/80 backdrop-blur-md rounded border border-primary/30 text-[10px] font-bold text-primary mb-1 uppercase tracking-wider shadow-lg">{t.eyevlmAnalysis}</span>
@@ -88,12 +88,12 @@ export default function Results() {
           <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
             <span className="material-symbols-outlined text-[100px] text-text-main">analytics</span>
           </div>
-          
+
           <h3 className="text-base font-bold text-text-main mb-6 flex items-center gap-2 relative z-10">
             <span className="material-symbols-outlined text-primary">analytics</span>
             {t.analysisDetail}
           </h3>
-          
+
           {/* Confidence Meter */}
           <div className="mb-8 relative z-10">
             <div className="flex justify-between items-end mb-2">
@@ -127,7 +127,7 @@ export default function Results() {
               </li>
               <li className="flex items-start gap-4 group">
                 <div className="mt-0.5 p-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 group-hover:bg-orange-500/20 group-hover:shadow-[0_0_10px_rgba(249,115,22,0.2)] transition-all">
-                   <span className="material-symbols-outlined text-[16px] block">check</span>
+                  <span className="material-symbols-outlined text-[16px] block">check</span>
                 </div>
                 <div>
                   <span className="text-sm font-bold text-text-main block mb-0.5 group-hover:text-text-main transition-colors">{t.exudates}</span>

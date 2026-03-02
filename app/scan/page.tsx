@@ -154,7 +154,7 @@ export default function Scan() {
     <div className="bg-background font-sans antialiased text-text-main h-screen flex flex-col overflow-hidden relative transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
 
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-4 bg-gradient-to-b from-background/90 dark:from-slate-950/90 to-transparent pt-safe backdrop-blur-[2px] transition-colors duration-300">

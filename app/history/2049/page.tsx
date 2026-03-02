@@ -12,7 +12,7 @@ export default function DetailedReport() {
     <div className="bg-background font-sans antialiased text-text-main min-h-screen flex justify-center w-full relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
 
       <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
         {/* Top App Bar */}
@@ -33,13 +33,13 @@ export default function DetailedReport() {
           {/* Tab Switcher */}
           <div className="bg-surface/80 backdrop-blur-md pt-2 pb-0 px-6 rounded-b-3xl shadow-lg mb-6 border-b border-slate-200 dark:border-white/5 z-10 relative transition-colors duration-300">
             <div className="flex border-b border-slate-200 dark:border-white/5">
-              <button 
+              <button
                 onClick={() => setActiveTab('original')}
                 className={`flex-1 pb-3 pt-2 font-bold text-sm tracking-widest uppercase text-center border-b-[3px] transition-all ${activeTab === 'original' ? 'text-primary border-primary shadow-[0_4px_10px_-4px_rgba(6,182,212,0.5)]' : 'text-text-secondary border-transparent hover:text-text-main'}`}
               >
                 {t.original}
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('heatmap')}
                 className={`flex-1 pb-3 pt-2 font-bold text-sm tracking-widest uppercase text-center border-b-[3px] transition-all ${activeTab === 'heatmap' ? 'text-primary border-primary shadow-[0_4px_10px_-4px_rgba(6,182,212,0.5)]' : 'text-text-secondary border-transparent hover:text-text-main'}`}
               >
@@ -51,13 +51,13 @@ export default function DetailedReport() {
           {/* Image Area */}
           <div className="px-4 mb-8">
             <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-surface shadow-2xl border border-slate-200 dark:border-white/10 group transition-colors duration-300">
-              <div 
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-90"
                 style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBRBZM5uzi3SDFMShD26k-qzbC3M1h4059G74A-QXq6nZcdkr66Q5aCuKVrn5bc9UVul8PzVMuNIGyO3gOuyPowu-OL7wezBDNLx1TYgEYes3rCvOAGi9ispB8EXntON5HkwNpap9uEbysoGsO9F6YQkqTDq9REvYupNQnH-ycIATx3AKRk_Rv-qqYA7vqeWohI1j8oqdBWH2CLWL90iksViPCVEe9aiI-q4pBdGkzl26y9CfCXN4AGXNtj0tjVDiZt-oUFLJO7HBA")' }}
               ></div>
-              
+
               {/* Heatmap Overlay */}
-              <div 
+              <div
                 className={`absolute inset-0 bg-gradient-to-br from-red-500/40 via-transparent to-blue-500/20 mix-blend-overlay transition-opacity duration-500 ${activeTab === 'heatmap' ? 'opacity-100' : 'opacity-0'}`}
               ></div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60 pointer-events-none"></div>
@@ -114,7 +114,7 @@ export default function DetailedReport() {
             <div className="bg-surface/40 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-primary/20 relative overflow-hidden transition-colors duration-300">
               {/* Decorative subtle gradient */}
               <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-              
+
               <h3 className="text-xs font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-lg">auto_awesome</span>
                 {t.aiInterpretation}

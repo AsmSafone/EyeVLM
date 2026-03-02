@@ -47,7 +47,7 @@ export default function Onboarding() {
     <div className="bg-background font-sans antialiased text-text-main h-screen w-full flex justify-center relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
 
       <div className="relative flex h-full max-w-md w-full flex-col bg-background overflow-hidden shadow-2xl sm:rounded-xl sm:h-[90vh] sm:my-auto z-10 transition-colors duration-300">
         {/* Top Navigation Bar */}
@@ -56,7 +56,7 @@ export default function Onboarding() {
             <span className="material-symbols-outlined text-primary text-2xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">visibility</span>
             <h2 className="text-text-main text-lg font-bold leading-tight tracking-wide">EyeVLM</h2>
           </div>
-          <button 
+          <button
             onClick={handleSkip}
             className="flex items-center justify-center rounded-full px-3 py-1.5 hover:bg-surface-highlight transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
           >
@@ -69,11 +69,11 @@ export default function Onboarding() {
           {/* Hero Image Container */}
           <div className="w-full aspect-[4/5] max-h-[45vh] relative rounded-3xl overflow-hidden mb-8 bg-surface shadow-2xl border border-slate-200 dark:border-white/5 group transition-colors duration-300">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-950/90 z-10"></div>
-            <div 
+            <div
               className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-80"
               style={{ backgroundImage: `url("${steps[currentStep].image}")` }}
             ></div>
-            
+
             {/* Floating icon badge */}
             <div className="absolute bottom-6 right-6 bg-surface/80 backdrop-blur-md p-4 rounded-2xl shadow-lg z-20 flex items-center justify-center transition-all duration-300 transform translate-y-0 opacity-100 border border-primary/30">
               <span className="material-symbols-outlined text-primary text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
@@ -98,19 +98,18 @@ export default function Onboarding() {
           {/* Progress Indicators */}
           <div className="flex w-full flex-row items-center justify-center gap-2 mb-8">
             {steps.map((_, index) => (
-              <div 
+              <div
                 key={index}
-                className={`h-2 rounded-full transition-all duration-500 ${
-                  index === currentStep 
-                    ? 'w-8 bg-primary shadow-[0_0_10px_rgba(34,211,238,0.6)]' 
-                    : 'w-2 bg-surface-highlight'
-                }`}
+                className={`h-2 rounded-full transition-all duration-500 ${index === currentStep
+                  ? 'w-8 bg-primary shadow-[0_0_10px_rgba(34,211,238,0.6)]'
+                  : 'w-2 bg-surface-highlight'
+                  }`}
               ></div>
             ))}
           </div>
 
           {/* Primary Action Button */}
-          <button 
+          <button
             onClick={handleNext}
             className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold h-14 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 group border border-primary/20 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
           >

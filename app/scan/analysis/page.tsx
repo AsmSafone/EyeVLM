@@ -114,7 +114,7 @@ export default function Analysis() {
     <div className="bg-background min-h-screen flex flex-col justify-between overflow-x-hidden text-text-main relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
 
       {/* Top Navigation */}
       <div className="flex items-center p-4 pb-2 justify-between w-full relative z-20">
