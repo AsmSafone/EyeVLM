@@ -13,6 +13,13 @@ export default function PatientInfo() {
   const [gender, setGender] = useState('');
   const [diseaseName, setDiseaseName] = useState('');
   const [severity, setSeverity] = useState('');
+  const [activeEye, setActiveEye] = useState<'left' | 'right'>(() => {
+    // Try to grab from sessionStorage if they tapped it on the legacy web screen
+    if (typeof window !== 'undefined') {
+      return (sessionStorage.getItem('activeEye') as 'left' | 'right') || 'left';
+    }
+    return 'left';
+  });
 
   // New State variables for mapping
   const [age, setAge] = useState('');
@@ -76,6 +83,26 @@ export default function PatientInfo() {
 
         {/* Form Fields */}
         <div className="flex flex-col gap-6">
+
+          {/* Eye Selection Toggle */}
+          <div className="flex flex-col w-full gap-2">
+            <span className="text-text-secondary text-sm font-bold uppercase tracking-wider ml-1">{t.select || "Select Eye"}</span>
+            <div className="flex h-14 bg-surface/50 rounded-2xl p-1.5 border border-slate-200 dark:border-white/10 w-full shadow-inner">
+              <label className="flex-1 cursor-pointer relative group">
+                <input type="radio" name="eye-side" value="left" className="peer sr-only" checked={activeEye === 'left'} onChange={() => setActiveEye('left')} />
+                <div className="w-full h-full flex items-center justify-center rounded-xl text-base font-bold tracking-wide text-text-secondary hover:text-text-main peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+                  {t.leftEye}
+                </div>
+              </label>
+              <label className="flex-1 cursor-pointer relative group">
+                <input type="radio" name="eye-side" value="right" className="peer sr-only" checked={activeEye === 'right'} onChange={() => setActiveEye('right')} />
+                <div className="w-full h-full flex items-center justify-center rounded-xl text-base font-bold tracking-wide text-text-secondary hover:text-text-main peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border peer-checked:border-primary/50 transition-all peer-checked:shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+                  {t.rightEye}
+                </div>
+              </label>
+            </div>
+          </div>
+
           {/* Name Input */}
           <label className="flex flex-col w-full group">
             <span className="text-text-secondary text-sm font-bold uppercase tracking-wider pb-2 ml-1 group-focus-within:text-primary transition-colors">{t.patientName}</span>
@@ -249,7 +276,8 @@ export default function PatientInfo() {
               diabetes,
               hypertension,
               familyHistory,
-              durationDays
+              durationDays,
+              activeEye
             }));
             router.push('/scan/symptoms');
           }}
