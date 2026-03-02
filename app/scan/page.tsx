@@ -56,15 +56,17 @@ export default function Scan() {
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     try {
-      // 1. Check native permissions first (Capacitor)
-      let permStatus = await Camera.checkPermissions();
+      // 1. Check native permissions first only if running natively via Capacitor
+      if (Capacitor.isNativePlatform()) {
+        let permStatus = await Camera.checkPermissions();
 
-      if (permStatus.camera === 'prompt' || permStatus.camera === 'prompt-with-rationale') {
-        permStatus = await Camera.requestPermissions();
-      }
+        if (permStatus.camera === 'prompt' || permStatus.camera === 'prompt-with-rationale') {
+          permStatus = await Camera.requestPermissions();
+        }
 
-      if (permStatus.camera === 'denied') {
-        throw new Error('Native camera permission denied');
+        if (permStatus.camera === 'denied') {
+          throw new Error('Native camera permission denied');
+        }
       }
 
       // 2. Clear old streams
