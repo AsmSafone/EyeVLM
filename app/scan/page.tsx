@@ -4,8 +4,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
+import Cropper, { ReactCropperElement } from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 import { Camera } from '@capacitor/camera';
-import { Torch } from '@capawesome/capacitor-torch';
 
 export default function Scan() {
   const { t } = useLanguage();
@@ -19,15 +20,13 @@ export default function Scan() {
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [isCropping, setIsCropping] = useState(false);
-  const [zoomScale, setZoomScale] = useState(1);
-  const pinchStartDist = useRef<number | null>(null);
-  const pinchStartZoom = useRef<number | null>(null);
-  const containerRef = useRef<HTMLElement>(null);
+  const [aspect, setAspect] = useState<number | undefined>(undefined);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const cropperRef = useRef<ReactCropperElement>(null);
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     try {
@@ -48,18 +47,13 @@ export default function Scan() {
       }
 
       // 3. Start web stream
-      const constraints: MediaStreamConstraints = {
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         }
-      };
-
-      if (mode === 'user') {
-        (constraints.video as MediaTrackConstraints).width = { ideal: 4096 };
-        (constraints.video as MediaTrackConstraints).height = { ideal: 4096 };
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      });
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -90,16 +84,23 @@ export default function Scan() {
   }, [facingMode, startCamera, stopCamera]);
 
   const toggleFlash = async () => {
-    try {
-      if (flashEnabled) {
-        await Torch.disable();
-        setFlashEnabled(false);
-      } else {
-        await Torch.enable();
-        setFlashEnabled(true);
+    if (streamRef.current) {
+      const track = streamRef.current.getVideoTracks()[0];
+      if (track) {
+        try {
+          const capabilities = track.getCapabilities ? track.getCapabilities() : {} as any;
+          if (capabilities.torch) {
+            await track.applyConstraints({
+              advanced: [{ torch: !flashEnabled } as any]
+            });
+            setFlashEnabled(!flashEnabled);
+          } else {
+            console.log("Torch not supported");
+          }
+        } catch (err) {
+          console.error("Error toggling flash:", err);
+        }
       }
-    } catch (err) {
-      console.error("Error toggling flash:", err);
     }
   };
 
@@ -108,45 +109,12 @@ export default function Scan() {
   };
 
   const handleCapture = () => {
-    if (videoRef.current && canvasRef.current && containerRef.current) {
+    if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      const container = containerRef.current;
 
-      // 1. Calculate actual video dimensions in the DOM vs its intrinsic resolution
-      const videoRect = video.getBoundingClientRect();
-      const scaleX = video.videoWidth / videoRect.width;
-      const scaleY = video.videoHeight / videoRect.height;
-      const scaleToUse = Math.min(scaleX, scaleY); // Cover behaviour means min scale to translate DOM to intrinsic
-
-      // 2. DOM dimensions of the overlay circle 
-      // The circle has w-72 h-72 which is 288px by 288px. It's perfectly centered in the container.
-      const targetSizeDOM = 288;
-      const targetXDOM = (container.clientWidth - targetSizeDOM) / 2;
-      const targetYDOM = (container.clientHeight - targetSizeDOM) / 2;
-
-      // 3. Map DOM crop square to intrinsic video pixels, accounting for pinch zoom
-      // The video object-fit: cover centers the video inside the container.
-
-      const zoomAwareWidth = videoRect.width * zoomScale;
-      const zoomAwareHeight = videoRect.height * zoomScale;
-
-      // Calculate offset of the scaled video relative to the container center
-      const offsetXDOM = (zoomAwareWidth - container.clientWidth) / 2;
-      const offsetYDOM = (zoomAwareHeight - container.clientHeight) / 2;
-
-      // Calculate crop box coordinates on the zoomed virtual DOM plane
-      const cropXDOM = targetXDOM + offsetXDOM;
-      const cropYDOM = targetYDOM + offsetYDOM;
-
-      // Convert to intrinsic video pixels by dividing by the zoom, and multiplying by natural scale
-      const cropX = (cropXDOM / zoomScale) * scaleToUse;
-      const cropY = (cropYDOM / zoomScale) * scaleToUse;
-      const cropSize = (targetSizeDOM / zoomScale) * scaleToUse;
-
-      // Setup output canvas (2x resolution of the target for high quality)
-      canvas.width = cropSize;
-      canvas.height = cropSize;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
       const context = canvas.getContext('2d');
       if (context) {
@@ -154,49 +122,13 @@ export default function Scan() {
           context.translate(canvas.width, 0);
           context.scale(-1, 1);
         }
-
-        // Draw only the perfectly cropped square target area
-        context.drawImage(
-          video,
-          cropX, cropY, cropSize, cropSize, // Source square
-          0, 0, cropSize, cropSize // Destination square
-        );
-
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
         setImageToCrop(imageDataUrl);
         setIsCropping(true);
         stopCamera();
       }
     }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      pinchStartDist.current = Math.sqrt(dx * dx + dy * dy);
-      pinchStartZoom.current = zoomScale;
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 2 && pinchStartDist.current && pinchStartZoom.current) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      const scaleDiff = dist / pinchStartDist.current;
-      let newZoom = pinchStartZoom.current * scaleDiff;
-
-      // Clamp zoom between 1x and 4x
-      newZoom = Math.max(1, Math.min(newZoom, 4));
-      setZoomScale(newZoom);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    pinchStartDist.current = null;
-    pinchStartZoom.current = null;
   };
 
   const handleGalleryClick = () => {
@@ -220,10 +152,14 @@ export default function Scan() {
   };
 
   const handleConfirmCrop = () => {
-    if (imageToCrop) {
-      sessionStorage.setItem('capturedEyeImage', imageToCrop);
-      sessionStorage.setItem('activeEye', activeEye);
-      router.push('/scan/patient-info');
+    const cropper = cropperRef.current?.cropper;
+    if (cropper) {
+      const croppedImage = cropper.getCroppedCanvas()?.toDataURL('image/jpeg', 0.9);
+      if (croppedImage) {
+        sessionStorage.setItem('capturedEyeImage', croppedImage);
+        sessionStorage.setItem('activeEye', activeEye);
+        router.push('/scan/patient-info');
+      }
     }
   };
 
@@ -250,41 +186,96 @@ export default function Scan() {
         </button>
       </header>
 
-      {/* Main Content Area: Viewfinder or Preview */}
-      <main
-        ref={containerRef}
-        className="relative flex-1 flex flex-col w-full bg-black overflow-hidden group/viewfinder"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      {/* Main Content Area: Viewfinder or Cropper */}
+      <main className="relative flex-1 flex flex-col w-full bg-black overflow-hidden group/viewfinder">
         {isCropping && imageToCrop ? (
           <div className="absolute inset-0 z-[100] bg-black flex flex-col pt-safe h-full">
 
-            {/* Preview Header */}
+            {/* Cropper Header */}
             <header className="flex items-center justify-between px-6 py-4 bg-slate-950/80 backdrop-blur-sm z-50 shrink-0">
               <button onClick={handleCancelCrop} className="text-white flex items-center gap-1 font-medium bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition">
                 <span className="material-symbols-outlined text-sm">close</span>
               </button>
-              <h2 className="text-white text-lg font-bold tracking-wide">Confirm</h2>
               <button onClick={handleConfirmCrop} className="text-white bg-primary flex items-center gap-1 font-medium px-4 py-1.5 rounded-full hover:brightness-110 transition shadow-[0_4px_10px_rgba(6,182,212,0.3)]">
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </header>
 
-            {/* Read-Only Preview Frame */}
-            <div className="relative flex-1 w-full bg-slate-900 flex items-center justify-center shrink overflow-hidden max-h-[60vh] sm:max-h-none p-6">
-              <div className="relative w-full max-w-sm aspect-square rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(6,182,212,0.15)] ring-1 ring-white/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imageToCrop} alt="Cropped Preview" className="w-full h-full object-cover" />
-              </div>
+            <div className="relative flex-1 w-full bg-black flex items-center justify-center shrink overflow-hidden max-h-[60vh] sm:max-h-none">
+              <Cropper
+                src={imageToCrop}
+                style={{ height: "100%", width: "100%" }}
+                aspectRatio={aspect}
+                guides={true}
+                ref={cropperRef}
+                viewMode={1}
+                minCropBoxHeight={100}
+                minCropBoxWidth={100}
+                background={false}
+                responsive={true}
+                autoCropArea={0.9}
+                checkOrientation={false} // Disable to avoid internal cropper js errors on some devices
+              />
             </div>
 
             {/* Bottom Controls Area Container */}
-            <div className="bg-slate-950 w-full flex flex-col mt-auto z-50 shrink-0 border-t border-white/5 py-8">
-              <p className="text-slate-400 text-center text-sm font-medium px-6">
-                Ensure the pupil is clearly visible and centered before proceeding.
-              </p>
+            <div className="bg-slate-950 w-full flex flex-col mt-auto z-50 shrink-0 border-t border-white/5">
+
+              {/* Aspect Ratios Bar */}
+              <div className="bg-surface/90 backdrop-blur-md rounded-t-[20px] px-6 py-4 flex justify-between items-center w-full shadow-[0_-4px_15px_rgba(0,0,0,0.2)] overflow-x-auto gap-4 hide-scrollbar">
+                {[
+                  { label: "Original", value: undefined },
+                  { label: "Square", value: 1 },
+                  { label: "3x2", value: 3 / 2 },
+                  { label: "4x3", value: 4 / 3 },
+                  { label: "16x9", value: 16 / 9 },
+                ].map((ratio) => (
+                  <button
+                    key={ratio.label}
+                    onClick={() => {
+                      setAspect(ratio.value);
+                      if (cropperRef.current?.cropper) {
+                        cropperRef.current.cropper.setAspectRatio(ratio.value as number);
+                      }
+                    }}
+                    className="flex flex-col items-center gap-1.5 group shrink-0"
+                  >
+                    <span className={`text-[14px] tracking-tight transition-colors ${aspect === ratio.value ? 'text-primary font-semibold' : 'text-text-secondary font-medium'}`}>
+                      {ratio.label}
+                    </span>
+                    <div className={`w-1.5 h-1.5 rounded-full transition-opacity ${aspect === ratio.value ? 'bg-primary opacity-100' : 'opacity-0'}`}></div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Action Bottom Bar */}
+              <div className="flex justify-between items-center px-10 py-5 w-full">
+                {/* Crop Cancel/Back (Just visual or mode toggle, usually non-functional if crop mode is active) */}
+                <button onClick={handleCancelCrop} className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors">
+                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">crop</span>
+                </button>
+
+                {/* Reset crop/rotation */}
+                <button
+                  onClick={() => {
+                    cropperRef.current?.cropper.rotate(90);
+                  }}
+                  className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">refresh</span>
+                </button>
+
+                {/* Fit Crop */}
+                <button
+                  onClick={() => {
+                    cropperRef.current?.cropper.reset();
+                  }}
+                  className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">fit_screen</span>
+                </button>
+              </div>
+
             </div>
           </div>
         ) : (
@@ -308,8 +299,7 @@ export default function Scan() {
                 autoPlay
                 playsInline
                 muted
-                style={{ transform: `scale(${zoomScale}) ${facingMode === 'user' ? 'scaleX(-1)' : ''}` }}
-                className={`absolute inset-0 w-full h-full object-cover origin-center transition-transform duration-75`}
+                className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
               />
             )}
 
