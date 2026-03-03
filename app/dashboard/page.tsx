@@ -12,7 +12,7 @@ import { quotes } from '@/app/lib/quotes';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [hydrationLevel, setHydrationLevel] = useState(0);
   const [greeting, setGreeting] = useState('');
@@ -23,6 +23,7 @@ export default function Dashboard() {
   useEffect(() => {
     const savedHydration = localStorage.getItem('eyeHydrationLevel');
     if (savedHydration) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHydrationLevel(parseInt(savedHydration));
     } else {
       setHydrationLevel(15);
@@ -42,6 +43,7 @@ export default function Dashboard() {
 
   // Quote carousel: advance every 60 seconds, progress bar every second
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgress(0);
     const tick = setInterval(() => {
       setProgress(prev => {
@@ -131,7 +133,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[10px] font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest flex items-center gap-1.5 opacity-90">
                     <span className="material-symbols-outlined text-[14px]">format_quote</span>
-                    Daily Quotes
+                    {t.dailyQuotes || "Daily Quotes"}
                   </p>
                   <div className="flex items-center gap-0.5">
                     <button
@@ -161,9 +163,9 @@ export default function Dashboard() {
                       transition={{ duration: 0.35, ease: 'easeInOut' }}
                     >
                       <p className="text-text-main text-[13px] font-medium leading-relaxed italic mb-1.5 opacity-90">
-                        &ldquo;{quotes[quoteIndex].text}&rdquo;
+                        &ldquo;{quotes[quoteIndex].text[language as 'en' | 'bn'] || quotes[quoteIndex].text.en}&rdquo;
                       </p>
-                      <p className="text-text-secondary text-[11px] font-semibold tracking-wider uppercase">— {quotes[quoteIndex].author}</p>
+                      <p className="text-text-secondary text-[11px] font-semibold tracking-wider uppercase">— {quotes[quoteIndex].author[language as 'en' | 'bn'] || quotes[quoteIndex].author.en}</p>
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -225,7 +227,7 @@ export default function Dashboard() {
 
               <div className="flex-1">
                 <h4 className="font-bold text-text-main text-lg mb-1 tracking-tight">{t.eyeHydration}</h4>
-                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You've met {hydrationLevel}% of your daily water intake goal.</p>
+                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You&apos;ve met {hydrationLevel}% of your daily water intake goal.</p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleLogDrink}

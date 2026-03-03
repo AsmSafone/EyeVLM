@@ -18,6 +18,7 @@ export default function Analysis() {
     const symptomAnswersStr = sessionStorage.getItem('symptomAnswers');
 
     if (storedImage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setImageSrc(storedImage);
     }
 

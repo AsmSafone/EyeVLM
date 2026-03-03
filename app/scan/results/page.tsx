@@ -9,9 +9,11 @@ export default function Results() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [patientInfo, setPatientInfo] = useState<any>(null);
   const [patientId, setPatientId] = useState<string>("EYE-89204-L");
-  const [confidence] = useState(Math.floor(Math.random() * (99 - 85 + 1) + 85));
+  const [confidence, setConfidence] = useState(90);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConfidence(Math.floor(Math.random() * (99 - 85 + 1) + 85));
     const storedImage = sessionStorage.getItem('capturedEyeImage');
     if (storedImage) setImageSrc(storedImage);
 
