@@ -1,12 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function DetailedReport() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'original' | 'heatmap'>('original');
+  const [isExporting, setIsExporting] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current) return;
+    try {
+      setIsExporting(true);
+      const element = reportRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdfWidth = canvas.width;
+      const pdfHeight = canvas.height;
+      const pdf = new jsPDF({
+        orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [pdfWidth, pdfHeight]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`EyeVLM_Report_8834_B.pdf`);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'EyeVLM Screening Report',
+          text: `EyeVLM Screening Report for Patient ID: 8834-B\nDisease: Diabetic Retinopathy (Proliferative Stage)\nConfidence: 98%`,
+        });
+      } else {
+        alert("Sharing is not supported on this browser/device.");
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
 
   return (
     <div className="bg-background font-sans antialiased text-text-main min-h-screen flex justify-center w-full relative overflow-hidden transition-colors duration-300">
@@ -14,7 +63,7 @@ export default function DetailedReport() {
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
 
 
-      <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
+      <div ref={reportRef} className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
         {/* Top App Bar */}
         <header className="flex items-center bg-surface/80 backdrop-blur-xl px-4 py-4 sticky top-0 z-20 shadow-lg border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
           <Link href="/history" className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition border border-transparent hover:border-slate-200 dark:hover:border-white/10">
@@ -129,14 +178,25 @@ export default function DetailedReport() {
         </main>
 
         {/* Fixed Bottom Action Bar */}
-        <div className="fixed bottom-0 w-full max-w-md bg-surface/90 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 p-4 pb-8 z-20 transition-colors duration-300">
+        <div data-html2canvas-ignore="true" className="fixed bottom-0 w-full max-w-md bg-surface/90 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 p-4 pb-8 z-20 transition-colors duration-300">
           <div className="flex gap-4">
-            <button className="flex-1 bg-surface border border-slate-200 dark:border-white/10 hover:bg-surface-highlight text-text-secondary hover:text-text-main font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition active:scale-95 shadow-lg">
+            <button
+              onClick={handleShare}
+              className="flex-1 bg-surface border border-slate-200 dark:border-white/10 hover:bg-surface-highlight text-text-secondary hover:text-text-main font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition active:scale-95 shadow-lg"
+            >
               <span className="material-symbols-outlined text-[20px]">share</span>
               <span className="text-sm tracking-wide">{t.share}</span>
             </button>
-            <button className="flex-[2] bg-primary hover:bg-primary-dark text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(6,182,212,0.25)] active:scale-95 hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] border border-primary/20">
-              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+            <button
+              onClick={handleDownloadPdf}
+              disabled={isExporting}
+              className="flex-[2] bg-primary hover:bg-primary-dark text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(6,182,212,0.25)] active:scale-95 hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] border border-primary/20 disabled:opacity-70"
+            >
+              {isExporting ? (
+                <span className="material-symbols-outlined animate-spin text-[20px]">autorenew</span>
+              ) : (
+                <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+              )}
               <span className="text-sm tracking-wide">{t.exportPDF}</span>
             </button>
           </div>

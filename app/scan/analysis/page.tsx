@@ -110,7 +110,7 @@ export default function Analysis() {
 
     // Navigate to results page after analysis dummy timer
     const timer = setTimeout(() => {
-      router.push('/scan/results');
+      router.replace('/scan/results');
     }, 4500); // slightly longer to ensure requests have time to leave
 
     return () => clearTimeout(timer);

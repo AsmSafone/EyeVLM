@@ -231,7 +231,21 @@ export const translations = {
     interpretationText: "The model detected distinct microaneurysms and multiple hemorrhages in the upper quadrant. The density of hard exudates near the macula suggests significant progression.",
     recommendation: "Recommended immediate follow-up with a retinal specialist for further OCT imaging.",
     share: "Share",
-    exportPDF: "Export Report PDF",
+    exportPDF: "Export Report",
+
+    // Consult
+    findDoctor: "Find a Doctor",
+    searchDoctor: "Search doctors or clinics...",
+    bookAppointment: "Book Appointment",
+    callNow: "Call Now",
+    distance: "Distance",
+    rating: "Rating",
+    specialization: "Specialization",
+    availability: "Next Available:",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    kmAway: "km away",
+    reviews: "reviews",
 
     // Profile & Settings
     settings: "Settings",
@@ -497,7 +511,21 @@ export const translations = {
     interpretationText: "মডেলটি উপরের অংশে স্পষ্ট মাইক্রোঅ্যানিউরিজম এবং একাধিক রক্তক্ষরণ সনাক্ত করেছে। ম্যাকুলার কাছে হার্ড এক্সুডেটের ঘনত্ব উল্লেখযোগ্য অগ্রগতির ইঙ্গিত দেয়।",
     recommendation: "আরও OCT ইমেজিংয়ের জন্য অবিলম্বে একজন রেটিনা বিশেষজ্ঞের সাথে ফলো-আপ করার পরামর্শ দেওয়া হচ্ছে।",
     share: "শেয়ার করুন",
-    exportPDF: "PDF রিপোর্ট এক্সপোর্ট করুন",
+    exportPDF: "রিপোর্ট এক্সপোর্ট করুন",
+
+    // Consult
+    findDoctor: "ডাক্তার খুঁজুন",
+    searchDoctor: "ডাক্তার বা ক্লিনিক অনুসন্ধান করুন...",
+    bookAppointment: "অ্যাপয়েন্টমেন্ট বুক করুন",
+    callNow: "কল করুন",
+    distance: "দূরত্ব",
+    rating: "রেটিং",
+    specialization: "বিশেষজ্ঞতা",
+    availability: "পরবর্তী উপলব্ধ:",
+    today: "আজ",
+    tomorrow: "আগামীকাল",
+    kmAway: "কিমি দূরে",
+    reviews: "রিভিউ",
 
     // Profile & Settings
     settings: "সেটিংস",

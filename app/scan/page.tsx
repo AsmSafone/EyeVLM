@@ -238,7 +238,6 @@ export default function Scan() {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 transition-all text-text-secondary hover:text-text-main text-sm font-semibold active:scale-95"
               >
                 <span className="material-symbols-outlined text-base">close</span>
-                Retake
               </button>
 
               <div className="flex flex-col items-center">
@@ -250,7 +249,6 @@ export default function Scan() {
                 onClick={handleConfirmCrop}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 transition-all text-white text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95"
               >
-                Use Photo
                 <span className="material-symbols-outlined text-base">check</span>
               </button>
             </header>
@@ -365,8 +363,8 @@ export default function Scan() {
                   className="flex flex-col items-center gap-1.5 group"
                 >
                   <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all active:scale-90 ${dragModeCrop
-                      ? 'bg-primary/10 border-primary/40 text-primary'
-                      : 'bg-surface border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:border-primary/30 hover:text-primary'
+                    ? 'bg-primary/10 border-primary/40 text-primary'
+                    : 'bg-surface border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:border-primary/30 hover:text-primary'
                     }`}>
                     <span className="material-symbols-outlined text-xl">{dragModeCrop ? 'crop' : 'pan_tool'}</span>
                   </div>

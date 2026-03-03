@@ -41,9 +41,7 @@ export default function UpdateChecker() {
                 {/* Decorative background glow */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-primary/10 blur-[50px] pointer-events-none"></div>
 
-                <svg className="w-16 h-16 text-primary mb-4 animate-[bounce_2s_infinite]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
+                <span className="material-symbols-outlined text-6xl text-primary mb-4 animate-[bounce_2s_infinite]">system_update</span>
                 <h2 className="text-2xl font-bold text-text-main mb-2 tracking-tight">Update Required</h2>
                 <p className="text-text-secondary mb-8 leading-relaxed">
                     A new version <span className="font-bold text-text-main">{updateAvailable}</span> of EyeVLM is available. You must update to continue using the app.
