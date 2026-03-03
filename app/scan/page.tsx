@@ -328,7 +328,7 @@ export default function Scan() {
             </div>
           </div>
         ) : isNative ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 pt-safe">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 pt-safe bg-background">
             <div className="relative z-10 w-full max-w-sm flex flex-col gap-6 w-full -mt-20">
 
               {/* Huge Native Camera Button */}

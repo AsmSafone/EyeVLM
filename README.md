@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/icons/icon-512x512.png" alt="EyeVLM Logo" width="128" height="128" />
+  <img src="public/icons/icon.png" alt="EyeVLM Logo" width="128" height="128" />
   <h1>EyeVLM</h1>
   <p><strong>AI-powered Early Eye Disease Screening Application</strong></p>
   

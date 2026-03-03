@@ -39,6 +39,32 @@ export const translations = {
     signUp: "Sign up",
     enterPassword: "Enter your password",
 
+    // Signup
+    createAccount: "Create Account",
+    joinEyeVLM: "Join EyeVLM and protect your eye health with AI-powered screening.",
+    fullName: "Full Name",
+    enterFullName: "Enter your full name",
+    email: "Email Address",
+    enterEmail: "name@example.com",
+    phoneNumber: "Phone Number",
+    enterPhoneNumber: "+1 (555) 000-0000",
+    createPassword: "Create Password",
+    confirmPassword: "Confirm Password",
+    confirmPasswordPlaceholder: "Re-enter your password",
+    alreadyHaveAccount: "Already have an account?",
+    signIn: "Sign in",
+    agreeToTerms: "By signing up, you agree to our Terms of Service and Privacy Policy.",
+
+    // Forgot Password
+    forgotPasswordTitle: "Forgot Password?",
+    forgotPasswordDesc: "No worries! Enter your email and we'll send you reset instructions.",
+    sendResetLink: "Send Reset Link",
+    checkYourEmail: "Check Your Email",
+    resetEmailSent: "We've sent a password reset link to your email. Check your inbox and follow the instructions.",
+    backToLogin: "Back to Login",
+    didntReceiveEmail: "Didn't receive the email?",
+    resendEmail: "Resend",
+
     // Dashboard
     goodMorning: "Good Morning,",
     goodAfternoon: "Good Afternoon,",
@@ -276,6 +302,32 @@ export const translations = {
     dontHaveAccount: "অ্যাকাউন্ট নেই?",
     signUp: "সাইন আপ করুন",
     enterPassword: "আপনার পাসওয়ার্ড লিখুন",
+
+    // Signup
+    createAccount: "অ্যাকাউন্ট তৈরি করুন",
+    joinEyeVLM: "EyeVLM-এ যোগ দিন এবং AI-চালিত স্ক্রিনিং দিয়ে আপনার চোখের স্বাস্থ্য রক্ষা করুন।",
+    fullName: "পূর্ণ নাম",
+    enterFullName: "আপনার পূর্ণ নাম লিখুন",
+    email: "ইমেল ঠিকানা",
+    enterEmail: "name@example.com",
+    phoneNumber: "ফোন নম্বর",
+    enterPhoneNumber: "+880 1XXX-XXXXXX",
+    createPassword: "পাসওয়ার্ড তৈরি করুন",
+    confirmPassword: "পাসওয়ার্ড নিশ্চিত করুন",
+    confirmPasswordPlaceholder: "পাসওয়ার্ড পুনরায় লিখুন",
+    alreadyHaveAccount: "ইতিমধ্যে একটি অ্যাকাউন্ট আছে?",
+    signIn: "সাইন ইন করুন",
+    agreeToTerms: "সাইন আপ করে, আপনি আমাদের পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতিতে সম্মত হচ্ছেন।",
+
+    // Forgot Password
+    forgotPasswordTitle: "পাসওয়ার্ড ভুলে গেছেন?",
+    forgotPasswordDesc: "চিন্তা করবেন না! আপনার ইমেল দিন, আমরা রিসেট নির্দেশাবলী পাঠাবো।",
+    sendResetLink: "রিসেট লিংক পাঠান",
+    checkYourEmail: "আপনার ইমেল চেক করুন",
+    resetEmailSent: "আমরা আপনার ইমেলে একটি পাসওয়ার্ড রিসেট লিংক পাঠিয়েছি। আপনার ইনবক্স চেক করুন এবং নির্দেশাবলী অনুসরণ করুন।",
+    backToLogin: "লগইনে ফিরে যান",
+    didntReceiveEmail: "ইমেল পাননি?",
+    resendEmail: "পুনরায় পাঠান",
 
     // Dashboard
     goodMorning: "শুভ সকাল,",

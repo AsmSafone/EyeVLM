@@ -24,7 +24,7 @@ export default function AboutApp() {
 
                 <div className="flex-1 px-4 py-8 space-y-6 flex flex-col items-center">
                     <div className="size-32 rounded-3xl bg-surface-highlight shadow-xl flex items-center justify-center mb-4 mt-8 overflow-hidden border border-white/10">
-                        <Image src="/icons/icon-512x512.png" alt="EyeVLM Logo" width={128} height={128} className="object-cover" />
+                        <Image src="/icons/icon.png" alt="EyeVLM Logo" width={128} height={128} className="object-cover" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight mb-1">EyeVLM</h2>
                     <p className="text-text-secondary font-medium tracking-wide mb-8">Version {packageJson.version}</p>

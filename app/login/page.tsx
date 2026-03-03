@@ -66,9 +66,9 @@ export default function Login() {
 
           {/* Forgot Password Link */}
           <div className="flex justify-end">
-            <a className="text-primary text-sm font-medium hover:text-primary-dark transition-colors py-1" href="#">
+            <Link className="text-primary text-sm font-medium hover:text-primary-dark transition-colors py-1" href="/forgot-password">
               {t.forgotPassword}
-            </a>
+            </Link>
           </div>
 
           {/* Login Button */}
@@ -98,7 +98,7 @@ export default function Login() {
 
           {/* Sign Up Link */}
           <p className="text-center text-text-secondary text-sm mt-2 pb-6">
-            {t.dontHaveAccount} <a className="text-primary font-semibold hover:text-primary-dark hover:underline transition-colors" href="#">{t.signUp}</a>
+            {t.dontHaveAccount} <Link className="text-primary font-semibold hover:text-primary-dark hover:underline transition-colors" href="/signup">{t.signUp}</Link>
           </p>
         </div>
       </div>

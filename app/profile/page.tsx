@@ -42,7 +42,7 @@ export default function Profile() {
             </div>
             <h2 className="text-xl font-bold text-text-main tracking-tight">John Doe</h2>
             <p className="text-primary/80 text-sm font-medium tracking-wide">john.doe@example.com</p>
-            <Link href="/profile/personal-info" className="mt-5 px-6 py-2 bg-surface-highlight border border-white/10 dark:border-white/10 border-slate-200 text-text-secondary rounded-full text-sm font-semibold hover:bg-surface hover:text-text-main hover:border-primary/20 transition-all shadow-sm">
+            <Link href="/profile/personal-info" className="mt-5 px-6 py-2 bg-surface border border-white/10 dark:border-white/10 border-slate-200 text-text-secondary rounded-full text-sm font-semibold hover:bg-surface-highlight hover:text-text-main hover:border-primary/20 transition-all shadow-sm">
               {t.editProfile}
             </Link>
           </div>
