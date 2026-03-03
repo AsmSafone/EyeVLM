@@ -61,8 +61,8 @@ export default function PatientInfo() {
           <span className="material-symbols-outlined text-2xl">arrow_back</span>
         </Link>
         <h2 className="text-text-main text-lg font-bold leading-tight tracking-wide flex-1 text-center shadow-black drop-shadow-sm">{t.newPatientScan}</h2>
-        <Link href="/dashboard" className="flex h-12 items-center justify-end px-2">
-          <span className="text-text-secondary hover:text-text-main transition-colors text-base font-bold leading-normal tracking-wide shrink-0">{t.cancel}</span>
+        <Link href="/dashboard" className="flex h-12 items-center justify-end p-4 rounded-full hover:bg-surface-highlight transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10">
+          <span className="material-symbols-outlined text-2xl">close</span>
         </Link>
       </div>
 

@@ -229,105 +229,165 @@ export default function Scan() {
       {/* Main Content Area: Viewfinder or Cropper */}
       <main className="relative flex-1 flex flex-col w-full bg-black overflow-hidden group/viewfinder">
         {isCropping && imageToCrop ? (
-          <div className="absolute inset-0 z-[100] bg-black flex flex-col pt-safe h-full">
+          <div className="absolute inset-0 z-[100] flex flex-col bg-background transition-colors duration-300">
 
-            {/* Cropper Header */}
-            <header className="flex items-center justify-between px-6 py-4 bg-slate-950/80 backdrop-blur-sm z-50 shrink-0">
-              <button onClick={handleCancelCrop} className="text-white flex items-center gap-1 font-medium bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition">
-                <span className="material-symbols-outlined text-sm">close</span>
+            {/* Top Header */}
+            <header className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-slate-200 dark:border-white/5 bg-surface/80 backdrop-blur-xl transition-colors duration-300" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+              <button
+                onClick={handleCancelCrop}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 transition-all text-text-secondary hover:text-text-main text-sm font-semibold active:scale-95"
+              >
+                <span className="material-symbols-outlined text-base">close</span>
+                Retake
               </button>
-              <button onClick={handleConfirmCrop} className="text-white bg-primary flex items-center gap-1 font-medium px-4 py-1.5 rounded-full hover:brightness-110 transition shadow-[0_4px_10px_rgba(6,182,212,0.3)]">
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+
+              <div className="flex flex-col items-center">
+                <h1 className="text-text-main font-bold text-base tracking-wide">Crop Image</h1>
+                <p className="text-text-secondary text-xs font-medium">Drag to adjust</p>
+              </div>
+
+              <button
+                onClick={handleConfirmCrop}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 transition-all text-white text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95"
+              >
+                Use Photo
+                <span className="material-symbols-outlined text-base">check</span>
               </button>
             </header>
 
-            <div className="relative flex-1 w-full bg-black flex items-center justify-center shrink overflow-hidden max-h-[60vh] sm:max-h-none">
+            {/* Cropper Area */}
+            <div className="relative flex-1 flex items-center justify-center overflow-hidden bg-surface-highlight transition-colors duration-300">
+              {/* Ambient glow */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
+              </div>
               <Cropper
-                src={imageToCrop}
-                style={{ height: "100%", width: "100%" }}
+                src={imageToCrop ?? undefined}
+                style={{ height: '100%', width: '100%' }}
                 aspectRatio={aspect}
                 guides={true}
                 ref={cropperRef}
                 viewMode={1}
-                minCropBoxHeight={100}
-                minCropBoxWidth={100}
+                minCropBoxHeight={80}
+                minCropBoxWidth={80}
                 background={false}
                 responsive={true}
-                autoCropArea={0.9}
-                checkOrientation={false} // Disable to avoid internal cropper js errors on some devices
+                autoCropArea={0.85}
+                checkOrientation={false}
               />
             </div>
 
-            {/* Bottom Controls Area Container */}
-            <div className="bg-slate-950 w-full flex flex-col mt-auto z-50 shrink-0 border-t border-white/5">
+            {/* Bottom Controls */}
+            <div className="shrink-0 border-t border-slate-200 dark:border-white/5 bg-surface/95 backdrop-blur-xl transition-colors duration-300">
 
-              {/* Aspect Ratios Bar */}
-              <div className="bg-surface/90 backdrop-blur-md rounded-t-[20px] px-6 py-4 flex justify-between items-center w-full shadow-[0_-4px_15px_rgba(0,0,0,0.2)] overflow-x-auto gap-4 hide-scrollbar">
-                {[
-                  { label: "Original", value: NaN },
-                  { label: "Square", value: 1 },
-                  { label: "3x2", value: 3 / 2 },
-                  { label: "4x3", value: 4 / 3 },
-                  { label: "16x9", value: 16 / 9 },
-                ].map((ratio) => (
-                  <button
-                    key={ratio.label}
-                    onClick={() => {
-                      setAspect(isNaN(ratio.value as number) ? undefined : ratio.value);
-                      if (cropperRef.current?.cropper) {
-                        cropperRef.current.cropper.setAspectRatio(ratio.value as number);
-                      }
-                    }}
-                    className="flex flex-col items-center gap-1.5 group shrink-0"
-                  >
-                    <span className={`text-[14px] tracking-tight transition-colors ${aspect === ratio.value ? 'text-primary font-semibold' : 'text-text-secondary font-medium'}`}>
-                      {ratio.label}
-                    </span>
-                    <div className={`w-1.5 h-1.5 rounded-full transition-opacity ${aspect === ratio.value ? 'bg-primary opacity-100' : 'opacity-0'}`}></div>
-                  </button>
-                ))}
+              {/* Aspect Ratio Selector */}
+              <div className="px-4 pt-4 pb-2">
+                <p className="text-text-secondary text-[10px] font-bold uppercase tracking-widest mb-3 text-center">Aspect Ratio</p>
+                <div className="flex items-center justify-around gap-2 overflow-x-auto hide-scrollbar">
+                  {[
+                    { label: 'Free', value: NaN, w: 'w-6', h: 'h-5' },
+                    { label: 'Square', value: 1, w: 'w-5', h: 'h-5' },
+                    { label: '3:2', value: 3 / 2, w: 'w-6', h: 'h-4' },
+                    { label: '4:3', value: 4 / 3, w: 'w-6', h: 'h-[18px]' },
+                    { label: '16:9', value: 16 / 9, w: 'w-7', h: 'h-4' },
+                  ].map((ratio) => {
+                    const isActive = isNaN(ratio.value) ? aspect === undefined : aspect === ratio.value;
+                    return (
+                      <button
+                        key={ratio.label}
+                        onClick={() => {
+                          const val = isNaN(ratio.value) ? undefined : ratio.value;
+                          setAspect(val);
+                          cropperRef.current?.cropper?.setAspectRatio(ratio.value);
+                        }}
+                        className={`flex flex-col items-center gap-2 px-3 py-2 rounded-2xl transition-all shrink-0 ${isActive
+                          ? 'bg-primary/10 border border-primary/40'
+                          : 'border border-transparent hover:border-slate-200 dark:hover:border-white/10'
+                          }`}
+                      >
+                        <div className={`${ratio.w} ${ratio.h} rounded-sm border-2 transition-colors ${isActive ? 'border-primary' : 'border-slate-300 dark:border-slate-600'
+                          }`}></div>
+                        <span className={`text-[11px] font-semibold transition-colors ${isActive ? 'text-primary' : 'text-text-secondary'
+                          }`}>{ratio.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Action Bottom Bar */}
-              <div className="flex justify-between items-center px-10 py-5 w-full">
-                {/* Drag Mode Toggle / Crop Reset */}
-                <button onClick={() => {
-                  if (cropperRef.current?.cropper) {
-                    const cropper = cropperRef.current.cropper;
-                    setDragModeCrop(prev => {
-                      const newState = !prev;
-                      cropper.setDragMode(newState ? 'crop' : 'move');
-                      return newState;
-                    });
-                  }
-                }} className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors">
-                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">crop</span>
+              {/* Divider */}
+              <div className="h-px bg-slate-200 dark:bg-white/5 mx-4 my-1"></div>
+
+              {/* Tool Actions */}
+              <div className="flex items-center justify-around px-4 py-3" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}>
+                {/* Rotate Left */}
+                <button onClick={() => cropperRef.current?.cropper.rotate(-90)} className="flex flex-col items-center gap-1.5 group">
+                  <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
+                    <span className="material-symbols-outlined text-xl">rotate_left</span>
+                  </div>
+                  <span className="text-[10px] text-text-secondary font-medium">Rotate L</span>
                 </button>
 
-                {/* Reset crop/rotation */}
-                <button
-                  onClick={() => {
-                    cropperRef.current?.cropper.rotate(90);
-                  }}
-                  className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">refresh</span>
+                {/* Rotate Right */}
+                <button onClick={() => cropperRef.current?.cropper.rotate(90)} className="flex flex-col items-center gap-1.5 group">
+                  <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
+                    <span className="material-symbols-outlined text-xl">rotate_right</span>
+                  </div>
+                  <span className="text-[10px] text-text-secondary font-medium">Rotate R</span>
                 </button>
 
-                {/* Fit Crop */}
+                {/* Flip Horizontal */}
                 <button
                   onClick={() => {
-                    cropperRef.current?.cropper.reset();
+                    const cd = cropperRef.current?.cropper.getData();
+                    cropperRef.current?.cropper.scaleX(cd ? (cd.scaleX || 1) * -1 : -1);
                   }}
-                  className="flex items-center justify-center p-3 rounded-full active:bg-white/10 transition-colors"
+                  className="flex flex-col items-center gap-1.5 group"
                 >
-                  <span className="material-symbols-outlined text-3xl text-slate-300 font-light">fit_screen</span>
+                  <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
+                    <span className="material-symbols-outlined text-xl">flip</span>
+                  </div>
+                  <span className="text-[10px] text-text-secondary font-medium">Flip</span>
+                </button>
+
+                {/* Crop / Move Toggle */}
+                <button
+                  onClick={() => {
+                    if (cropperRef.current?.cropper) {
+                      const cropper = cropperRef.current.cropper;
+                      setDragModeCrop(prev => {
+                        const next = !prev;
+                        cropper.setDragMode(next ? 'crop' : 'move');
+                        return next;
+                      });
+                    }
+                  }}
+                  className="flex flex-col items-center gap-1.5 group"
+                >
+                  <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all active:scale-90 ${dragModeCrop
+                      ? 'bg-primary/10 border-primary/40 text-primary'
+                      : 'bg-surface border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:border-primary/30 hover:text-primary'
+                    }`}>
+                    <span className="material-symbols-outlined text-xl">{dragModeCrop ? 'crop' : 'pan_tool'}</span>
+                  </div>
+                  <span className={`text-[10px] font-medium ${dragModeCrop ? 'text-primary' : 'text-text-secondary'}`}>
+                    {dragModeCrop ? 'Crop' : 'Move'}
+                  </span>
+                </button>
+
+                {/* Reset */}
+                <button onClick={() => cropperRef.current?.cropper.reset()} className="flex flex-col items-center gap-1.5 group">
+                  <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
+                    <span className="material-symbols-outlined text-xl">restart_alt</span>
+                  </div>
+                  <span className="text-[10px] text-text-secondary font-medium">Reset</span>
                 </button>
               </div>
-
             </div>
           </div>
+
         ) : isNative ? (
+
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 pt-safe bg-background">
             <div className="relative z-10 w-full max-w-sm flex flex-col gap-6 w-full -mt-20">
 
@@ -505,8 +565,9 @@ export default function Scan() {
               </div>
             </div>
           </>
-        )}
-      </main>
-    </div>
+        )
+        }
+      </main >
+    </div >
   );
 }

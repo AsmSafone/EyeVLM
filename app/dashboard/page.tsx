@@ -5,9 +5,10 @@ import Image from 'next/image';
 import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import TipsCarousel from '@/components/TipsCarousel';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { quotes } from '@/app/lib/quotes';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -15,13 +16,16 @@ export default function Dashboard() {
 
   const [hydrationLevel, setHydrationLevel] = useState(0);
   const [greeting, setGreeting] = useState('');
+  const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * quotes.length));
+  const [quoteDir, setQuoteDir] = useState(1);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const savedHydration = localStorage.getItem('eyeHydrationLevel');
     if (savedHydration) {
       setHydrationLevel(parseInt(savedHydration));
     } else {
-      setHydrationLevel(15); // Default start
+      setHydrationLevel(15);
     }
 
     const hour = new Date().getHours();
@@ -36,12 +40,34 @@ export default function Dashboard() {
     }
   }, [t]);
 
+  // Quote carousel: advance every 60 seconds, progress bar every second
+  useEffect(() => {
+    setProgress(0);
+    const tick = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          setQuoteDir(1);
+          setQuoteIndex(i => (i + 1) % quotes.length);
+          return 0;
+        }
+        return prev + 100 / 45; // ~2.22% per second → 100% in 45s
+      });
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [quoteIndex]);
+
   const handleLogDrink = () => {
     setHydrationLevel(prev => {
       const newLevel = Math.min(prev + 15, 100);
       localStorage.setItem('eyeHydrationLevel', newLevel.toString());
       return newLevel;
     });
+  };
+
+  const goToQuote = (dir: 1 | -1) => {
+    setQuoteDir(dir);
+    setProgress(0);
+    setQuoteIndex(i => (i + dir + quotes.length) % quotes.length);
   };
 
   return (
@@ -76,12 +102,9 @@ export default function Dashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="relative overflow-hidden rounded-3xl bg-surface/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-lg hover:shadow-cyan-500/20 group cursor-pointer transition-all duration-500 active:scale-[0.99]">
-            {/* Decorative elements - adaptive to theme */}
-            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-cyan-500/10 dark:bg-cyan-400/10 blur-3xl group-hover:bg-cyan-500/20 transition-colors duration-500"></div>
-            <div className="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-blue-500/10 dark:bg-blue-600/20 blur-2xl group-hover:bg-blue-500/20 transition-colors duration-500"></div>
-
-            <div className="relative p-6 flex flex-col gap-5">
+          <div className="flex flex-col overflow-hidden rounded-3xl bg-surface/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-lg hover:shadow-cyan-500/20 group transition-all duration-500 relative">
+            {/* Top Interactive Area: Start Scan CTA */}
+            <Link href="/scan/patient-info" className="relative p-6 pb-8 flex flex-col gap-5 z-10 active:bg-surface-highlight/30 transition-colors">
               <div className="flex items-start justify-between">
                 <div className="p-3 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-2xl inline-flex items-center justify-center border border-cyan-500/20 text-cyan-600 dark:text-cyan-400">
                   <span className="material-symbols-outlined text-3xl drop-shadow-sm">photo_camera</span>
@@ -94,6 +117,64 @@ export default function Dashboard() {
               <div className="space-y-1">
                 <h2 className="text-2xl font-bold tracking-tight text-text-main">{t.startNewScan}</h2>
                 <p className="text-text-secondary text-sm leading-relaxed max-w-[85%] font-light">{t.useCameraDesc}</p>
+              </div>
+            </Link>
+
+            {/* Bottom Area: Daily Inspiration Quote Carousel */}
+            <div className="relative border-t border-slate-200 dark:border-white/5 bg-surface-highlight/40 dark:bg-surface-highlight/10 z-20">
+              {/* Subtle background for the quote area */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-violet-500/5 blur-2xl transition-colors duration-500 group-hover:bg-violet-500/10"></div>
+              </div>
+
+              <div className="relative p-5 pb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[10px] font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest flex items-center gap-1.5 opacity-90">
+                    <span className="material-symbols-outlined text-[14px]">format_quote</span>
+                    Daily Quotes
+                  </p>
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      onClick={() => goToQuote(-1)}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-text-secondary hover:text-text-main hover:bg-surface-highlight transition-all active:scale-90 border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+                      aria-label="Previous quote"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                    </button>
+                    <button
+                      onClick={() => goToQuote(1)}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-text-secondary hover:text-text-main hover:bg-surface-highlight transition-all active:scale-90 border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+                      aria-label="Next quote"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative min-h-[64px] overflow-hidden">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={quoteIndex}
+                      initial={{ x: quoteDir * 40, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: quoteDir * -40, opacity: 0 }}
+                      transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    >
+                      <p className="text-text-main text-[13px] font-medium leading-relaxed italic mb-1.5 opacity-90">
+                        &ldquo;{quotes[quoteIndex].text}&rdquo;
+                      </p>
+                      <p className="text-text-secondary text-[11px] font-semibold tracking-wider uppercase">— {quotes[quoteIndex].author}</p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Progress bar attached to the bottom */}
+              <div className="h-[2px] w-full bg-slate-200/50 dark:bg-white/5 relative overflow-hidden mt-auto">
+                <div
+                  className="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-500 to-cyan-400 transition-all ease-linear"
+                  style={{ width: `${Math.min(progress, 100)}%`, transitionDuration: progress === 0 ? '0s' : '1s' }}
+                ></div>
               </div>
             </div>
           </div>

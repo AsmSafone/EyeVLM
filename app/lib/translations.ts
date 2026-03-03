@@ -12,6 +12,7 @@ export const translations = {
     history: "History",
     profile: "Profile",
     progress: "Progress",
+    previous: "Previous",
 
     // Splash
     initializing: "Initializing",
@@ -83,7 +84,7 @@ export const translations = {
     logSymptoms: "Log symptoms",
     healthHistory: "Health History",
     reviewTimeline: "Review your complete medical timeline",
-    quickTips: "Quick Tips",
+    quickTips: "Eye Care Tips",
     prevention: "Prevention",
     nutrition: "Nutrition",
     rule202020: "The 20-20-20 Rule",
@@ -276,6 +277,7 @@ export const translations = {
     history: "ইতিহাস",
     profile: "প্রোফাইল",
     progress: "অগ্রগতি",
+    previous: "পূর্ববর্তী",
 
     // Splash
     initializing: "শুরু হচ্ছে",
@@ -347,7 +349,7 @@ export const translations = {
     logSymptoms: "লক্ষণ লিখুন",
     healthHistory: "স্বাস্থ্য ইতিহাস",
     reviewTimeline: "আপনার সম্পূর্ণ মেডিকেল টাইমলাইন পর্যালোচনা করুন",
-    quickTips: "দ্রুত পরামর্শ",
+    quickTips: "চোখের যত্ন টিপস",
     prevention: "প্রতিরোধ",
     nutrition: "পুষ্টি",
     rule202020: "২০-২০-২০ নিয়ম",

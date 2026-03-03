@@ -135,14 +135,14 @@ export default function SymptomCheck() {
         <div className="mt-auto flex w-full items-center justify-between border-t border-slate-200 dark:border-white/5 bg-surface/50 backdrop-blur-xl p-6 z-20 transition-colors duration-300">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-xl py-2 pl-2 pr-4 text-base font-medium text-text-secondary hover:text-text-main transition-colors"
+            className="flex items-center gap-2 rounded-xl py-2 pl-2 pr-4 text-base font-medium text-text-secondary hover:text-text-main transition-colors bg-surface border border-slate-200 dark:border-white/5 hover:bg-surface-highlight hover:border-slate-300 dark:hover:border-white/10"
           >
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             {t.back}
           </button>
           <button
             onClick={handleSkip}
-            className="flex items-center gap-2 rounded-xl bg-surface-highlight border border-slate-200 dark:border-white/5 px-6 py-2.5 text-base font-bold text-text-secondary hover:bg-surface hover:text-text-main hover:border-slate-300 dark:hover:border-white/10 transition-colors"
+            className="flex items-center gap-2 rounded-xl bg-surface border border-slate-200 dark:border-white/5 px-6 py-2.5 text-base font-bold text-text-secondary hover:bg-surface-highlight hover:text-text-main hover:border-slate-300 dark:hover:border-white/10 transition-colors"
           >
             {t.skip}
             <span className="material-symbols-outlined text-[20px]">skip_next</span>
