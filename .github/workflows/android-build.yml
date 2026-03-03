@@ -58,9 +58,6 @@ jobs:
           fi
 
       - name: Build Android APK (Debug)
-        env:
-          VERSION_CODE: ${{ github.run_number }}
-          VERSION_NAME: ${{ env.RAW_VERSION }}
         run: |
           cd android
           chmod +x gradlew

@@ -1,7 +1,13 @@
 {
   "name": "eyevlm",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
+  "author": {
+    "name": "AsmSafone",
+    "email": "safone@safone.dev",
+    "url": "https://www.safone.dev"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,8 +17,10 @@
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
+    "@capacitor/app": "^8.0.1",
     "@capacitor/camera": "^8.0.1",
     "@capacitor/core": "^6.2.1",
+    "@capacitor/toast": "^8.0.1",
     "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",
     "autoprefixer": "^10.4.21",

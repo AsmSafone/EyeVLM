@@ -49,7 +49,7 @@ export default function Onboarding() {
     <div className="bg-background font-sans antialiased text-text-main h-screen w-full flex justify-center relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
+
 
       <div className="relative flex h-full max-w-md w-full flex-col bg-background overflow-hidden shadow-2xl sm:rounded-xl sm:h-[90vh] sm:my-auto z-10 transition-colors duration-300">
         {/* Top Navigation Bar */}

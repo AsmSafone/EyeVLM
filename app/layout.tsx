@@ -4,6 +4,7 @@ import './globals.css';
 import { LanguageProvider } from '@/app/context/LanguageContext';
 import { ThemeProvider } from '@/app/context/ThemeContext';
 import UpdateChecker from '@/components/UpdateChecker';
+import AppConfig from '@/components/AppConfig';
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -25,6 +26,11 @@ export default function RootLayout({
     <html lang="en" className={`${lexend.variable}`}>
       <head>
         <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+        />
+        <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
         />
@@ -32,8 +38,10 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-text-main transition-colors duration-300">
         <ThemeProvider>
           <LanguageProvider>
-            <UpdateChecker />
-            {children}
+            <AppConfig>
+              <UpdateChecker />
+              {children}
+            </AppConfig>
           </LanguageProvider>
         </ThemeProvider>
       </body>

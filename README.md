@@ -18,7 +18,8 @@ EyeVLM is a cross-platform, progressive web application engineered to provide ea
 - **Native Android APK Integration**: Seamlessly wrapper utilizing Capacitor v6, including native Android hardware API plugins (`@capacitor/camera`, `@capawesome/capacitor-torch`).
 - **Precision Viewfinder**: A highly customized `getUserMedia` web stream tracker that dynamically controls device hardware, pre-crops live video feeds instantly using HTML5 Canvas mathematical coordinate injection, and leverages `react-cropper` to isolate purely the optical disc focus.
 - **Robust Multi-Language System**: Full internal support via Context API translation strings.
-- **Over The Air Updating**: Integrated blocking UI client prompt that intercepts older APK clients by querying the Github action pipelines to require forced application updates.
+- **Over The Air Updating**: Integrated blocking UI client prompt that intercepts older APK clients by querying the Github action pipelines to require forced application updates. Next.js natively builds dynamic valid `versionCode` variables directly into `<Project>/android/app/build.gradle`.
+- **Hardware Native Navigation**: Dynamic handling of Android hardware back buttons using `@capacitor/app` wrapper injected over `<RootLayout>`, alongside safety-exit hooks powered by `@capacitor/toast`.
 
 ## 🚀 Workflows
 ### Android APK Generation
@@ -32,7 +33,7 @@ This repository maintains a fully customized GitHub Actions CI/CD pipeline!
 - **Design System**: Tailwind CSS v4, Lucide React Icons
 - **Native Wrapper**: Capacitor v6
 - **Device Hardware**: `navigator.mediaDevices.getUserMedia`
-- **Dependencies**: `react-cropper`, `framer-motion`
+- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`, `@capacitor/toast`
 
 ## 📦 Local Installation
 

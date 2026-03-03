@@ -50,7 +50,7 @@ export default function SymptomCheck() {
     <div className="bg-background min-h-screen font-sans flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
+
 
       {/* Mobile Container */}
       <div className="relative flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden bg-background shadow-2xl z-10 transition-colors duration-300">

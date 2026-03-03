@@ -12,7 +12,7 @@ export default function DetailedReport() {
     <div className="bg-background font-sans antialiased text-text-main min-h-screen flex justify-center w-full relative overflow-hidden transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-[url(/noise.svg)] opacity-5 pointer-events-none"></div>
+
 
       <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
         {/* Top App Bar */}

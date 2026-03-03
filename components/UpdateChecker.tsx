@@ -38,7 +38,9 @@ export default function UpdateChecker() {
                 {/* Decorative background glow */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-primary/10 blur-[50px] pointer-events-none"></div>
 
-                <span className="material-symbols-outlined text-6xl text-primary mb-4 animate-[bounce_2s_infinite]">system_update</span>
+                <svg className="w-16 h-16 text-primary mb-4 animate-[bounce_2s_infinite]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
                 <h2 className="text-2xl font-bold text-text-main mb-2 tracking-tight">Update Required</h2>
                 <p className="text-text-secondary mb-8 leading-relaxed">
                     A new version <span className="font-bold text-text-main">{updateAvailable}</span> of EyeVLM is available. You must update to continue using the app.
@@ -49,7 +51,9 @@ export default function UpdateChecker() {
                     rel="noopener noreferrer"
                     className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-6 rounded-2xl transition-colors shadow-[0_4px_15px_rgba(6,182,212,0.3)] active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                    <span className="material-symbols-outlined text-lg">download</span>
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
                     Download Update
                 </a>
             </div>
