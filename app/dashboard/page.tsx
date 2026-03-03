@@ -6,9 +6,31 @@ import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import TipsCarousel from '@/components/TipsCarousel';
 import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
+  const router = useRouter();
   const { t } = useLanguage();
+
+  const [hydrationLevel, setHydrationLevel] = useState(0);
+
+  useEffect(() => {
+    const savedHydration = localStorage.getItem('eyeHydrationLevel');
+    if (savedHydration) {
+      setHydrationLevel(parseInt(savedHydration));
+    } else {
+      setHydrationLevel(75); // Default start
+    }
+  }, []);
+
+  const handleLogDrink = () => {
+    setHydrationLevel(prev => {
+      const newLevel = Math.min(prev + 15, 100);
+      localStorage.setItem('eyeHydrationLevel', newLevel.toString());
+      return newLevel;
+    });
+  };
 
   return (
     <div className="bg-background font-sans min-h-screen flex flex-col antialiased pb-24 relative overflow-hidden transition-colors duration-300">
@@ -94,25 +116,27 @@ export default function Dashboard() {
                     strokeDasharray="100, 100"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
-                  {/* Progress Circle (75%) */}
+                  {/* Progress Circle */}
                   <path
                     className="stroke-cyan-500 dark:stroke-cyan-400 fill-none drop-shadow-md dark:drop-shadow-[0_0_4px_rgba(34,211,238,0.5)] transition-all duration-1000 ease-out"
                     strokeWidth="3.5"
-                    strokeDasharray="75, 100"
+                    strokeDasharray={`${hydrationLevel}, 100`}
                     strokeLinecap="round"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <span className="text-lg font-bold text-text-main">75%</span>
+                  <span className="text-lg font-bold text-text-main">{hydrationLevel}%</span>
                 </div>
               </div>
 
               <div className="flex-1">
                 <h4 className="font-bold text-text-main text-lg mb-1 tracking-tight">{t.eyeHydration}</h4>
-                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You've met 75% of your daily water intake goal.</p>
+                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You've met {hydrationLevel}% of your daily water intake goal.</p>
                 <div className="flex items-center gap-2">
-                  <button className="bg-cyan-500 text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1">
+                  <button
+                    onClick={handleLogDrink}
+                    className="bg-cyan-500 text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px]">water_drop</span>
                     Log Drink
                   </button>
