@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import { Eye } from 'lucide-react';
@@ -9,10 +9,26 @@ import { Camera } from '@capacitor/camera';
 export default function Splash() {
   const router = useRouter();
   const { t } = useLanguage();
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     // Request native camera permissions upfront
     Camera.requestPermissions().catch(err => console.error(err));
+
+    // Progress animation over 3 seconds
+    const duration = 3000;
+    const intervalTime = 30;
+    const totalSteps = duration / intervalTime;
+    let step = 0;
+
+    const progressInterval = setInterval(() => {
+      step++;
+      const nextProgress = Math.min(Math.floor((step / totalSteps) * 100), 100);
+      setProgress(nextProgress);
+      if (step >= totalSteps) {
+        clearInterval(progressInterval);
+      }
+    }, intervalTime);
 
     const timer = setTimeout(() => {
       const hasOnboarded = localStorage.getItem('onboardingCompleted');
@@ -21,9 +37,12 @@ export default function Splash() {
       } else {
         router.push('/onboarding');
       }
-    }, 3000);
+    }, duration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressInterval);
+    };
   }, [router]);
 
   return (
@@ -94,10 +113,13 @@ export default function Splash() {
         <div className="absolute bottom-16 w-full max-w-[240px] flex flex-col items-center gap-4">
           <div className="flex justify-between w-full text-xs font-medium text-primary/70 uppercase tracking-[0.2em]">
             <span>{t.initializing}</span>
-            <span className="animate-pulse">84%</span>
+            <span className="animate-pulse">{progress}%</span>
           </div>
           <div className="w-full bg-surface-highlight rounded-full h-1 overflow-hidden backdrop-blur-sm border border-slate-200 dark:border-white/5">
-            <div className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 h-full rounded-full w-[84%] shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-[shimmer_2s_linear_infinite] bg-[length:200%_100%]"></div>
+            <div
+              className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 h-full rounded-full shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-[shimmer_2s_linear_infinite] bg-[length:200%_100%] transition-all duration-75 ease-linear"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
           <p className="text-[10px] text-text-secondary mt-2 font-mono tracking-widest opacity-60">{t.trustedBy}</p>
         </div>

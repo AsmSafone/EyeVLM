@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import BottomNav from '@/components/BottomNav';
+import Image from 'next/image';
 import { useLanguage } from '@/app/context/LanguageContext';
 
 export default function AboutApp() {
@@ -22,8 +22,8 @@ export default function AboutApp() {
                 </div>
 
                 <div className="flex-1 px-4 py-8 space-y-6 flex flex-col items-center">
-                    <div className="size-32 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-xl flex items-center justify-center mb-4 mt-8">
-                        <span className="material-symbols-outlined text-[64px] text-white">visibility</span>
+                    <div className="size-32 rounded-3xl bg-surface-highlight shadow-xl flex items-center justify-center mb-4 mt-8 overflow-hidden border border-white/10">
+                        <Image src="/icons/icon-512x512.png" alt="EyeVLM Logo" width={128} height={128} className="object-cover" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight mb-1">EyeVLM</h2>
                     <p className="text-text-secondary font-medium tracking-wide mb-8">Version 1.0.0</p>
@@ -59,7 +59,6 @@ export default function AboutApp() {
                     </p>
                 </div>
 
-                <BottomNav />
             </div>
         </div>
     );

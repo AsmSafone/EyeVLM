@@ -11,6 +11,7 @@ export default function PatientInfo() {
   const { t } = useLanguage();
 
   const [gender, setGender] = useState('');
+  const [patientName, setPatientName] = useState('');
   const [diseaseName, setDiseaseName] = useState('');
   const [severity, setSeverity] = useState('');
   const [activeEye, setActiveEye] = useState<'left' | 'right'>(() => {
@@ -110,7 +111,8 @@ export default function PatientInfo() {
               <input
                 className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 text-text-main h-14 pl-4 pr-4 placeholder:text-text-secondary/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all text-lg shadow-inner"
                 placeholder="John Doe"
-                defaultValue=""
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
               />
             </div>
           </label>
@@ -269,6 +271,7 @@ export default function PatientInfo() {
             else if (duration === 'moreThan1Month') durationDays = 45;
 
             sessionStorage.setItem('patientInfo', JSON.stringify({
+              name: patientName,
               age,
               gender,
               diseaseName,

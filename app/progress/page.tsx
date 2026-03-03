@@ -19,19 +19,13 @@ export default function ProgressPage() {
                     <Link href="/dashboard" className="flex size-10 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors text-text-main border border-transparent hover:border-slate-200 dark:hover:border-white/10">
                         <span className="material-symbols-outlined text-2xl">arrow_back</span>
                     </Link>
-                    <h1 className="text-xl font-bold leading-tight flex-1 text-center pr-10 tracking-wide text-text-main">{t.progress}</h1>
+                    <h1 className="text-xl font-bold leading-tight flex-1 text-center pr-10 tracking-wide text-text-main">{t.eyeHealthTrends}</h1>
                 </div>
             </div>
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col p-6 overflow-y-auto relative z-10 pb-36">
                 <div className="flex flex-col gap-6 w-full max-w-lg mx-auto">
-
-                    {/* Header Summary */}
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-2xl font-bold text-text-main tracking-tight">{t.eyeHealthTrends}</h2>
-                        <p className="text-sm text-text-secondary">{t.trackStatistics}</p>
-                    </div>
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-4">
@@ -60,41 +54,44 @@ export default function ProgressPage() {
                             <div className="px-3 py-1 bg-surface-highlight rounded-full text-xs font-bold text-text-secondary">{t.last6Months}</div>
                         </div>
 
-                        <div className="h-40 w-full relative flex items-end justify-between pt-4">
+                        <div className="h-40 w-full relative flex flex-col justify-end pt-4 font-sans max-w-full overflow-hidden">
                             {/* Y-axis labels */}
-                            <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-text-secondary opacity-50 font-bold">
+                            <div className="absolute left-0 top-4 bottom-6 flex flex-col justify-between text-[10px] text-text-secondary opacity-50 font-bold z-10 w-6">
                                 <span>100</span>
                                 <span>50</span>
                                 <span>0</span>
                             </div>
 
-                            {/* Grid Lines */}
-                            <div className="absolute left-6 right-0 top-1.5 h-px bg-slate-200 dark:bg-white/5"></div>
-                            <div className="absolute left-6 right-0 top-1/2 h-px bg-slate-200 dark:bg-white/5 -translate-y-3"></div>
-                            <div className="absolute left-6 right-0 bottom-6 h-px bg-slate-200 dark:bg-white/10"></div>
+                            {/* Chart Data Area */}
+                            <div className="relative w-full h-[calc(100%-24px)] pl-8">
+                                {/* Grid Lines */}
+                                <div className="absolute left-8 right-0 top-0 h-px bg-slate-200 dark:bg-white/5"></div>
+                                <div className="absolute left-8 right-0 top-1/2 h-px bg-slate-200 dark:bg-white/5 -translate-y-px"></div>
+                                <div className="absolute left-8 right-0 bottom-0 h-px bg-slate-200 dark:bg-white/10"></div>
 
-                            {/* SVG Line Chart Mock */}
-                            <svg className="absolute left-6 right-0 top-2 bottom-6 w-[calc(100%-24px)] h-[calc(100%-32px)] overflow-visible" preserveAspectRatio="none">
-                                <path
-                                    d="M0,80 C40,70 60,30 100,40 C140,50 180,20 220,10 C260,0 300,5 340,15"
-                                    fill="none"
-                                    stroke="url(#gradientLine)"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="drop-shadow-[0_4px_12px_rgba(6,182,212,0.4)]"
-                                    vectorEffect="non-scaling-stroke"
-                                />
-                                <defs>
-                                    <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stopColor="#06b6d4" />
-                                        <stop offset="100%" stopColor="#6366f1" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
+                                {/* SVG Line Chart Mock */}
+                                <svg className="absolute inset-0 left-8 right-0 w-[calc(100%-32px)] h-full overflow-visible" viewBox="0 0 340 80" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="#06b6d4" />
+                                            <stop offset="100%" stopColor="#6366f1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path
+                                        d="M0,80 C40,65 60,30 100,40 C140,50 180,20 220,10 C260,0 300,5 340,15"
+                                        fill="none"
+                                        stroke="url(#gradientLine)"
+                                        strokeWidth="4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="drop-shadow-[0_4px_12px_rgba(6,182,212,0.4)]"
+                                        vectorEffect="non-scaling-stroke"
+                                    />
+                                </svg>
+                            </div>
 
                             {/* X-axis labels */}
-                            <div className="w-full flex justify-between pl-6 mt-auto text-[10px] text-text-secondary font-bold uppercase tracking-widest">
+                            <div className="w-full h-6 flex justify-between items-end pl-8 text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-2 overflow-hidden">
                                 <span>{t.may}</span>
                                 <span>{t.jul}</span>
                                 <span>{t.sep}</span>
@@ -138,7 +135,6 @@ export default function ProgressPage() {
                 </div>
             </main>
 
-            {/* Navigation */}
             <BottomNav />
         </div>
     );

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 
 export default function PersonalInfo() {
@@ -48,7 +47,6 @@ export default function PersonalInfo() {
                     </button>
                 </div>
 
-                <BottomNav />
             </div>
         </div>
     );

@@ -328,17 +328,8 @@ export default function Scan() {
             </div>
           </div>
         ) : isNative ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 bg-black pt-safe">
-            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black pointer-events-none opacity-80"></div>
-
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 pt-safe">
             <div className="relative z-10 w-full max-w-sm flex flex-col gap-6 w-full -mt-20">
-
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white tracking-wide">{t.captureEyeImage || "Capture Eye Image"}</h2>
-                <p className="text-slate-400 mt-2 text-sm max-w-xs mx-auto">
-                  {t.alignPupil || "Please provide a clear, high-resolution photo of the eye."}
-                </p>
-              </div>
 
               {/* Huge Native Camera Button */}
               <button

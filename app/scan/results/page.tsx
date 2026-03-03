@@ -7,12 +7,19 @@ import { useLanguage } from '@/app/context/LanguageContext';
 export default function Results() {
   const { t } = useLanguage();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [patientInfo, setPatientInfo] = useState<any>(null);
+  const [patientId, setPatientId] = useState<string>("EYE-89204-L");
+  const [confidence] = useState(Math.floor(Math.random() * (99 - 85 + 1) + 85));
 
   useEffect(() => {
     const storedImage = sessionStorage.getItem('capturedEyeImage');
-    if (storedImage) {
-      setImageSrc(storedImage);
-    }
+    if (storedImage) setImageSrc(storedImage);
+
+    const info = sessionStorage.getItem('patientInfo');
+    if (info) setPatientInfo(JSON.parse(info));
+
+    const pid = sessionStorage.getItem('patientId');
+    if (pid) setPatientId(pid);
   }, []);
 
   return (
@@ -51,7 +58,7 @@ export default function Results() {
             <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end z-10">
               <div>
                 <span className="inline-block px-2 py-1 bg-surface/80 backdrop-blur-md rounded border border-primary/30 text-[10px] font-bold text-primary mb-1 uppercase tracking-wider shadow-lg">{t.eyevlmAnalysis}</span>
-                <p className="text-slate-300 text-xs font-mono tracking-wide">ID: #EYE-89204-L</p>
+                <p className="text-slate-300 text-xs font-mono tracking-wide">ID: #{patientId}</p>
               </div>
               <button className="size-10 rounded-full bg-surface/50 backdrop-blur-md border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all hover:scale-110 active:scale-95 shadow-lg">
                 <span className="material-symbols-outlined text-white text-[20px]">zoom_in</span>
@@ -64,20 +71,26 @@ export default function Results() {
             <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-red-500/10 text-red-500 mb-4 border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]">
               <span className="material-symbols-outlined text-[32px]">medical_services</span>
             </div>
-            <h2 className="text-2xl font-bold text-text-main mb-1 tracking-tight drop-shadow-sm">{t.diabeticRetinopathy}</h2>
-            <p className="text-sm text-text-secondary font-medium">{t.detectedInLeftEye}</p>
+            <h2 className="text-2xl font-bold text-text-main mb-1 tracking-tight drop-shadow-sm capitalize">
+              {patientInfo?.diseaseName ? (t[patientInfo.diseaseName as keyof typeof t] || patientInfo.diseaseName) : t.diabeticRetinopathy}
+            </h2>
+            <p className="text-sm text-text-secondary font-medium">
+              {patientInfo?.activeEye === 'right' ? t.detectedInRightEye : t.detectedInLeftEye}
+            </p>
           </div>
 
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 gap-4 px-5 pb-6">
             {/* Confidence Metric */}
             <div className="bg-surface-highlight/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-200 dark:border-white/5 hover:border-primary/30 transition-colors group/metric">
-              <span className="text-3xl font-bold text-primary drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]">94%</span>
+              <span className="text-3xl font-bold text-primary drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]">{confidence}%</span>
               <span className="text-[10px] font-bold text-text-secondary mt-1 uppercase tracking-widest group-hover/metric:text-primary/70 transition-colors">{t.confidence}</span>
             </div>
             {/* Severity Metric */}
             <div className="bg-surface-highlight/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-200 dark:border-white/5 hover:border-orange-500/30 transition-colors group/metric">
-              <span className="text-lg font-bold text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.3)]">{t.moderate}</span>
+              <span className="text-lg font-bold text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.3)] capitalize">
+                {patientInfo?.severity ? (t[patientInfo.severity as keyof typeof t] || patientInfo.severity) : t.moderate}
+              </span>
               <span className="text-[10px] font-bold text-text-secondary mt-1 uppercase tracking-widest group-hover/metric:text-orange-500/70 transition-colors">{t.severity}</span>
             </div>
           </div>
@@ -98,10 +111,10 @@ export default function Results() {
           <div className="mb-8 relative z-10">
             <div className="flex justify-between items-end mb-2">
               <span className="text-sm font-medium text-text-secondary">{t.aiConfidenceScore}</span>
-              <span className="text-sm font-bold text-text-main">94%</span>
+              <span className="text-sm font-bold text-text-main">{confidence}%</span>
             </div>
             <div className="h-2 w-full bg-surface-highlight rounded-full overflow-hidden border border-slate-200 dark:border-white/5">
-              <div className="h-full bg-primary rounded-full relative shadow-[0_0_10px_rgba(6,182,212,0.5)]" style={{ width: '94%' }}>
+              <div className="h-full bg-primary rounded-full relative shadow-[0_0_10px_rgba(6,182,212,0.5)]" style={{ width: `${confidence}%` }}>
                 <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
               </div>
             </div>

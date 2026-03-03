@@ -45,7 +45,7 @@ export const translations = {
     startNewScan: "Test Your Eye Today",
     aiPowered: "AI Powered",
     useCameraDesc: "Use your camera to detect potential issues early with our AI diagnosis tool.",
-    launchCamera: "Launch Camera",
+    launchCamera: "Open Camera",
     yourHealth: "Your Health",
     viewAll: "View All",
     reports: "Reports",
@@ -85,11 +85,11 @@ export const translations = {
     flash: "Flash",
     capture: "Capture",
     cameraAccessDenied: "Camera Access Denied",
-    takeNewPhotoNatively: "Take a new photo natively",
+    takeNewPhotoNatively: "Take a new photo",
     openGallery: "Open Gallery",
     selectExistingPhoto: "Select an existing photo",
     or: "OR",
-    relaunchCamera: "Relaunch Camera",
+    relaunchCamera: "Open Camera",
 
     // Patient Info
     newPatientScan: "New Patient Scan",
@@ -154,6 +154,7 @@ export const translations = {
     eyevlmAnalysis: "EyeVLM Analysis",
     diabeticRetinopathy: "Diabetic Retinopathy",
     detectedInLeftEye: "Detected in Left Eye",
+    detectedInRightEye: "Detected in Right Eye",
     confidence: "Confidence",
     severity: "Severity",
     moderate: "Moderate",
@@ -204,7 +205,7 @@ export const translations = {
     // Profile & Settings
     settings: "Settings",
     account: "Account",
-    personalInfo: "Personal Information",
+    personalInfo: "Personal Info",
     notifications: "Notifications",
     security: "Security",
     language: "Language",
@@ -220,8 +221,7 @@ export const translations = {
     save: "Save",
 
     // Progress
-    eyeHealthTrends: "Eye Health Trends",
-    trackStatistics: "Track your AI-powered scanning statistics over time.",
+    eyeHealthTrends: "Health Trends",
     totalScans: "Total Scans",
     healthyRate: "Healthy Rate",
     confidenceScoreTrend: "Confidence Score Trend",
@@ -280,7 +280,7 @@ export const translations = {
     startNewScan: "আজই আপনার চোখের পরীক্ষা করুন",
     aiPowered: "AI চালিত",
     useCameraDesc: "আমাদের AI ডায়াগনসিস টুলের মাধ্যমে প্রাথমিক সমস্যাগুলি সনাক্ত করতে আপনার ক্যামেরা ব্যবহার করুন।",
-    launchCamera: "ক্যামেরা চালু করুন",
+    launchCamera: "ক্যামেরা খুলুন",
     yourHealth: "আপনার স্বাস্থ্য",
     viewAll: "সব দেখুন",
     reports: "রিপোর্ট",
@@ -320,11 +320,11 @@ export const translations = {
     flash: "ফ্ল্যাশ",
     capture: "ক্যাপচার",
     cameraAccessDenied: "ক্যামেরা অ্যাক্সেস প্রত্যাখ্যান করা হয়েছে",
-    takeNewPhotoNatively: "নেটিভভাবে একটি নতুন ছবি তুলুন",
+    takeNewPhotoNatively: "একটি নতুন ছবি তুলুন",
     openGallery: "গ্যালারি খুলুন",
     selectExistingPhoto: "একটি বিদ্যমান ছবি নির্বাচন করুন",
     or: "অথবা",
-    relaunchCamera: "ক্যামেরা পুনরায় রিলঞ্চ করুন",
+    relaunchCamera: "ক্যামেরা খুলুন",
 
     // Patient Info
     newPatientScan: "নতুন রোগীর স্ক্যান",
@@ -389,6 +389,7 @@ export const translations = {
     eyevlmAnalysis: "EyeVLM বিশ্লেষণ",
     diabeticRetinopathy: "ডায়াবেটিক রেটিনোপ্যাথি",
     detectedInLeftEye: "বাম চোখে সনাক্ত হয়েছে",
+    detectedInRightEye: "ডান চোখে সনাক্ত হয়েছে",
     confidence: "কনফিডেন্স",
     severity: "তীব্রতা",
     moderate: "মাঝারি",
@@ -455,8 +456,7 @@ export const translations = {
     save: "সংরক্ষণ করুন",
 
     // Progress
-    eyeHealthTrends: "চোখের স্বাস্থ্যের প্রবণতা",
-    trackStatistics: "সম সময়ের সাথে সাথে আপনার এআই-চালিত স্ক্যানিং পরিসংখ্যান ট্র্যাক করুন।",
+    eyeHealthTrends: "স্বাস্থ্যের প্রবণতা",
     totalScans: "মোট স্ক্যান",
     healthyRate: "সুস্থতার হার",
     confidenceScoreTrend: "কনফিডেন্স স্কোর প্রবণতা",

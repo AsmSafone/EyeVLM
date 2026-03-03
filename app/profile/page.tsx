@@ -39,9 +39,6 @@ export default function Profile() {
                   className="object-cover"
                 />
               </div>
-              <button className="absolute bottom-1 right-1 p-2 bg-primary text-white rounded-full shadow-lg border-2 border-surface hover:bg-primary-dark transition-colors z-20 hover:scale-110 active:scale-95">
-                <span className="material-symbols-outlined text-[18px] leading-none">edit</span>
-              </button>
             </div>
             <h2 className="text-xl font-bold text-text-main tracking-tight">John Doe</h2>
             <p className="text-primary/80 text-sm font-medium tracking-wide">john.doe@example.com</p>

@@ -27,8 +27,13 @@ export default function Analysis() {
     const submitData = async () => {
       try {
         const formData = new FormData();
-        const patientId = Date.now().toString();
+        const uniqueHash = Math.random().toString(36).substring(2, 7).toUpperCase();
+        const eyeSuffix = activeEye === 'right' ? 'R' : 'L';
+        const patientId = `EYE-${uniqueHash}-${eyeSuffix}`;
+        sessionStorage.setItem('patientId', patientId);
+
         formData.append("Patient_ID", patientId);
+        formData.append("Patient_Name", patientInfo?.name || "");
         formData.append("Age", patientInfo?.age || "0");
         formData.append("Gender", patientInfo?.gender === "male" ? "0" : "1");
         formData.append("Eye_Side", activeEye === "left" ? "0" : "1");
@@ -76,7 +81,7 @@ export default function Analysis() {
         if (storedImage && storedImage.startsWith('data:image')) {
           const res = await fetch(storedImage);
           const blob = await res.blob();
-          const imgFilename = `${patientId}_${diagnosisLabel.toLowerCase()}.jpg`;
+          const imgFilename = `${patientId}_${diagnosisLabel.toUpperCase()}.jpg`;
           formData.append("Image_Path", blob, imgFilename);
         }
 
