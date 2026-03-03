@@ -3,8 +3,12 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { PrescriptionReport } from '@/app/components/PrescriptionReport';
 
 export default function DetailedReport() {
   const { t } = useLanguage();
@@ -17,16 +21,14 @@ export default function DetailedReport() {
     try {
       setIsExporting(true);
       const element = reportRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+      const imgData = await toPng(element, {
+        pixelRatio: 2,
+        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdfWidth = canvas.width;
-      const pdfHeight = canvas.height;
+      // Instead of relying on a <canvas> dimensions, use a fixed A4 aspect ratio or client rect
+      const pdfWidth = element.clientWidth;
+      const pdfHeight = element.clientHeight;
       const pdf = new jsPDF({
         orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
         unit: 'px',
@@ -34,7 +36,30 @@ export default function DetailedReport() {
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`EyeVLM_Report_8834_B.pdf`);
+      const fileName = `EyeVLM_Report_8834_B.pdf`;
+
+      if (Capacitor.isNativePlatform()) {
+        const base64Data = pdf.output('datauristring').split(',')[1];
+        try {
+          const result = await Filesystem.writeFile({
+            path: fileName,
+            data: base64Data,
+            directory: Directory.Documents,
+          });
+          console.log(`Report saved to ${result.uri}`);
+
+          // Optionally share it right away natively
+          await Share.share({
+            title: 'EyeVLM Screening Report',
+            url: result.uri,
+          });
+        } catch (e) {
+          console.error("Filesystem error", e);
+          alert("Could not save PDF to device.");
+        }
+      } else {
+        pdf.save(fileName);
+      }
     } catch (error) {
       console.error("Failed to generate PDF:", error);
     } finally {
@@ -44,11 +69,15 @@ export default function DetailedReport() {
 
   const handleShare = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'EyeVLM Screening Report',
-          text: `EyeVLM Screening Report for Patient ID: 8834-B\nDisease: Diabetic Retinopathy (Proliferative Stage)\nConfidence: 98%`,
-        });
+      const shareData = {
+        title: 'EyeVLM Screening Report',
+        text: `EyeVLM Screening Report for Patient ID: 8834-B\nDisease: Diabetic Retinopathy (Proliferative Stage)\nConfidence: 98%`,
+      };
+
+      if (Capacitor.isNativePlatform()) {
+        await Share.share(shareData);
+      } else if (navigator.share) {
+        await navigator.share(shareData);
       } else {
         alert("Sharing is not supported on this browser/device.");
       }
@@ -63,7 +92,7 @@ export default function DetailedReport() {
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
 
 
-      <div ref={reportRef} className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl overflow-hidden pb-24 z-10 transition-colors duration-300">
         {/* Top App Bar */}
         <header className="flex items-center bg-surface/80 backdrop-blur-xl px-4 py-4 sticky top-0 z-20 shadow-lg border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
           <Link href="/history" className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition border border-transparent hover:border-slate-200 dark:hover:border-white/10">
@@ -201,6 +230,21 @@ export default function DetailedReport() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Hidden PDF Report Template */}
+      <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0">
+        <PrescriptionReport
+          ref={reportRef}
+          patientId="8834-B"
+          date="Oct 24, 2023"
+          disease={t.diabeticRetinopathy}
+          severity={t.proliferativeStage}
+          confidence={98}
+          activeEye="right"
+          imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuBRBZM5uzi3SDFMShD26k-qzbC3M1h4059G74A-QXq6nZcdkr66Q5aCuKVrn5bc9UVul8PzVMuNIGyO3gOuyPowu-OL7wezBDNLx1TYgEYes3rCvOAGi9ispB8EXntON5HkwNpap9uEbysoGsO9F6YQkqTDq9REvYupNQnH-ycIATx3AKRk_Rv-qqYA7vqeWohI1j8oqdBWH2CLWL90iksViPCVEe9aiI-q4pBdGkzl26y9CfCXN4AGXNtj0tjVDiZt-oUFLJO7HBA"
+          t={t}
+        />
       </div>
     </div>
   );

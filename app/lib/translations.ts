@@ -236,7 +236,7 @@ export const translations = {
     // Consult
     findDoctor: "Find a Doctor",
     searchDoctor: "Search doctors or clinics...",
-    bookAppointment: "Book Appointment",
+    bookAppointment: "Appointment",
     callNow: "Call Now",
     distance: "Distance",
     rating: "Rating",
@@ -516,7 +516,7 @@ export const translations = {
     // Consult
     findDoctor: "ডাক্তার খুঁজুন",
     searchDoctor: "ডাক্তার বা ক্লিনিক অনুসন্ধান করুন...",
-    bookAppointment: "অ্যাপয়েন্টমেন্ট বুক করুন",
+    bookAppointment: "অ্যাপয়েন্টমেন্ট নিন",
     callNow: "কল করুন",
     distance: "দূরত্ব",
     rating: "রেটিং",

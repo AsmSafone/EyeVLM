@@ -4,12 +4,33 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/app/context/LanguageContext';
 import { eyeHealthTips, Tip } from '@/app/lib/tips';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function TipsCarousel() {
     const { t } = useLanguage();
     const [hoveredTip, setHoveredTip] = useState<string | null>(null);
     const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (scrollContainerRef.current && !hoveredTip && !selectedTip) {
+                const container = scrollContainerRef.current;
+                // Approximate width of card + gap
+                const scrollAmount = window.innerWidth < 640 ? 300 : 320;
+                const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+                // If we reach the end, loop back smoothly
+                if (container.scrollLeft >= maxScrollLeft - 10) {
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }
+        }, 3000); // Auto scroll every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [hoveredTip, selectedTip]);
 
     return (
         <section aria-label="Daily Tips" className="relative">
@@ -30,7 +51,10 @@ export default function TipsCarousel() {
                 </div>
             </motion.div>
 
-            <div className="flex overflow-x-auto gap-5 pb-6 -mx-6 px-6 scrollbar-hide snap-x snap-mandatory perspective-[1000px]">
+            <div
+                ref={scrollContainerRef}
+                className="flex overflow-x-auto gap-5 pb-6 -mx-6 px-6 scrollbar-hide snap-x snap-mandatory perspective-[1000px] scroll-smooth"
+            >
                 {eyeHealthTips.map((tip, index) => (
                     <motion.div
                         key={tip.id}

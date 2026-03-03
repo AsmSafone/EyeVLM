@@ -190,14 +190,14 @@ export default function ConsultPage() {
                                         </span>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3 mt-1">
-                                        <button className="flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/30 text-primary font-bold text-sm bg-primary/5 hover:bg-primary/10 transition-colors active:scale-95">
-                                            <span className="material-symbols-outlined text-[18px]">call</span>
-                                            {t.callNow}
+                                    <div className="flex flex-wrap gap-3 mt-1">
+                                        <button className="flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl border border-primary/30 text-primary font-bold text-sm bg-primary/5 hover:bg-primary/10 transition-colors active:scale-95 text-center">
+                                            <span className="material-symbols-outlined text-[18px] shrink-0">call</span>
+                                            <span>{t.callNow}</span>
                                         </button>
-                                        <button className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 border border-primary/20">
-                                            <span className="material-symbols-outlined text-[18px]">event_available</span>
-                                            {t.bookAppointment}
+                                        <button className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 border border-primary/20 text-center">
+                                            <span className="material-symbols-outlined text-[18px] shrink-0">event_available</span>
+                                            <span>{t.bookAppointment}</span>
                                         </button>
                                     </div>
                                 </div>

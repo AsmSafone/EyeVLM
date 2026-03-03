@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { PrescriptionReport } from '@/app/components/PrescriptionReport';
 
 export default function Results() {
   const router = useRouter();
@@ -22,16 +26,13 @@ export default function Results() {
     try {
       setIsExporting(true);
       const element = reportRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+      const imgData = await toPng(element, {
+        pixelRatio: 2,
+        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdfWidth = canvas.width;
-      const pdfHeight = canvas.height;
+      const pdfWidth = element.clientWidth;
+      const pdfHeight = element.clientHeight;
       const pdf = new jsPDF({
         orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
         unit: 'px',
@@ -39,7 +40,29 @@ export default function Results() {
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`EyeVLM_Report_${patientId}.pdf`);
+      const fileName = `EyeVLM_Report_${patientId}.pdf`;
+
+      if (Capacitor.isNativePlatform()) {
+        const base64Data = pdf.output('datauristring').split(',')[1];
+        try {
+          const result = await Filesystem.writeFile({
+            path: fileName,
+            data: base64Data,
+            directory: Directory.Documents,
+          });
+          console.log(`Report saved to ${result.uri}`);
+
+          await Share.share({
+            title: 'EyeVLM Screening Report',
+            url: result.uri,
+          });
+        } catch (e) {
+          console.error("Filesystem error", e);
+          alert("Could not save PDF to device.");
+        }
+      } else {
+        pdf.save(fileName);
+      }
     } catch (error) {
       console.error("Failed to generate PDF:", error);
     } finally {
@@ -89,7 +112,7 @@ export default function Results() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col gap-6 p-4 pb-24 overflow-y-auto w-full max-w-md mx-auto relative z-10">
-        <div ref={reportRef} className="flex flex-col gap-6 w-full -mx-4 px-4 bg-background pb-4 pt-2">
+        <div className="flex flex-col gap-6 -mx-4 px-4 bg-background pb-4 pt-2">
           {/* Disease Prediction Card */}
           <div className="bg-surface/50 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group transition-colors duration-300">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50 pointer-events-none"></div>
@@ -212,12 +235,12 @@ export default function Results() {
             {isExporting ? (
               <span className="material-symbols-outlined animate-spin text-[20px]">autorenew</span>
             ) : (
-              <span className="material-symbols-outlined">description</span>
+              <span className="material-symbols-outlined text-[20px]">description</span>
             )}
             {t.downloadReport}
           </button>
           <Link href="/consult" className="w-full bg-surface/50 border border-slate-200 dark:border-white/10 text-text-main hover:bg-surface-highlight hover:text-text-main hover:border-slate-300 dark:hover:border-white/20 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] backdrop-blur-sm">
-            <span className="material-symbols-outlined text-[22px] text-rose-500">medical_services</span>
+            <span className="material-symbols-outlined text-[20px] text-rose-500">medical_services</span>
             {t.consultOphthalmologist}
           </Link>
         </div>
@@ -232,6 +255,21 @@ export default function Results() {
           </div>
         </div>
       </main>
+
+      {/* Hidden PDF Report Template */}
+      <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-0">
+        <PrescriptionReport
+          ref={reportRef}
+          patientId={patientId || "Unknown"}
+          date={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+          disease={patientInfo?.diseaseName ? (t[patientInfo.diseaseName as keyof typeof t] || patientInfo.diseaseName) : t.diabeticRetinopathy}
+          severity={patientInfo?.severity ? (t[patientInfo.severity as keyof typeof t] || patientInfo.severity) : t.moderate}
+          confidence={confidence}
+          activeEye={patientInfo?.activeEye || "left"}
+          imageSrc={imageSrc}
+          t={t}
+        />
+      </div>
     </div>
   );
 }
