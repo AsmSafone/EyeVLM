@@ -31,11 +31,16 @@ export default function Splash() {
     }, intervalTime);
 
     const timer = setTimeout(() => {
-      const hasOnboarded = localStorage.getItem('onboardingCompleted');
-      if (hasOnboarded) {
-        router.push('/login');
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn) {
+        router.push('/dashboard');
       } else {
-        router.push('/onboarding');
+        const hasOnboarded = localStorage.getItem('onboardingCompleted');
+        if (hasOnboarded) {
+          router.push('/login');
+        } else {
+          router.push('/onboarding');
+        }
       }
     }, duration);
 

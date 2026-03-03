@@ -346,22 +346,22 @@ export default function Scan() {
               </button>
 
               <div className="flex items-center gap-4 w-full">
-                <div className="h-px bg-white/10 flex-1"></div>
+                <div className="h-px bg-slate-200 dark:bg-white/10 flex-1"></div>
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.or}</span>
-                <div className="h-px bg-white/10 flex-1"></div>
+                <div className="h-px bg-slate-200 dark:bg-white/10 flex-1"></div>
               </div>
 
               {/* Huge Native Gallery Button */}
               <button
                 onClick={handleGalleryClick}
-                className="w-full flex items-center p-6 bg-surface/80 hover:bg-surface backdrop-blur-md rounded-[32px] shadow-lg transition-all active:scale-[0.98] group border border-slate-800 hover:border-slate-600"
+                className="w-full flex items-center p-6 bg-surface hover:bg-surface-highlight backdrop-blur-md rounded-[32px] shadow-lg transition-all active:scale-[0.98] group border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600"
               >
-                <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:text-primary">
-                  <span className="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary transition-colors">photo_library</span>
+                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:text-primary">
+                  <span className="material-symbols-outlined text-4xl text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">photo_library</span>
                 </div>
                 <div className="flex flex-col ml-6 text-left">
-                  <span className="text-xl font-bold text-white tracking-wide">{t.openGallery}</span>
-                  <span className="text-sm text-slate-400 font-medium">{t.selectExistingPhoto}</span>
+                  <span className="text-xl font-bold text-text-main tracking-wide">{t.openGallery}</span>
+                  <span className="text-sm text-text-secondary font-medium">{t.selectExistingPhoto}</span>
                 </div>
               </button>
             </div>

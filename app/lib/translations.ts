@@ -41,6 +41,9 @@ export const translations = {
 
     // Dashboard
     goodMorning: "Good Morning,",
+    goodAfternoon: "Good Afternoon,",
+    goodEvening: "Good Evening,",
+    goodNight: "Good Night,",
     welcomeBackUser: "Welcome back, John",
     startNewScan: "Test Your Eye Today",
     aiPowered: "AI Powered",
@@ -276,6 +279,9 @@ export const translations = {
 
     // Dashboard
     goodMorning: "শুভ সকাল,",
+    goodAfternoon: "শুভ অপরাহ্ন,",
+    goodEvening: "শুভ সন্ধ্যা,",
+    goodNight: "শুভ রাত্রি,",
     welcomeBackUser: "স্বাগতম, জন",
     startNewScan: "আজই আপনার চোখের পরীক্ষা করুন",
     aiPowered: "AI চালিত",

@@ -14,15 +14,27 @@ export default function Dashboard() {
   const { t } = useLanguage();
 
   const [hydrationLevel, setHydrationLevel] = useState(0);
+  const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     const savedHydration = localStorage.getItem('eyeHydrationLevel');
     if (savedHydration) {
       setHydrationLevel(parseInt(savedHydration));
     } else {
-      setHydrationLevel(75); // Default start
+      setHydrationLevel(15); // Default start
     }
-  }, []);
+
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      setGreeting(t.goodMorning);
+    } else if (hour >= 12 && hour < 17) {
+      setGreeting(t.goodAfternoon);
+    } else if (hour >= 17 && hour < 21) {
+      setGreeting(t.goodEvening);
+    } else {
+      setGreeting(t.goodNight);
+    }
+  }, [t]);
 
   const handleLogDrink = () => {
     setHydrationLevel(prev => {
@@ -42,7 +54,7 @@ export default function Dashboard() {
       <header className="sticky top-0 z-20 bg-surface/80 backdrop-blur-xl px-6 pt-12 pb-4 border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-primary text-xs font-medium tracking-wider uppercase mb-1">{t.goodMorning}</p>
+            <p className="text-primary text-xs font-medium tracking-wider uppercase mb-1">{greeting}</p>
             <h1 className="text-2xl font-bold tracking-tight text-text-main">{t.welcomeBackUser}</h1>
           </div>
           <button className="relative h-12 w-12 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background">

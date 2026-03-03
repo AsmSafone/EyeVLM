@@ -130,7 +130,13 @@ export default function Profile() {
             </div>
           </section>
 
-          <button onClick={() => window.location.href = '/'} className="w-full p-4 rounded-2xl bg-red-500/10 text-red-500 font-bold hover:bg-red-500/20 border border-red-500/20 transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] active:scale-[0.98]">
+          <button
+            onClick={() => {
+              localStorage.removeItem('isLoggedIn');
+              window.location.href = '/login';
+            }}
+            className="w-full p-4 rounded-2xl bg-red-500/10 text-red-500 font-bold hover:bg-red-500/20 border border-red-500/20 transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] active:scale-[0.98]"
+          >
             <span className="material-symbols-outlined">logout</span>
             {t.logOut}
           </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import packageJson from '../package.json';
 
 export default function UpdateChecker() {
@@ -9,6 +10,8 @@ export default function UpdateChecker() {
 
     useEffect(() => {
         const checkUpdate = async () => {
+            if (Capacitor.getPlatform() === 'web') return;
+
             try {
                 const response = await fetch('https://api.github.com/repos/AsmSafone/EyeVLM/releases/latest');
                 if (!response.ok) return;

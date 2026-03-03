@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/app/context/LanguageContext';
+import packageJson from '@/package.json';
 
 export default function AboutApp() {
     const { t } = useLanguage();
@@ -26,7 +27,7 @@ export default function AboutApp() {
                         <Image src="/icons/icon-512x512.png" alt="EyeVLM Logo" width={128} height={128} className="object-cover" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight mb-1">EyeVLM</h2>
-                    <p className="text-text-secondary font-medium tracking-wide mb-8">Version 1.0.0</p>
+                    <p className="text-text-secondary font-medium tracking-wide mb-8">Version {packageJson.version}</p>
 
                     <div className="w-full bg-surface/40 backdrop-blur-md rounded-3xl border border-white/5 dark:border-white/5 border-slate-200 overflow-hidden shadow-sm">
 

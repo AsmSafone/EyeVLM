@@ -1,10 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 
 export default function Login() {
+  const router = useRouter();
   const { t } = useLanguage();
+
+  const handleLogin = () => {
+    localStorage.setItem('isLoggedIn', 'true');
+    router.push('/dashboard');
+  };
 
   return (
     <div className="bg-background font-sans min-h-screen flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
@@ -65,10 +72,10 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <Link href="/dashboard" className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-lg h-14 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2 group">
+          <button onClick={handleLogin} className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-lg h-14 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2 group">
             {t.login}
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-          </Link>
+          </button>
 
           {/* Divider */}
           <div className="relative flex py-2 items-center">
