@@ -264,6 +264,17 @@ export const translations = {
     english: "English",
     bengali: "Bengali",
     save: "Save",
+    saveChanges: "Save Changes",
+
+    // Dashboard metrics & Actions
+    beginScreening: "Begin Screening",
+    good: "Good",
+    logDrink: "Log Drink",
+    screenTime: "Screen Time",
+    blinkRate: "Blink Rate",
+    lastBreak: "Last Break",
+    hydrationGoal1: "You've met",
+    hydrationGoal2: "% of your daily water intake goal.",
 
     // Progress
     eyeHealthTrends: "Health Trends",
@@ -544,6 +555,17 @@ export const translations = {
     english: "ইংরেজি",
     bengali: "বাংলা",
     save: "সংরক্ষণ করুন",
+    saveChanges: "পরিবর্তন সংরক্ষণ করুন",
+
+    // Dashboard metrics & Actions
+    beginScreening: "স্ক্রিনিং শুরু করুন",
+    good: "ভালো",
+    logDrink: "পানীয় লগ করুন",
+    screenTime: "স্ক্রিন টাইম",
+    blinkRate: "চোখের পলক পড়ার হার",
+    lastBreak: "শেষ বিরতি",
+    hydrationGoal1: "আপনি আপনার দৈনিক জলের লক্ষ্যের",
+    hydrationGoal2: "% পূরণ করেছেন।",
 
     // Progress
     eyeHealthTrends: "স্বাস্থ্যের প্রবণতা",

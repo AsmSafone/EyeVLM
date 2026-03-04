@@ -29,21 +29,21 @@ export default function PersonalInfo() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Full Name</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">{t.fullName || "Full Name"}</label>
                             <input type="text" defaultValue="Admin" className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 px-4 py-4 text-text-main placeholder:text-text-secondary/50 focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all font-medium" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Email Address</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">{t.email || "Email Address"}</label>
                             <input type="email" defaultValue="admin@example.com" className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 px-4 py-4 text-text-main placeholder:text-text-secondary/50 focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all font-medium" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Phone Number</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">{t.phoneNumber || "Phone Number"}</label>
                             <input type="tel" placeholder="+1 (555) 000-0000" className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 px-4 py-4 text-text-main placeholder:text-text-secondary/50 focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all font-medium" />
                         </div>
                     </div>
 
                     <button className="w-full mt-8 bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all active:scale-[0.98]">
-                        Save Changes
+                        {t.saveChanges || "Save Changes"}
                     </button>
                 </div>
 

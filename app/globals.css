@@ -56,6 +56,14 @@
     user-select: none;
     -webkit-user-select: none;
   }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a, button {
+    outline: none;
+  }
 }
 
 .material-symbols-outlined {

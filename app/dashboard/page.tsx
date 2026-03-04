@@ -129,7 +129,7 @@ export default function Dashboard() {
               </div>
 
               <Link href="/scan" className="w-full max-w-[280px] bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_-10px_rgba(6,182,212,0.6)] flex items-center justify-center gap-3 transition-all transform hover:scale-105 active:scale-95 border border-white/20">
-                <span className="text-lg">Begin Screening</span>
+                <span className="text-lg">{t.beginScreening || "Begin Screening"}</span>
               </Link>
             </div>
 
@@ -203,7 +203,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-text-main tracking-tight">{t.dailyProgress}</h3>
             <span className="text-xs font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">trending_up</span> Good
+              <span className="material-symbols-outlined text-xs">trending_up</span> {t.good || "Good"}
             </span>
           </div>
 
@@ -238,13 +238,15 @@ export default function Dashboard() {
 
               <div className="flex-1">
                 <h4 className="font-bold text-text-main text-lg mb-1 tracking-tight">{t.eyeHydration}</h4>
-                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">You&apos;ve met {hydrationLevel}% of your daily water intake goal.</p>
+                <p className="text-sm text-text-secondary font-light mb-3 leading-relaxed">
+                  {t.hydrationGoal1 || "You've met"} {hydrationLevel}{t.hydrationGoal2 || "% of your daily water intake goal."}
+                </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleLogDrink}
                     className="bg-cyan-500 text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px]">water_drop</span>
-                    Log Drink
+                    {t.logDrink || "Log Drink"}
                   </button>
                 </div>
               </div>
@@ -252,20 +254,20 @@ export default function Dashboard() {
 
             <div className="mt-5 pt-4 border-t border-slate-200 dark:border-white/5 grid grid-cols-3 gap-2 justify-between items-center w-full relative z-10">
               <div className="flex flex-col items-center justify-center text-center group/item w-full">
-                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">schedule</span> Screen Time</p>
+                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">schedule</span> {t.screenTime || "Screen Time"}</p>
                 <p className="font-bold text-text-main group-hover/item:text-cyan-500 transition-colors">4h 20m</p>
               </div>
 
               <div className="flex flex-col items-center justify-center text-center group/item w-full relative">
                 <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-200 dark:bg-white/10"></div>
-                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">visibility</span> Blink Rate</p>
+                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">visibility</span> {t.blinkRate || "Blink Rate"}</p>
                 <p className="font-bold text-emerald-500 transition-colors">{t.normal}</p>
                 <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-200 dark:bg-white/10"></div>
               </div>
 
               <div className="flex flex-col items-center justify-center text-center group/item w-full">
-                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">coffee</span> Last Break</p>
-                <p className="font-bold text-text-main group-hover/item:text-cyan-500 transition-colors">15m ago</p>
+                <p className="text-xs text-text-secondary mb-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">coffee</span> {t.lastBreak || "Last Break"}</p>
+                <p className="font-bold text-text-main group-hover/item:text-cyan-500 transition-colors">15m</p>
               </div>
             </div>
           </div>
