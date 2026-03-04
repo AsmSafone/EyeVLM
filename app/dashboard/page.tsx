@@ -104,29 +104,40 @@ export default function Dashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex flex-col overflow-hidden rounded-3xl bg-surface/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-lg hover:shadow-cyan-500/20 group transition-all duration-500 relative">
-            {/* Top Interactive Area: Start Scan CTA */}
-            <Link href="/scan/patient-info" className="relative p-6 pb-8 flex flex-col gap-5 z-10 active:bg-surface-highlight/30 transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="p-3 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-2xl inline-flex items-center justify-center border border-cyan-500/20 text-cyan-600 dark:text-cyan-400">
-                  <span className="material-symbols-outlined text-3xl drop-shadow-sm">photo_camera</span>
+          <div className="flex flex-col gap-6 relative">
+            {/* Top Interactive Area: Start Scan Heading & CTA */}
+            <div className="relative pt-6 flex flex-col items-center text-center z-10 transition-colors">
+              <div className="mb-6 relative group inline-flex">
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                <div className="relative size-20 sm:size-24 bg-surface dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1)_0%,transparent_70%)]"></div>
+                  <span className="material-symbols-outlined text-[40px] sm:text-[48px] text-cyan-500 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)] group-hover:scale-110 transition-transform duration-500">
+                    center_focus_strong
+                  </span>
                 </div>
-                <span className="bg-surface-highlight px-3 py-1 rounded-full text-xs font-bold tracking-wide border border-slate-200 dark:border-white/10 flex items-center gap-1 text-text-main">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {t.aiPowered}
-                </span>
               </div>
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold tracking-tight text-text-main">{t.startNewScan}</h2>
-                <p className="text-text-secondary text-sm leading-relaxed max-w-[85%] font-light">{t.useCameraDesc}</p>
+
+              <div className="space-y-3 mb-8">
+                <div className="flex justify-center mb-2">
+                  <span className="bg-surface/80 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold tracking-wide border border-slate-200 dark:border-white/10 flex items-center gap-2 text-text-main shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+                    {t.aiPowered}
+                  </span>
+                </div>
+                <h2 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-text-main to-text-secondary pb-1">{t.startNewScan}</h2>
+                <p className="text-text-secondary text-base leading-relaxed max-w-[90%] mx-auto font-medium">{t.useCameraDesc}</p>
               </div>
-            </Link>
+
+              <Link href="/scan" className="w-full max-w-[280px] bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_-10px_rgba(6,182,212,0.6)] flex items-center justify-center gap-3 transition-all transform hover:scale-105 active:scale-95 border border-white/20">
+                <span className="text-lg">Begin Screening</span>
+              </Link>
+            </div>
 
             {/* Bottom Area: Daily Inspiration Quote Carousel */}
-            <div className="relative border-t border-slate-200 dark:border-white/5 bg-surface-highlight/40 dark:bg-surface-highlight/10 z-20">
+            <div className="relative bg-surface/60 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-lg z-20 overflow-hidden mt-4">
               {/* Subtle background for the quote area */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-violet-500/5 blur-2xl transition-colors duration-500 group-hover:bg-violet-500/10"></div>
+                <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl transition-colors duration-500 group-hover:bg-violet-500/10"></div>
               </div>
 
               <div className="relative p-5 pb-4">

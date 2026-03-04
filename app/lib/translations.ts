@@ -236,7 +236,7 @@ export const translations = {
     // Consult
     findDoctor: "Find a Doctor",
     searchDoctor: "Search doctors or clinics...",
-    bookAppointment: "Appointment",
+    bookAppointment: "Book Appointment",
     callNow: "Call Now",
     distance: "Distance",
     rating: "Rating",

@@ -1,11 +1,34 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
+import { Toast } from '@capacitor/toast';
 
 export default function SecuritySettings() {
     const { t } = useLanguage();
+    const router = useRouter();
+    const [biometricEnabled, setBiometricEnabled] = useState(true);
+
+    const handleDeleteAccount = async () => {
+        localStorage.clear();
+        // clear router history
+        window.history.replaceState(null, '', '/');
+
+        if (Capacitor.isNativePlatform()) {
+            await Toast.show({
+                text: 'Account deleted successfully. Exiting app...',
+                duration: 'long'
+            });
+            App.exitApp();
+        } else {
+            router.refresh();
+        }
+    };
 
     return (
         <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-hidden transition-colors duration-300">
@@ -37,23 +60,23 @@ export default function SecuritySettings() {
                             <span className="material-symbols-outlined text-text-secondary group-hover:text-emerald-500 transition-colors">chevron_right</span>
                         </Link>
 
-                        <div className="flex items-center justify-between p-5 border-b border-white/5 dark:border-white/5 border-slate-100 hover:bg-surface-highlight transition-colors group cursor-pointer">
+                        <div className="flex items-center justify-between p-5 border-b border-white/5 dark:border-white/5 border-slate-100">
                             <div className="flex items-center gap-4">
-                                <div className="size-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
+                                <div className="size-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-500/20">
                                     <span className="material-symbols-outlined">fingerprint</span>
                                 </div>
                                 <div>
-                                    <p className="font-bold text-text-main group-hover:text-primary transition-colors">Biometric Authentication</p>
+                                    <p className="font-bold text-text-main">Biometric Authentication</p>
                                     <p className="text-xs text-text-secondary font-light">Use FaceID or Fingerprint</p>
                                 </div>
                             </div>
-                            <div className="w-12 h-6 rounded-full p-1 bg-primary cursor-pointer">
-                                <div className="w-4 h-4 bg-white rounded-full shadow-md transform translate-x-6"></div>
-                            </div>
+                            <button onClick={() => setBiometricEnabled(!biometricEnabled)} className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${biometricEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${biometricEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                            </button>
                         </div>
 
-                        <Link href="#" className="flex items-center justify-between p-5 hover:bg-surface-highlight transition-colors group">
-                            <div className="flex items-center gap-4">
+                        <button onClick={handleDeleteAccount} className="w-full flex items-center justify-between p-5 hover:bg-surface-highlight transition-colors group cursor-pointer">
+                            <div className="flex items-center gap-4 text-left">
                                 <div className="size-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 group-hover:scale-110 transition-transform">
                                     <span className="material-symbols-outlined">delete_forever</span>
                                 </div>
@@ -63,7 +86,7 @@ export default function SecuritySettings() {
                                 </div>
                             </div>
                             <span className="material-symbols-outlined text-text-secondary group-hover:text-red-500 transition-colors">chevron_right</span>
-                        </Link>
+                        </button>
 
                     </div>
                 </div>

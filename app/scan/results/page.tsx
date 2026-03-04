@@ -48,7 +48,7 @@ export default function Results() {
           const result = await Filesystem.writeFile({
             path: fileName,
             data: base64Data,
-            directory: Directory.Documents,
+            directory: Directory.Cache,
           });
           console.log(`Report saved to ${result.uri}`);
 
