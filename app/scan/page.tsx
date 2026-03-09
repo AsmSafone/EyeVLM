@@ -16,7 +16,7 @@ export default function Scan() {
   const [cameraError, setCameraError] = useState<string | null>(null);
 
   // Flash, Camera Switch, and Cropping states
-  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('user');
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [isCropping, setIsCropping] = useState(false);
@@ -53,10 +53,17 @@ export default function Scan() {
       if (Capacitor.isNativePlatform()) {
         const platform = Capacitor.getPlatform();
         if (platform === 'android' || platform === 'ios') {
+          // Add a delay to ensure the previous camera (if any) was fully stopped
+          // Native APIs sometimes take a moment to release the hardware.
+          await new Promise(resolve => setTimeout(resolve, 500));
+
           await CameraPreview.start({
             position: mode === 'environment' ? 'rear' : 'front',
             toBack: true,
-            enableZoom: true
+            enableZoom: true,
+            disableAudio: true,
+            width: window.innerWidth,
+            height: window.innerHeight,
           } as any);
           setFlashEnabled(false);
           setHasPermission(true);
