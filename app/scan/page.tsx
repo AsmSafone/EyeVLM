@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { CameraPreview } from '@capacitor-community/camera-preview';
-import { CapacitorFlash as Flash } from '@capgo/capacitor-flash';
+import { CameraPreview, CameraPreviewFlashMode } from '@capacitor-community/camera-preview';
 import { Capacitor } from '@capacitor/core';
 
 export default function Scan() {
@@ -30,6 +29,17 @@ export default function Scan() {
     setIsNative(Capacitor.isNativePlatform());
   }, []);
 
+  useEffect(() => {
+    if (isNative && !isCropping && hasPermission) {
+      document.documentElement.classList.add('camera-active');
+    } else {
+      document.documentElement.classList.remove('camera-active');
+    }
+    return () => {
+      document.documentElement.classList.remove('camera-active');
+    };
+  }, [isNative, isCropping, hasPermission]);
+
 
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,9 +56,7 @@ export default function Scan() {
           await CameraPreview.start({
             position: mode === 'environment' ? 'rear' : 'front',
             toBack: true,
-            enableZoom: true,
-            tapToFocus: true,
-            tapFocus: true
+            enableZoom: true
           } as any);
           setFlashEnabled(false);
           setHasPermission(true);
@@ -89,7 +97,7 @@ export default function Scan() {
   const stopCamera = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
       try {
-        await Flash.switchOff();
+        await CameraPreview.setFlashMode({ flashMode: 'off' });
         await CameraPreview.stop();
       } catch (e) {
         console.error("Error stopping native components:", e);
@@ -113,14 +121,11 @@ export default function Scan() {
   const toggleFlash = async () => {
     if (Capacitor.isNativePlatform()) {
       try {
-        const isOn = await Flash.isSwitchedOn();
-        if (isOn.value) {
-          await Flash.switchOff();
-          setFlashEnabled(false);
-        } else {
-          await Flash.switchOn({ intensity: 1.0 });
-          setFlashEnabled(true);
-        }
+        const newMode: CameraPreviewFlashMode = flashEnabled ? 'off' : 'torch';
+        // Note: the plugin API might expect an object based on typings, but the docs mention string. 
+        // According to definitions.d.ts, setFlashMode(options: { flashMode: CameraPreviewFlashMode | string }): Promise<void>;
+        await CameraPreview.setFlashMode({ flashMode: newMode } as any);
+        setFlashEnabled(!flashEnabled);
       } catch (err) {
         console.error("Error toggling native flash", err);
       }
@@ -147,9 +152,19 @@ export default function Scan() {
     }
   };
 
-  const switchCamera = () => {
-    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+  const switchCamera = async () => {
+    if (isNative) {
+      try {
+        await CameraPreview.flip();
+        setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+      } catch (err) {
+        console.error("Error flipping native camera", err);
+      }
+    } else {
+      setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+    }
   };
+
 
   const handleCapture = async () => {
     if (Capacitor.isNativePlatform()) {
@@ -250,7 +265,6 @@ export default function Scan() {
         </button>
       </header>
 
-      {/* Main Content Area: Viewfinder or Cropper */}
       <main className={`relative flex-1 flex flex-col w-full overflow-hidden group/viewfinder ${isNative && !isCropping ? 'bg-transparent' : 'bg-black'}`}>
         {isCropping && imageToCrop ? (
           <div className="absolute inset-0 z-[100] flex flex-col bg-background transition-colors duration-300">
