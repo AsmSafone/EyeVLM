@@ -22,12 +22,25 @@ export default function SymptomCheck() {
     const updatedAnswers = { ...answers, [currentQuestion.id]: answer };
     setAnswers(updatedAnswers);
 
+    setTimeout(() => {
+      if (currentQuestionIndex < currentQuestions.length - 1) {
+        setDirection(1);
+        setCurrentQuestionIndex(prev => prev + 1);
+      } else {
+        // Finished
+        sessionStorage.setItem('symptomAnswers', JSON.stringify(updatedAnswers));
+        router.push('/scan/analysis');
+      }
+    }, 150);
+  };
+
+  const handleNext = () => {
     if (currentQuestionIndex < currentQuestions.length - 1) {
       setDirection(1);
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       // Finished
-      sessionStorage.setItem('symptomAnswers', JSON.stringify(updatedAnswers));
+      sessionStorage.setItem('symptomAnswers', JSON.stringify(answers));
       router.push('/scan/analysis');
     }
   };
@@ -59,7 +72,10 @@ export default function SymptomCheck() {
           <Link href="/scan/patient-info" className="flex size-10 shrink-0 items-center justify-center rounded-full text-text-secondary hover:text-text-main hover:bg-surface-highlight transition-colors">
             <span className="material-symbols-outlined text-[24px]">close</span>
           </Link>
-          <h2 className="flex-1 text-center text-lg font-bold leading-tight tracking-wide text-text-main pr-10 drop-shadow-md">{t.symptomCheck}</h2>
+          <h2 className="flex-1 text-center text-lg font-bold leading-tight tracking-wide text-text-main drop-shadow-md">{t.symptomCheck}</h2>
+          <button onClick={handleSkip} className="flex size-10 shrink-0 items-center justify-center rounded-full text-text-secondary hover:text-text-main hover:bg-surface-highlight transition-colors">
+            <span className="material-symbols-outlined text-[24px]">skip_next</span>
+          </button>
         </div>
 
         {/* Progress Section */}
@@ -114,14 +130,20 @@ export default function SymptomCheck() {
               <div className="flex w-full flex-col gap-4">
                 <button
                   onClick={() => handleAnswer('Yes')}
-                  className="group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-primary text-white shadow-[0_0_20px_rgba(6,182,212,0.25)] transition-all active:scale-[0.98] hover:bg-primary-dark hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] border border-primary/20"
+                  className={`group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all active:scale-[0.98] border ${answers[currentQuestion.id] === 'Yes'
+                    ? 'bg-primary text-white border-primary/40 hover:bg-primary-dark shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+                    : 'bg-surface/50 border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:text-text-main'
+                    }`}
                 >
                   <span className="material-symbols-outlined text-[24px]">check</span>
                   <span className="text-xl font-bold tracking-wide">{t.yes}</span>
                 </button>
                 <button
                   onClick={() => handleAnswer('No')}
-                  className="group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-surface/50 border border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:text-text-main hover:border-slate-300 dark:hover:border-white/20 transition-all active:scale-[0.98] backdrop-blur-sm"
+                  className={`group flex h-16 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all active:scale-[0.98] border ${answers[currentQuestion.id] === 'No'
+                    ? 'bg-primary text-white border-primary/40 hover:bg-primary-dark shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+                    : 'bg-surface/50 border-slate-200 dark:border-white/10 text-text-secondary hover:bg-surface-highlight hover:text-text-main'
+                    }`}
                 >
                   <span className="material-symbols-outlined text-[24px]">close</span>
                   <span className="text-xl font-bold tracking-wide">{t.no}</span>
@@ -141,11 +163,11 @@ export default function SymptomCheck() {
             {t.back}
           </button>
           <button
-            onClick={handleSkip}
+            onClick={handleNext}
             className="flex items-center gap-2 rounded-xl bg-surface border border-slate-200 dark:border-white/5 px-6 py-2.5 text-base font-bold text-text-secondary hover:bg-surface-highlight hover:text-text-main hover:border-slate-300 dark:hover:border-white/10 transition-colors"
           >
             {t.skip}
-            <span className="material-symbols-outlined text-[20px]">skip_next</span>
+            <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
           </button>
         </div>
       </div>

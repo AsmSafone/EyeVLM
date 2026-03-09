@@ -79,7 +79,6 @@ export default function Results() {
     };
     window.addEventListener('popstate', handlePopState);
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setConfidence(Math.floor(Math.random() * (99 - 85 + 1) + 85));
     const storedImage = sessionStorage.getItem('capturedEyeImage');
     if (storedImage) setImageSrc(storedImage);

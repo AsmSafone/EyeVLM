@@ -2,6 +2,9 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
 
+include ':capacitor-community-camera-preview'
+project(':capacitor-community-camera-preview').projectDir = new File('../node_modules/@capacitor-community/camera-preview/android')
+
 include ':capacitor-community-file-opener'
 project(':capacitor-community-file-opener').projectDir = new File('../node_modules/@capacitor-community/file-opener/android')
 
@@ -19,3 +22,6 @@ project(':capacitor-share').projectDir = new File('../node_modules/@capacitor/sh
 
 include ':capacitor-toast'
 project(':capacitor-toast').projectDir = new File('../node_modules/@capacitor/toast/android')
+
+include ':capgo-capacitor-flash'
+project(':capgo-capacitor-flash').projectDir = new File('../node_modules/@capgo/capacitor-flash/android')

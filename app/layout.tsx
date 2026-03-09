@@ -6,6 +6,7 @@ import { LanguageProvider } from '@/app/context/LanguageContext';
 import { ThemeProvider } from '@/app/context/ThemeContext';
 import UpdateChecker from '@/components/UpdateChecker';
 import AppConfig from '@/components/AppConfig';
+import OfflineSync from '@/components/OfflineSync';
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -32,6 +33,7 @@ export default function RootLayout({
           <LanguageProvider>
             <AppConfig>
               <UpdateChecker />
+              <OfflineSync />
               {children}
             </AppConfig>
           </LanguageProvider>

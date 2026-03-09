@@ -57,11 +57,11 @@ jobs:
             echo "CREATE_RELEASE=true" >> $GITHUB_ENV
           fi
 
-      - name: Build Android APK (Debug)
+      - name: Build Android APK (Release)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease --parallel --max-workers=4
 
       - name: Release & Upload APK
         if: env.CREATE_RELEASE == 'true'
@@ -69,5 +69,5 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+          files: android/app/build/outputs/apk/release/app-release.apk
           generate_release_notes: true

@@ -13,6 +13,8 @@ export const translations = {
     profile: "Profile",
     progress: "Progress",
     previous: "Previous",
+    next: "Next",
+    or: "OR",
 
     // Splash
     initializing: "Initializing",
@@ -75,7 +77,6 @@ export const translations = {
     startNewScan: "Test Your Eye Today",
     aiPowered: "AI Powered",
     useCameraDesc: "Use your camera to detect potential issues early with our AI diagnosis tool.",
-    launchCamera: "Open Camera",
     yourHealth: "Your Health",
     viewAll: "View All",
     reports: "Reports",
@@ -116,11 +117,6 @@ export const translations = {
     flash: "Flash",
     capture: "Capture",
     cameraAccessDenied: "Camera Access Denied",
-    takeNewPhotoNatively: "Take a new photo",
-    openGallery: "Open Gallery",
-    selectExistingPhoto: "Select an existing photo",
-    or: "OR",
-    relaunchCamera: "Open Camera",
 
     // Patient Info
     newPatientScan: "New Patient Scan",
@@ -304,6 +300,8 @@ export const translations = {
     profile: "প্রোফাইল",
     progress: "অগ্রগতি",
     previous: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    or: "অথবা",
 
     // Splash
     initializing: "শুরু হচ্ছে",
@@ -366,7 +364,6 @@ export const translations = {
     startNewScan: "আজই আপনার চোখের পরীক্ষা করুন",
     aiPowered: "AI চালিত",
     useCameraDesc: "আমাদের AI ডায়াগনসিস টুলের মাধ্যমে প্রাথমিক সমস্যাগুলি সনাক্ত করতে আপনার ক্যামেরা ব্যবহার করুন।",
-    launchCamera: "ক্যামেরা খুলুন",
     yourHealth: "আপনার স্বাস্থ্য",
     viewAll: "সব দেখুন",
     reports: "রিপোর্ট",
@@ -407,11 +404,6 @@ export const translations = {
     flash: "ফ্ল্যাশ",
     capture: "ক্যাপচার",
     cameraAccessDenied: "ক্যামেরা অ্যাক্সেস প্রত্যাখ্যান করা হয়েছে",
-    takeNewPhotoNatively: "একটি নতুন ছবি তুলুন",
-    openGallery: "গ্যালারি খুলুন",
-    selectExistingPhoto: "একটি বিদ্যমান ছবি নির্বাচন করুন",
-    or: "অথবা",
-    relaunchCamera: "ক্যামেরা খুলুন",
 
     // Patient Info
     newPatientScan: "নতুন রোগীর স্ক্যান",

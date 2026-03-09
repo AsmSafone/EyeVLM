@@ -89,14 +89,37 @@ export default function Analysis() {
         // We aren't awaiting the response here so it doesn't block UI navigation,
         // but it will fire off the submission while the user sees the analysis UI.
         console.log("Submitting webhook...");
-        fetch("https://n8n.vps.safone.dev/webhook/eyevlm-data", {
-          method: "POST",
-          body: formData,
-        }).then(response => {
-          console.log("Webhook response status:", response.status);
-        }).catch(err => {
-          console.error("Webhook submission error:", err);
-        });
+
+        const saveOffline = () => {
+          console.log("Device offline or submission failed. Saving to localStorage.");
+          const pendingSyncsStr = localStorage.getItem('offlinePendingSyncs');
+          const pendingSyncs = pendingSyncsStr ? JSON.parse(pendingSyncsStr) : [];
+          pendingSyncs.push({
+            patientId,
+            patientInfo,
+            symptomAnswers,
+            activeEye,
+            imageSrc: storedImage // Save the base64 string
+          });
+          localStorage.setItem('offlinePendingSyncs', JSON.stringify(pendingSyncs));
+        };
+
+        if (navigator.onLine) {
+          fetch("https://n8n.vps.safone.dev/webhook/eyevlm-data", {
+            method: "POST",
+            body: formData,
+          }).then(response => {
+            console.log("Webhook response status:", response.status);
+            if (!response.ok) {
+              saveOffline();
+            }
+          }).catch(err => {
+            console.error("Webhook submission error:", err);
+            saveOffline();
+          });
+        } else {
+          saveOffline();
+        }
 
       } catch (error) {
         console.error("Error preparing form data:", error);

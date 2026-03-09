@@ -176,7 +176,7 @@ export default function Dashboard() {
                       <p className="text-text-main text-[13px] font-medium leading-relaxed italic mb-1.5 opacity-90">
                         &ldquo;{quotes[quoteIndex].text[language as 'en' | 'bn'] || quotes[quoteIndex].text.en}&rdquo;
                       </p>
-                      <p className="text-text-secondary text-[11px] font-semibold tracking-wider uppercase">— {quotes[quoteIndex].author[language as 'en' | 'bn'] || quotes[quoteIndex].author.en}</p>
+                      <p className="text-right text-text-secondary text-[11px] font-semibold tracking-wider uppercase">— {quotes[quoteIndex].author[language as 'en' | 'bn'] || quotes[quoteIndex].author.en}</p>
                     </motion.div>
                   </AnimatePresence>
                 </div>

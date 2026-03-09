@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { CameraPreview } from '@capacitor-community/camera-preview';
+import { CapacitorFlash as Flash } from '@capgo/capacitor-flash';
 import { Capacitor } from '@capacitor/core';
 
 export default function Scan() {
@@ -25,27 +26,11 @@ export default function Scan() {
   const [isNative, setIsNative] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsNative(Capacitor.isNativePlatform());
   }, []);
 
-  const handleNativeCapture = async () => {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 100,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-      });
 
-      if (image.dataUrl) {
-        setImageToCrop(image.dataUrl);
-        setIsCropping(true);
-        setAspect(1); // Force square cropper default
-      }
-    } catch (e) {
-      console.log('Native camera cancelled or failed', e);
-    }
-  };
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -55,25 +40,27 @@ export default function Scan() {
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     try {
-      // 1. Check native permissions first only if running natively via Capacitor
       if (Capacitor.isNativePlatform()) {
-        let permStatus = await Camera.checkPermissions();
-
-        if (permStatus.camera === 'prompt' || permStatus.camera === 'prompt-with-rationale') {
-          permStatus = await Camera.requestPermissions();
-        }
-
-        if (permStatus.camera === 'denied') {
-          throw new Error('Native camera permission denied');
+        const platform = Capacitor.getPlatform();
+        if (platform === 'android' || platform === 'ios') {
+          await CameraPreview.start({
+            position: mode === 'environment' ? 'rear' : 'front',
+            toBack: true,
+            enableZoom: true,
+            tapToFocus: true,
+            tapFocus: true
+          } as any);
+          setFlashEnabled(false);
+          setHasPermission(true);
+          setCameraError(null);
+          return;
         }
       }
 
-      // 2. Clear old streams
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      // 3. Start web stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: mode,
@@ -91,12 +78,24 @@ export default function Scan() {
       setCameraError(null);
     } catch (err) {
       console.error("Error accessing camera:", err);
+      if (err instanceof Error && err.message === 'camera already started') {
+        return;
+      }
       setHasPermission(false);
       setCameraError('Camera access denied or not available.');
     }
   }, []);
 
-  const stopCamera = useCallback(() => {
+  const stopCamera = useCallback(async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Flash.switchOff();
+        await CameraPreview.stop();
+      } catch (e) {
+        console.error("Error stopping native components:", e);
+      }
+    }
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
@@ -104,15 +103,30 @@ export default function Scan() {
   }, []);
 
   useEffect(() => {
-    if (!isNative) {
-      startCamera(facingMode);
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    startCamera(facingMode);
     return () => {
       stopCamera();
     };
-  }, [facingMode, startCamera, stopCamera, isNative]);
+  }, [facingMode, startCamera, stopCamera]);
 
   const toggleFlash = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const isOn = await Flash.isSwitchedOn();
+        if (isOn.value) {
+          await Flash.switchOff();
+          setFlashEnabled(false);
+        } else {
+          await Flash.switchOn({ intensity: 1.0 });
+          setFlashEnabled(true);
+        }
+      } catch (err) {
+        console.error("Error toggling native flash", err);
+      }
+      return;
+    }
+
     if (streamRef.current) {
       const track = streamRef.current.getVideoTracks()[0];
       if (track) {
@@ -137,12 +151,23 @@ export default function Scan() {
     setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
   };
 
-  const handleCapture = () => {
+  const handleCapture = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const result = await CameraPreview.captureSample({ quality: 100 });
+        setImageToCrop(`data:image/jpeg;base64,${result.value}`);
+        setIsCropping(true);
+        stopCamera();
+      } catch (err) {
+        console.error("Error capturing native image:", err);
+      }
+      return;
+    }
+
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      // Ensure we capture a central square block equal to the shortest dimension
       const size = Math.min(video.videoWidth, video.videoHeight);
       canvas.width = size;
       canvas.height = size;
@@ -156,13 +181,10 @@ export default function Scan() {
           context.translate(canvas.width, 0);
           context.scale(-1, 1);
         }
-        // Set image smoothing to high for better downscaling quality if needed
         context.imageSmoothingEnabled = true;
         context.imageSmoothingQuality = 'high';
 
-        // Draw the square subset of the video onto the entire square canvas
         context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
-        // Export with 1.0 (maximum) JPEG quality, or use lossless PNG
         const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
         setImageToCrop(imageDataUrl);
         setIsCropping(true);
@@ -210,9 +232,11 @@ export default function Scan() {
   };
 
   return (
-    <div className="bg-background font-sans antialiased text-text-main h-screen flex flex-col overflow-hidden relative transition-colors duration-300">
+    <div className={`font-sans antialiased h-screen flex flex-col overflow-hidden relative transition-colors duration-300 ${isNative && !isCropping ? 'bg-transparent text-white' : 'bg-background text-text-main'}`}>
       {/* Decorative Background - Dark Mode Only */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
+      {(!isNative || isCropping) && (
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
+      )}
 
 
       {/* Header */}
@@ -384,49 +408,6 @@ export default function Scan() {
             </div>
           </div>
 
-        ) : isNative ? (
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 pt-safe bg-background">
-            <div className="relative z-10 w-full max-w-sm flex flex-col gap-6 w-full -mt-20">
-
-              {/* Huge Native Camera Button */}
-              <button
-                onClick={handleNativeCapture}
-                className="w-full flex items-center p-6 bg-gradient-to-br from-primary to-cyan-500 hover:from-cyan-400 hover:to-primary rounded-[32px] shadow-[0_15px_35px_rgba(6,182,212,0.3)] hover:shadow-[0_20px_45px_rgba(6,182,212,0.5)] transition-all active:scale-[0.98] group border border-white/10"
-              >
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-4xl text-white">photo_camera</span>
-                </div>
-                <div className="flex flex-col ml-6 text-left">
-                  <span className="text-xl font-bold text-white tracking-wide">{t.launchCamera}</span>
-                  <span className="text-sm text-cyan-50 opacity-90 font-medium">{t.takeNewPhotoNatively}</span>
-                </div>
-              </button>
-
-              <div className="flex items-center gap-4 w-full">
-                <div className="h-px bg-slate-200 dark:bg-white/10 flex-1"></div>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.or}</span>
-                <div className="h-px bg-slate-200 dark:bg-white/10 flex-1"></div>
-              </div>
-
-              {/* Huge Native Gallery Button */}
-              <button
-                onClick={handleGalleryClick}
-                className="w-full flex items-center p-6 bg-surface hover:bg-surface-highlight backdrop-blur-md rounded-[32px] shadow-lg transition-all active:scale-[0.98] group border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600"
-              >
-                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:text-primary">
-                  <span className="material-symbols-outlined text-4xl text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">photo_library</span>
-                </div>
-                <div className="flex flex-col ml-6 text-left">
-                  <span className="text-xl font-bold text-text-main tracking-wide">{t.openGallery}</span>
-                  <span className="text-sm text-text-secondary font-medium">{t.selectExistingPhoto}</span>
-                </div>
-              </button>
-            </div>
-
-            {/* Hidden Input for generic gallery fallback */}
-            <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleFileChange} />
-          </div>
         ) : (
           <>
             {/* Live Camera Feed */}
@@ -443,13 +424,15 @@ export default function Scan() {
                 </button>
               </div>
             ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
-              />
+              !isNative && (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
+                />
+              )
             )}
 
             {/* Hidden Canvas for capture */}
