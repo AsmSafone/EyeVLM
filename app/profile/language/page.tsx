@@ -39,7 +39,7 @@ export default function LanguageSettings() {
               >
                 <div className="flex items-center gap-4 text-left">
                   <div className={`size-10 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110 ${language === lang.code ? 'bg-primary/20 text-primary border-primary/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'bg-slate-500/10 text-slate-500 border-slate-500/20 group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/20'}`}>
-                    <span className="material-symbols-outlined">{lang.code === 'en' ? 'language_us' : 'translate'}</span>
+                    <span className="material-symbols-outlined">translate</span>
                   </div>
                   <div>
                     <p className={`font-bold transition-colors ${language === lang.code ? 'text-primary' : 'text-text-main group-hover:text-primary'}`}>{lang.nativeName}</p>

@@ -55,8 +55,14 @@ export default function UpdateChecker() {
         try {
             await Toast.show({ text: 'Downloading update, please wait...', duration: 'long' });
 
-            const result = await Filesystem.downloadFile({
+            await Filesystem.downloadFile({
                 url: apkUrl,
+                path: 'eyevlm-update.apk',
+                directory: Directory.Cache
+            });
+
+            // Get a content:// URI that Android's package installer can open
+            const uriResult = await Filesystem.getUri({
                 path: 'eyevlm-update.apk',
                 directory: Directory.Cache
             });
@@ -64,7 +70,7 @@ export default function UpdateChecker() {
             await Toast.show({ text: 'Download complete. Starting install...', duration: 'short' });
 
             await FileOpener.open({
-                filePath: result.path || '',
+                filePath: uriResult.uri,
                 contentType: 'application/vnd.android.package-archive',
                 openWithDefault: true
             });

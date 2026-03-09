@@ -240,7 +240,7 @@ export default function Scan() {
 
 
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-4 bg-gradient-to-b from-background/90 dark:from-slate-950/90 to-transparent pt-safe backdrop-blur-[2px] transition-colors duration-300">
+      <header className={`absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-4 pt-safe backdrop-blur-[2px] transition-colors duration-300 ${isNative && !isCropping ? 'bg-transparent' : 'bg-gradient-to-b from-background/90 dark:from-slate-950/90 to-transparent'}`}>
         <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-10 h-10 rounded-full bg-surface/40 backdrop-blur-md border border-slate-200 dark:border-white/10 hover:bg-surface-highlight transition-colors text-text-main hover:border-primary/30">
           <span className="material-symbols-outlined text-2xl">arrow_back</span>
         </button>
@@ -251,7 +251,7 @@ export default function Scan() {
       </header>
 
       {/* Main Content Area: Viewfinder or Cropper */}
-      <main className="relative flex-1 flex flex-col w-full bg-black overflow-hidden group/viewfinder">
+      <main className={`relative flex-1 flex flex-col w-full overflow-hidden group/viewfinder ${isNative && !isCropping ? 'bg-transparent' : 'bg-black'}`}>
         {isCropping && imageToCrop ? (
           <div className="absolute inset-0 z-[100] flex flex-col bg-background transition-colors duration-300">
 
@@ -507,7 +507,7 @@ export default function Scan() {
             </div>
 
             {/* Bottom Controls Area (Floating over camera) */}
-            <div className="mt-auto relative z-20 w-full pb-28 pt-12 px-6 flex flex-col items-center justify-end bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent transition-colors duration-300">
+            <div className={`mt-auto relative z-20 w-full pb-28 pt-12 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
               <p className="text-text-main/90 text-sm font-medium text-center mb-8 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
                 {t.alignPupil}
               </p>

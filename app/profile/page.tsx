@@ -33,7 +33,7 @@ export default function Profile() {
               <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500 hidden dark:block"></div>
               <div className="size-28 rounded-full overflow-hidden border-2 border-surface shadow-2xl relative z-10">
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj7TlOYBM68apVQ-KP6xMYJEuIltMbKhra9Q5ELf-Lurp6lHv2QOlhW3cs2vfIXK7kVYEzOdXk2MiNs3u-k5_bCQ5rpZzHTMXZxFdNLQ1xyjReppSTDoMDfQL1yGeDZDLf7GHqE-HHXg1YCUtl2y9lzNQcALzhq14LM-jeXA4pkZOB47tZo5NhSPQ2E38Gd-NgegPM3Djo2SWdUoNWcTOFEmJyF2OpSJlJ0QQmFz1n8clXgD9tfaaQzAFnG6mcq5YAY3IN02dvzYM"
+                  src="avatar.webp"
                   alt="Profile"
                   fill
                   className="object-cover"

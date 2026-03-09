@@ -33,6 +33,30 @@ export default function Analysis() {
         const patientId = `EYE-${uniqueHash}-${eyeSuffix}`;
         sessionStorage.setItem('patientId', patientId);
 
+        // Save to history in localStorage
+        const historyEntry = {
+          id: patientId,
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          timestamp: Date.now(),
+          name: patientInfo?.name || '',
+          age: patientInfo?.age || '',
+          gender: patientInfo?.gender || '',
+          activeEye: activeEye || 'left',
+          diseaseName: patientInfo?.diseaseName || 'others',
+          severity: patientInfo?.severity || 'mild',
+          diabetes: patientInfo?.diabetes || false,
+          hypertension: patientInfo?.hypertension || false,
+          familyHistory: patientInfo?.familyHistory || false,
+        };
+        // Store image separately by ID to avoid bloating the history list
+        if (storedImage) {
+          localStorage.setItem(`scanImage_${patientId}`, storedImage);
+        }
+        const prevHistoryStr = localStorage.getItem('scanHistory');
+        const prevHistory = prevHistoryStr ? JSON.parse(prevHistoryStr) : [];
+        prevHistory.unshift(historyEntry); // newest first
+        localStorage.setItem('scanHistory', JSON.stringify(prevHistory.slice(0, 50))); // keep last 50
+
         formData.append("Patient_ID", patientId);
         formData.append("Patient_Name", patientInfo?.name || "");
         formData.append("Age", patientInfo?.age || "0");

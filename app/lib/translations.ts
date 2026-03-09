@@ -201,9 +201,6 @@ export const translations = {
     // History
     screeningHistory: "Screening History",
     searchPlaceholder: "Search date or diagnosis",
-    october2023: "October 2023",
-    september2023: "September 2023",
-    august2023: "August 2023",
     highRisk: "High Risk",
     glaucomaSuspect: "Glaucoma Suspect",
     healthyRetina: "Healthy Retina",
@@ -213,10 +210,10 @@ export const translations = {
     mild: "Mild",
 
     // Detailed Report
-    screeningId: "Screening #2049",
+    screeningId: "Screening Report",
     original: "Original",
     aiHeatmap: "AI Heatmap",
-    capturedOn: "Captured on Oct 24, 2023 at 10:42 AM",
+    capturedOn: "Captured on",
     proliferativeStage: "Proliferative Stage",
     patientSummary: "Patient Summary",
     patientId: "Patient ID",
@@ -488,9 +485,6 @@ export const translations = {
     // History
     screeningHistory: "স্ক্রিনিং ইতিহাস",
     searchPlaceholder: "তারিখ বা রোগ নির্ণয় অনুসন্ধান করুন",
-    october2023: "অক্টোবর ২০২৩",
-    september2023: "সেপ্টেম্বর ২০২৩",
-    august2023: "আগস্ট ২০২৩",
     highRisk: "উচ্চ ঝুঁকি",
     glaucomaSuspect: "গ্লুকোমা সন্দেহ",
     healthyRetina: "সুস্থ রেটিনা",
@@ -500,10 +494,10 @@ export const translations = {
     mild: "মৃদু",
 
     // Detailed Report
-    screeningId: "স্ক্রিনিং #২০৪৯",
+    screeningId: "স্ক্রিনিং রিপোর্ট",
     original: "আসল",
     aiHeatmap: "AI হিটম্যাপ",
-    capturedOn: "২৪ অক্টোবর, ২০২৩ সকাল ১০:৪২ এ ক্যাপচার করা হয়েছে",
+    capturedOn: "ক্যাপচার করা হয়েছে",
     proliferativeStage: "প্রলিফারেটিভ স্টেজ",
     patientSummary: "রোগীর সারাংশ",
     patientId: "রোগী আইডি",
