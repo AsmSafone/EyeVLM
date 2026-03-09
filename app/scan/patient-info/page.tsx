@@ -35,7 +35,7 @@ export default function PatientInfo() {
   // New State variables for mapping
   const [age, setAge] = useState('');
   const [diabetes, setDiabetes] = useState(false);
-  const [hypertension, setHypertension] = useState(true); // default true per original UI
+  const [hypertension, setHypertension] = useState(false);
   const [familyHistory, setFamilyHistory] = useState(false);
   const [duration, setDuration] = useState('1To4Weeks'); // lessThan1Week, 1To4Weeks, moreThan1Month
 

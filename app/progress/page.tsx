@@ -1,12 +1,35 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
 import BottomNav from '@/components/BottomNav';
 
+interface ScanHistoryEntry {
+    diseaseName: string;
+    severity: string;
+}
+
 export default function ProgressPage() {
     const { t } = useLanguage();
+    const [totalScans, setTotalScans] = useState(0);
+    const [healthyRate, setHealthyRate] = useState(0);
+
+    useEffect(() => {
+        const raw = localStorage.getItem('scanHistory');
+        if (raw) {
+            try {
+                const history: ScanHistoryEntry[] = JSON.parse(raw);
+                setTotalScans(history.length);
+                if (history.length > 0) {
+                    const healthyCount = history.filter(h => !h.diseaseName || h.diseaseName.toLowerCase() === 'others' || h.diseaseName.toLowerCase() === 'normal' || h.diseaseName.toLowerCase() === 'none').length;
+                    setHealthyRate(Math.round((healthyCount / history.length) * 100));
+                }
+            } catch (e) {
+                console.error("Error parsing history for progress:", e);
+            }
+        }
+    }, []);
 
     return (
         <div className="bg-background font-sans text-text-main min-h-screen flex justify-center relative overflow-clip transition-colors duration-300">
@@ -35,7 +58,7 @@ export default function ProgressPage() {
                                 <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500">
                                     <span className="material-symbols-outlined text-lg">medical_information</span>
                                 </div>
-                                <span className="text-2xl font-black text-text-main">12</span>
+                                <span className="text-2xl font-black text-text-main">{totalScans}</span>
                                 <span className="text-xs text-text-secondary font-bold uppercase tracking-wider">{t.totalScans}</span>
                             </div>
                             <div className="bg-surface/60 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm flex flex-col gap-2 relative overflow-hidden">
@@ -44,7 +67,7 @@ export default function ProgressPage() {
                                 <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                                     <span className="material-symbols-outlined text-lg">task_alt</span>
                                 </div>
-                                <span className="text-2xl font-black text-text-main">92%</span>
+                                <span className="text-2xl font-black text-text-main">{totalScans > 0 ? `${healthyRate}%` : '—'}</span>
                                 <span className="text-xs text-text-secondary font-bold uppercase tracking-wider">{t.healthyRate}</span>
                             </div>
                         </div>

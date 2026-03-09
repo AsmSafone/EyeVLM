@@ -152,17 +152,8 @@ export default function Scan() {
     }
   };
 
-  const switchCamera = async () => {
-    if (isNative) {
-      try {
-        await CameraPreview.flip();
-        setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
-      } catch (err) {
-        console.error("Error flipping native camera", err);
-      }
-    } else {
-      setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
-    }
+  const switchCamera = () => {
+    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
   };
 
 

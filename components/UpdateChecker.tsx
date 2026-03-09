@@ -90,7 +90,7 @@ export default function UpdateChecker() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-primary/10 blur-[50px] pointer-events-none"></div>
 
                 <span className="material-symbols-outlined text-6xl text-primary mb-4 animate-[bounce_2s_infinite]">system_update</span>
-                <h2 className="text-2xl font-bold text-text-main mb-2 tracking-tight">Update Required</h2>
+                <h2 className="text-2xl font-bold text-text-main mb-2 tracking-tight">Update App</h2>
                 <p className="text-text-secondary mb-8 leading-relaxed">
                     A new version <span className="font-bold text-text-main">{updateAvailable}</span> of EyeVLM is available. You must update to continue using the app.
                 </p>
