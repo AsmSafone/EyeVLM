@@ -76,11 +76,11 @@ export default function History() {
   };
 
   return (
-    <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-hidden transition-colors duration-300">
+    <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-clip transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
 
-      <div className="relative flex h-full w-full max-w-md flex-col bg-background overflow-x-hidden shadow-2xl min-h-screen z-10 transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl min-h-screen z-10 transition-colors duration-300">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-surface/80 backdrop-blur-xl px-4 pb-4 pt-6 border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
           <div className="flex items-center justify-between mb-4">
@@ -105,8 +105,8 @@ export default function History() {
             <button
               onClick={toggleFilter}
               className={`flex size-12 shrink-0 items-center justify-center rounded-xl border bg-surface/50 transition-all ${activeFilter !== 'all'
-                  ? 'border-primary text-primary bg-primary/10'
-                  : 'border-slate-200 dark:border-white/10 text-text-secondary hover:text-primary hover:border-primary/30 hover:bg-surface-highlight'
+                ? 'border-primary text-primary bg-primary/10'
+                : 'border-slate-200 dark:border-white/10 text-text-secondary hover:text-primary hover:border-primary/30 hover:bg-surface-highlight'
                 }`}
             >
               <span className="material-symbols-outlined">
@@ -148,13 +148,13 @@ export default function History() {
                     <div className="flex flex-col gap-3">
                       {items.map((item) => (
                         <Link key={item.id} href={item.id === '2049' ? `/history/${item.id}` : '#'} className={`group flex cursor-pointer items-center justify-between gap-4 rounded-2xl bg-surface/40 p-4 border border-slate-200 dark:border-white/5 hover:bg-surface/60 transition-all ${item.risk === 'high' ? 'hover:border-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.1)]' :
-                            item.risk === 'moderate' ? 'hover:border-amber-500/30 hover:shadow-[0_0_15px_rgba(245,158,11,0.1)]' :
-                              'hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                          item.risk === 'moderate' ? 'hover:border-amber-500/30 hover:shadow-[0_0_15px_rgba(245,158,11,0.1)]' :
+                            'hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                           }`}>
                           <div className="flex items-center gap-4">
                             <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl border group-hover:scale-105 transition-transform ${item.risk === 'high' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                item.risk === 'moderate' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                  'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                              item.risk === 'moderate' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                               }`}>
                               <span className="material-symbols-outlined">{item.icon}</span>
                             </div>
@@ -170,8 +170,8 @@ export default function History() {
                             </div>
                           </div>
                           <span className={`material-symbols-outlined transition-colors ${item.risk === 'high' ? 'text-text-secondary group-hover:text-red-400' :
-                              item.risk === 'moderate' ? 'text-text-secondary group-hover:text-amber-400' :
-                                'text-text-secondary group-hover:text-emerald-400'
+                            item.risk === 'moderate' ? 'text-text-secondary group-hover:text-amber-400' :
+                              'text-text-secondary group-hover:text-emerald-400'
                             }`}>chevron_right</span>
                         </Link>
                       ))}

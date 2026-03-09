@@ -13,11 +13,11 @@ export default function LanguageSettings() {
   ];
 
   return (
-    <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-hidden transition-colors duration-300">
+    <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-clip transition-colors duration-300">
       {/* Decorative Background - Dark Mode Only */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
 
-      <div className="relative flex h-full w-full max-w-md flex-col bg-background overflow-x-hidden shadow-2xl min-h-screen pb-24 z-10 transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-md flex-col bg-background shadow-2xl min-h-screen pb-24 z-10 transition-colors duration-300">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-surface/80 backdrop-blur-xl px-4 pb-4 pt-6 border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
           <div className="flex items-center gap-4">

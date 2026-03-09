@@ -10,6 +10,7 @@ import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { PrescriptionReport } from '@/app/components/PrescriptionReport';
+import { translations } from '@/app/lib/translations';
 
 export default function Results() {
   const router = useRouter();
@@ -262,12 +263,12 @@ export default function Results() {
           ref={reportRef}
           patientId={patientId || "Unknown"}
           date={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-          disease={patientInfo?.diseaseName ? (t[patientInfo.diseaseName as keyof typeof t] || patientInfo.diseaseName) : t.diabeticRetinopathy}
-          severity={patientInfo?.severity ? (t[patientInfo.severity as keyof typeof t] || patientInfo.severity) : t.moderate}
+          disease={patientInfo?.diseaseName ? (translations.en[patientInfo.diseaseName as keyof typeof translations.en] || patientInfo.diseaseName) : translations.en.diabeticRetinopathy}
+          severity={patientInfo?.severity ? (translations.en[patientInfo.severity as keyof typeof translations.en] || patientInfo.severity) : translations.en.moderate}
           confidence={confidence}
           activeEye={patientInfo?.activeEye || "left"}
           imageSrc={imageSrc}
-          t={t}
+          t={translations.en}
         />
       </div>
     </div>

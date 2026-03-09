@@ -9,6 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { PrescriptionReport } from '@/app/components/PrescriptionReport';
+import { translations } from '@/app/lib/translations';
 
 export default function DetailedReport() {
   const { t } = useLanguage();
@@ -238,12 +239,12 @@ export default function DetailedReport() {
           ref={reportRef}
           patientId="8834-B"
           date="Oct 24, 2023"
-          disease={t.diabeticRetinopathy}
-          severity={t.proliferativeStage}
+          disease={translations.en.diabeticRetinopathy}
+          severity={translations.en.proliferativeStage}
           confidence={98}
           activeEye="right"
           imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuBRBZM5uzi3SDFMShD26k-qzbC3M1h4059G74A-QXq6nZcdkr66Q5aCuKVrn5bc9UVul8PzVMuNIGyO3gOuyPowu-OL7wezBDNLx1TYgEYes3rCvOAGi9ispB8EXntON5HkwNpap9uEbysoGsO9F6YQkqTDq9REvYupNQnH-ycIATx3AKRk_Rv-qqYA7vqeWohI1j8oqdBWH2CLWL90iksViPCVEe9aiI-q4pBdGkzl26y9CfCXN4AGXNtj0tjVDiZt-oUFLJO7HBA"
-          t={t}
+          t={translations.en}
         />
       </div>
     </div>

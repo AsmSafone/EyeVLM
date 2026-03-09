@@ -9,7 +9,7 @@ export default function ProgressPage() {
     const { t } = useLanguage();
 
     return (
-        <div className="bg-background font-sans text-text-main min-h-screen flex flex-col relative overflow-hidden transition-colors duration-300">
+        <div className="bg-background font-sans text-text-main min-h-screen flex flex-col relative overflow-clip transition-colors duration-300">
             {/* Decorative Background - Dark Mode Only */}
             <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-900/20 via-slate-950 to-slate-950 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300"></div>
 
