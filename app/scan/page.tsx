@@ -212,14 +212,17 @@ export default function Scan() {
       try {
         cameraOperatingRef.current = true;
         const result = await CameraPreview.capture({ quality: 90 });
-        // Stop camera first, then show cropper
+        const base64Image = `data:image/jpeg;base64,${result.value}`;
+        // Stop camera before showing cropper to release camera resource
         await stopCamera(false);
         cameraOperatingRef.current = false;
-        setImageToCrop(`data:image/jpeg;base64,${result.value}`);
+        setImageToCrop(base64Image);
         setIsCropping(true);
       } catch (err) {
         console.error("Error capturing native image:", err);
         cameraOperatingRef.current = false;
+        // Attempt to stop camera if capture failed mid-way
+        await stopCamera().catch(() => {});
       }
       return;
     }
@@ -256,6 +259,11 @@ export default function Scan() {
   const handleGalleryClick = async () => {
     if (Capacitor.isNativePlatform()) {
       try {
+        // Stop camera BEFORE opening gallery to release the camera hardware.
+        // Having CameraPreview active while the system picker launches causes
+        // a crash on many Android devices (two camera sessions simultaneously).
+        await stopCamera();
+
         const result = await Camera.pickImages({
           quality: 100,
           limit: 1,
@@ -265,19 +273,23 @@ export default function Scan() {
           // Convert webPath to base64 data URL
           const response = await fetch(photo.webPath);
           const blob = await response.blob();
-          const reader = new FileReader();
-          reader.onload = () => {
-            const dataUrl = reader.result as string;
-            if (dataUrl) {
-              stopCamera();
-              setImageToCrop(dataUrl);
-              setIsCropping(true);
-            }
-          };
-          reader.readAsDataURL(blob);
+          const dataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+          if (dataUrl) {
+            setImageToCrop(dataUrl);
+            setIsCropping(true);
+          }
+        } else {
+          // User cancelled — restart camera
+          startCamera(currentFacingModeRef.current);
         }
       } catch (err) {
         console.error('Error picking image from gallery:', err);
+        // Restart camera on error so the user isn't stuck on a blank screen
+        startCamera(currentFacingModeRef.current);
       }
       return;
     }
