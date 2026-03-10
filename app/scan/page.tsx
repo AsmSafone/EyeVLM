@@ -6,6 +6,7 @@ import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { CameraPreview, CameraPreviewFlashMode } from '@capacitor-community/camera-preview';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 
 export default function Scan() {
@@ -16,7 +17,7 @@ export default function Scan() {
   const [cameraError, setCameraError] = useState<string | null>(null);
 
   // Flash, Camera Switch, and Cropping states
-  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('user');
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [isCropping, setIsCropping] = useState(false);
@@ -49,7 +50,8 @@ export default function Scan() {
   const cropperRef = useRef<ReactCropperElement>(null);
 
   const cameraOperatingRef = useRef(false);
-  const currentFacingModeRef = useRef<'environment' | 'user'>('user');
+  const cameraStartedRef = useRef(false);
+  const currentFacingModeRef = useRef<'environment' | 'user'>('environment');
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     if (cameraOperatingRef.current) return;
@@ -66,6 +68,7 @@ export default function Scan() {
             width: window.innerWidth,
             height: window.innerHeight,
           } as any);
+          cameraStartedRef.current = true;
           setFlashEnabled(false);
           setHasPermission(true);
           setCameraError(null);
@@ -112,11 +115,12 @@ export default function Scan() {
     }
   }, []);
 
-  const stopCamera = useCallback(async () => {
+  const stopCamera = useCallback(async (resetOperatingRef = true) => {
     cameraOperatingRef.current = true;
     try {
-      if (Capacitor.isNativePlatform()) {
-        await CameraPreview.setFlashMode({ flashMode: 'off' }).catch(() => {});
+      if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
+        cameraStartedRef.current = false;
+        await CameraPreview.setFlashMode({ flashMode: 'off' }).catch(() => { });
         await CameraPreview.stop();
       }
       if (streamRef.current) {
@@ -126,7 +130,9 @@ export default function Scan() {
     } catch (e) {
       console.error("Error stopping camera:", e);
     } finally {
-      cameraOperatingRef.current = false;
+      if (resetOperatingRef) {
+        cameraOperatingRef.current = false;
+      }
     }
   }, []);
 
@@ -136,7 +142,7 @@ export default function Scan() {
     startCamera(currentFacingModeRef.current);
     return () => {
       // Direct stop on unmount — no need to await, page is leaving
-      CameraPreview.stop().catch(() => {});
+      CameraPreview.stop().catch(() => { });
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -182,27 +188,32 @@ export default function Scan() {
 
   const switchCamera = async () => {
     if (cameraOperatingRef.current) return;
+    cameraOperatingRef.current = true;
     const nextMode = currentFacingModeRef.current === 'environment' ? 'user' : 'environment';
-    await stopCamera();
+    // Stop without resetting the operating ref so startCamera doesn't bail
+    await stopCamera(false);
     // Small delay to let hardware release completely
     await new Promise(resolve => setTimeout(resolve, 300));
     currentFacingModeRef.current = nextMode;
     setFacingMode(nextMode);
+    // Reset ref right before starting so startCamera can proceed
+    cameraOperatingRef.current = false;
     await startCamera(nextMode);
   };
 
 
   const handleCapture = async () => {
     if (cameraOperatingRef.current) return;
-    
+
     if (Capacitor.isNativePlatform()) {
       try {
         cameraOperatingRef.current = true;
         const result = await CameraPreview.captureSample({ quality: 100 });
+        // Stop camera first, then show cropper
+        await stopCamera(false);
+        cameraOperatingRef.current = false;
         setImageToCrop(`data:image/jpeg;base64,${result.value}`);
         setIsCropping(true);
-        cameraOperatingRef.current = false;
-        await stopCamera();
       } catch (err) {
         console.error("Error capturing native image:", err);
         cameraOperatingRef.current = false;
@@ -239,7 +250,34 @@ export default function Scan() {
     }
   };
 
-  const handleGalleryClick = () => {
+  const handleGalleryClick = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const result = await Camera.pickImages({
+          quality: 100,
+          limit: 1,
+        });
+        if (result.photos && result.photos.length > 0) {
+          const photo = result.photos[0];
+          // Convert webPath to base64 data URL
+          const response = await fetch(photo.webPath);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            if (dataUrl) {
+              stopCamera();
+              setImageToCrop(dataUrl);
+              setIsCropping(true);
+            }
+          };
+          reader.readAsDataURL(blob);
+        }
+      } catch (err) {
+        console.error('Error picking image from gallery:', err);
+      }
+      return;
+    }
     fileInputRef.current?.click();
   };
 
