@@ -152,7 +152,10 @@ export default function Scan() {
   }, []);
 
 
+  const isFrontCamera = facingMode === 'user';
+
   const toggleFlash = async () => {
+    if (isFrontCamera) return;
     if (Capacitor.isNativePlatform()) {
       try {
         const newMode: CameraPreviewFlashMode = flashEnabled ? 'off' : 'torch';
@@ -208,7 +211,7 @@ export default function Scan() {
     if (Capacitor.isNativePlatform()) {
       try {
         cameraOperatingRef.current = true;
-        const result = await CameraPreview.captureSample({ quality: 100 });
+        const result = await CameraPreview.capture({ quality: 90 });
         // Stop camera first, then show cropper
         await stopCamera(false);
         cameraOperatingRef.current = false;
@@ -348,8 +351,8 @@ export default function Scan() {
               </button>
 
               <div className="flex flex-col items-center">
-                <h1 className="text-text-main font-bold text-base tracking-wide">Crop Image</h1>
-                <p className="text-text-secondary text-xs font-medium">Drag to adjust</p>
+                <h1 className="text-text-main font-bold text-base tracking-wide">{t.cropImage}</h1>
+                <p className="text-text-secondary text-xs font-medium">{t.dragToAdjust}</p>
               </div>
 
               <button
@@ -387,11 +390,11 @@ export default function Scan() {
 
               {/* Aspect Ratio Selector */}
               <div className="px-4 pt-4 pb-2">
-                <p className="text-text-secondary text-[10px] font-bold uppercase tracking-widest mb-3 text-center">Aspect Ratio</p>
+                <p className="text-text-secondary text-[10px] font-bold uppercase tracking-widest mb-3 text-center">{t.aspectRatio}</p>
                 <div className="flex items-center justify-around gap-2 overflow-x-auto hide-scrollbar">
                   {[
-                    { label: 'Free', value: NaN, w: 'w-6', h: 'h-5' },
-                    { label: 'Square', value: 1, w: 'w-5', h: 'h-5' },
+                    { label: t.free, value: NaN, w: 'w-6', h: 'h-5' },
+                    { label: t.square, value: 1, w: 'w-5', h: 'h-5' },
                     { label: '3:2', value: 3 / 2, w: 'w-6', h: 'h-4' },
                     { label: '4:3', value: 4 / 3, w: 'w-6', h: 'h-[18px]' },
                     { label: '16:9', value: 16 / 9, w: 'w-7', h: 'h-4' },
@@ -430,7 +433,7 @@ export default function Scan() {
                   <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
                     <span className="material-symbols-outlined text-xl">rotate_left</span>
                   </div>
-                  <span className="text-[10px] text-text-secondary font-medium">Rotate L</span>
+                  <span className="text-[10px] text-text-secondary font-medium">{t.rotateLeft}</span>
                 </button>
 
                 {/* Rotate Right */}
@@ -438,7 +441,7 @@ export default function Scan() {
                   <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
                     <span className="material-symbols-outlined text-xl">rotate_right</span>
                   </div>
-                  <span className="text-[10px] text-text-secondary font-medium">Rotate R</span>
+                  <span className="text-[10px] text-text-secondary font-medium">{t.rotateRight}</span>
                 </button>
 
                 {/* Flip Horizontal */}
@@ -452,7 +455,7 @@ export default function Scan() {
                   <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
                     <span className="material-symbols-outlined text-xl">flip</span>
                   </div>
-                  <span className="text-[10px] text-text-secondary font-medium">Flip</span>
+                  <span className="text-[10px] text-text-secondary font-medium">{t.flip}</span>
                 </button>
 
                 {/* Crop / Move Toggle */}
@@ -476,7 +479,7 @@ export default function Scan() {
                     <span className="material-symbols-outlined text-xl">{dragModeCrop ? 'crop' : 'pan_tool'}</span>
                   </div>
                   <span className={`text-[10px] font-medium ${dragModeCrop ? 'text-primary' : 'text-text-secondary'}`}>
-                    {dragModeCrop ? 'Crop' : 'Move'}
+                    {dragModeCrop ? t.crop : t.move}
                   </span>
                 </button>
 
@@ -485,7 +488,7 @@ export default function Scan() {
                   <div className="w-11 h-11 rounded-2xl bg-surface hover:bg-surface-highlight border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all active:scale-90 group-hover:border-primary/30 text-text-secondary group-hover:text-primary">
                     <span className="material-symbols-outlined text-xl">restart_alt</span>
                   </div>
-                  <span className="text-[10px] text-text-secondary font-medium">Reset</span>
+                  <span className="text-[10px] text-text-secondary font-medium">{t.reset}</span>
                 </button>
               </div>
             </div>
@@ -619,7 +622,8 @@ export default function Scan() {
                 {/* Flash Button */}
                 <button
                   onClick={toggleFlash}
-                  className="flex flex-col items-center justify-center gap-1 group"
+                  disabled={isFrontCamera}
+                  className={`flex flex-col items-center justify-center gap-1 group ${isFrontCamera ? 'opacity-30 pointer-events-none' : ''}`}
                 >
                   <div className={`w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all border ${flashEnabled ? 'bg-primary/20 border-primary shadow-[0_0_15px_rgba(6,182,212,0.5)] text-primary' : 'bg-surface/50 border-slate-200 dark:border-white/10 text-text-secondary group-hover:border-primary/50 group-hover:text-primary group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]'} group-active:bg-surface-highlight`}>
                     <span className="material-symbols-outlined text-2xl">{flashEnabled ? 'flash_on' : 'flash_off'}</span>
