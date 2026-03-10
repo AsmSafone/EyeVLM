@@ -5,10 +5,12 @@ import Image from 'next/image';
 import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/app/context/LanguageContext';
 import { useTheme } from '@/app/context/ThemeContext';
+import { useRouter } from 'next/navigation';
 
 export default function Profile() {
   const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <div className="bg-background font-sans min-h-screen flex justify-center text-text-main antialiased relative overflow-hidden transition-colors duration-300">
@@ -133,7 +135,7 @@ export default function Profile() {
           <button
             onClick={() => {
               localStorage.removeItem('isLoggedIn');
-              window.location.href = '/login';
+              router.push('/login');
             }}
             className="w-full p-4 rounded-2xl bg-red-500/10 text-red-500 font-bold hover:bg-red-500/20 border border-red-500/20 transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] active:scale-[0.98]"
           >

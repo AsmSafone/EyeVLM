@@ -49,18 +49,15 @@ export default function Scan() {
   const cropperRef = useRef<ReactCropperElement>(null);
 
   const cameraOperatingRef = useRef(false);
+  const currentFacingModeRef = useRef<'environment' | 'user'>('user');
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     if (cameraOperatingRef.current) return;
+    cameraOperatingRef.current = true;
     try {
       if (Capacitor.isNativePlatform()) {
         const platform = Capacitor.getPlatform();
         if (platform === 'android' || platform === 'ios') {
-          cameraOperatingRef.current = true;
-          // Add a delay to ensure the previous camera (if any) was fully stopped
-          // Native APIs sometimes take a moment to release the hardware.
-          await new Promise(resolve => setTimeout(resolve, 500));
-
           await CameraPreview.start({
             position: mode === 'environment' ? 'rear' : 'front',
             toBack: true,
@@ -72,7 +69,6 @@ export default function Scan() {
           setFlashEnabled(false);
           setHasPermission(true);
           setCameraError(null);
-          cameraOperatingRef.current = false;
           return;
         }
       }
@@ -83,7 +79,6 @@ export default function Scan() {
 
       let stream: MediaStream;
       try {
-        // Try exact constraint first (better for mobile web)
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: { exact: mode === 'user' ? 'user' : 'environment' },
@@ -92,7 +87,6 @@ export default function Scan() {
           }
         });
       } catch (e) {
-        // Fallback to loose constraint if exact fails (e.g. desktop webcams)
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: mode === 'user' ? 'user' : 'environment',
@@ -110,52 +104,47 @@ export default function Scan() {
       setHasPermission(true);
       setCameraError(null);
     } catch (err) {
-      cameraOperatingRef.current = false;
       console.error("Error accessing camera:", err);
-      if (err instanceof Error && err.message === 'camera already started') {
-        return;
-      }
       setHasPermission(false);
       setCameraError('Camera access denied or not available.');
+    } finally {
+      cameraOperatingRef.current = false;
     }
   }, []);
 
   const stopCamera = useCallback(async () => {
-    if (Capacitor.isNativePlatform()) {
-      try {
-        cameraOperatingRef.current = true;
+    cameraOperatingRef.current = true;
+    try {
+      if (Capacitor.isNativePlatform()) {
         await CameraPreview.setFlashMode({ flashMode: 'off' }).catch(() => {});
         await CameraPreview.stop();
-      } catch (e) {
-        console.error("Error stopping native components:", e);
-      } finally {
-        cameraOperatingRef.current = false;
       }
-    }
-
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+    } catch (e) {
+      console.error("Error stopping camera:", e);
+    } finally {
+      cameraOperatingRef.current = false;
     }
   }, []);
 
-  // Handle initialization and component unmount
+  // Initialize camera once on mount, stop on unmount only (not on facingMode changes
+  // to avoid concurrent stop/start race condition — switching is handled in switchCamera)
   useEffect(() => {
-    let mounted = true;
-    
-    const initCamera = async () => {
-      if (mounted) {
-        await startCamera(facingMode);
+    startCamera(currentFacingModeRef.current);
+    return () => {
+      // Direct stop on unmount — no need to await, page is leaving
+      CameraPreview.stop().catch(() => {});
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
       }
     };
-    
-    initCamera();
-    
-    return () => {
-      mounted = false;
-      stopCamera();
-    };
-  }, [facingMode, startCamera, stopCamera]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const toggleFlash = async () => {
     if (Capacitor.isNativePlatform()) {
@@ -191,8 +180,15 @@ export default function Scan() {
     }
   };
 
-  const switchCamera = () => {
-    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+  const switchCamera = async () => {
+    if (cameraOperatingRef.current) return;
+    const nextMode = currentFacingModeRef.current === 'environment' ? 'user' : 'environment';
+    await stopCamera();
+    // Small delay to let hardware release completely
+    await new Promise(resolve => setTimeout(resolve, 300));
+    currentFacingModeRef.current = nextMode;
+    setFacingMode(nextMode);
+    await startCamera(nextMode);
   };
 
 

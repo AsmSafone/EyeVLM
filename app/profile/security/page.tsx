@@ -12,7 +12,7 @@ import { Toast } from '@capacitor/toast';
 export default function SecuritySettings() {
     const { t } = useLanguage();
     const router = useRouter();
-    const [biometricEnabled, setBiometricEnabled] = useState(true);
+    const [biometricEnabled, setBiometricEnabled] = useState(false);
 
     const handleDeleteAccount = async () => {
         localStorage.clear();
