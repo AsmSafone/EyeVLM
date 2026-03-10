@@ -48,11 +48,15 @@ export default function Scan() {
   const streamRef = useRef<MediaStream | null>(null);
   const cropperRef = useRef<ReactCropperElement>(null);
 
+  const cameraOperatingRef = useRef(false);
+
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
+    if (cameraOperatingRef.current) return;
     try {
       if (Capacitor.isNativePlatform()) {
         const platform = Capacitor.getPlatform();
         if (platform === 'android' || platform === 'ios') {
+          cameraOperatingRef.current = true;
           // Add a delay to ensure the previous camera (if any) was fully stopped
           // Native APIs sometimes take a moment to release the hardware.
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -68,6 +72,7 @@ export default function Scan() {
           setFlashEnabled(false);
           setHasPermission(true);
           setCameraError(null);
+          cameraOperatingRef.current = false;
           return;
         }
       }
@@ -76,13 +81,26 @@ export default function Scan() {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: mode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }
-      });
+      let stream: MediaStream;
+      try {
+        // Try exact constraint first (better for mobile web)
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { exact: mode === 'user' ? 'user' : 'environment' },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        });
+      } catch (e) {
+        // Fallback to loose constraint if exact fails (e.g. desktop webcams)
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: mode === 'user' ? 'user' : 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        });
+      }
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -92,6 +110,7 @@ export default function Scan() {
       setHasPermission(true);
       setCameraError(null);
     } catch (err) {
+      cameraOperatingRef.current = false;
       console.error("Error accessing camera:", err);
       if (err instanceof Error && err.message === 'camera already started') {
         return;
@@ -104,10 +123,13 @@ export default function Scan() {
   const stopCamera = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
       try {
-        await CameraPreview.setFlashMode({ flashMode: 'off' });
+        cameraOperatingRef.current = true;
+        await CameraPreview.setFlashMode({ flashMode: 'off' }).catch(() => {});
         await CameraPreview.stop();
       } catch (e) {
         console.error("Error stopping native components:", e);
+      } finally {
+        cameraOperatingRef.current = false;
       }
     }
 
@@ -117,10 +139,20 @@ export default function Scan() {
     }
   }, []);
 
+  // Handle initialization and component unmount
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    startCamera(facingMode);
+    let mounted = true;
+    
+    const initCamera = async () => {
+      if (mounted) {
+        await startCamera(facingMode);
+      }
+    };
+    
+    initCamera();
+    
     return () => {
+      mounted = false;
       stopCamera();
     };
   }, [facingMode, startCamera, stopCamera]);
@@ -165,14 +197,19 @@ export default function Scan() {
 
 
   const handleCapture = async () => {
+    if (cameraOperatingRef.current) return;
+    
     if (Capacitor.isNativePlatform()) {
       try {
+        cameraOperatingRef.current = true;
         const result = await CameraPreview.captureSample({ quality: 100 });
         setImageToCrop(`data:image/jpeg;base64,${result.value}`);
         setIsCropping(true);
-        stopCamera();
+        cameraOperatingRef.current = false;
+        await stopCamera();
       } catch (err) {
         console.error("Error capturing native image:", err);
+        cameraOperatingRef.current = false;
       }
       return;
     }
