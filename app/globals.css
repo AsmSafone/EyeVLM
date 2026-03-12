@@ -57,10 +57,12 @@
     -webkit-user-select: none;
   }
 
-  html.camera-active,
-  html.camera-active body {
+  body.camera-running,
+  body.camera-running #__next {
     background-color: transparent !important;
     background: transparent !important;
+    /* Adding visibility: hidden isn't strictly necessary if Next.js handles layout, 
+       but we ensure the background is fully transparent */
   }
 
 

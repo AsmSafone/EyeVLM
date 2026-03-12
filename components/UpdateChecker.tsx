@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { FileOpener } from '@capacitor-community/file-opener';
+import { FileTransfer } from '@capacitor/file-transfer';
 import { Toast } from '@capacitor/toast';
 import packageJson from '../package.json';
 
@@ -55,20 +56,21 @@ export default function UpdateChecker() {
         try {
             await Toast.show({ text: 'Downloading update, please wait...', duration: 'long' });
 
-            await Filesystem.downloadFile({
-                url: apkUrl,
-                path: 'eyevlm-update.apk',
-                directory: Directory.Cache
-            });
-
-            // Get a content:// URI that Android's package installer can open
+            // 1. Get the absolute content:// or file:// URI for the Cache directory
             const uriResult = await Filesystem.getUri({
                 path: 'eyevlm-update.apk',
                 directory: Directory.Cache
             });
 
+            // 2. Download directly to that resolved URI
+            await FileTransfer.downloadFile({
+                url: apkUrl,
+                path: uriResult.uri,
+            });
+
             await Toast.show({ text: 'Download complete. Starting install...', duration: 'short' });
 
+            // 3. Open the downloaded APK
             await FileOpener.open({
                 filePath: uriResult.uri,
                 contentType: 'application/vnd.android.package-archive',

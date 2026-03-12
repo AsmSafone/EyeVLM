@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { CameraPreview, CameraPreviewFlashMode } from '@capacitor-community/camera-preview';
+import { CameraView, FlashMode } from 'capacitor-camera-view';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 
@@ -25,6 +25,11 @@ export default function Scan() {
   const [dragModeCrop, setDragModeCrop] = useState(true);
   const [isNative, setIsNative] = useState(false);
 
+  // Zoom States
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+  const [minZoom, setMinZoom] = useState(1.0);
+  const [maxZoom, setMaxZoom] = useState(1.0);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsNative(Capacitor.isNativePlatform());
@@ -32,15 +37,14 @@ export default function Scan() {
 
   useEffect(() => {
     if (isNative && !isCropping && hasPermission) {
-      document.documentElement.classList.add('camera-active');
+      document.body.classList.add('camera-running');
     } else {
-      document.documentElement.classList.remove('camera-active');
+      document.body.classList.remove('camera-running');
     }
     return () => {
-      document.documentElement.classList.remove('camera-active');
+      document.body.classList.remove('camera-running');
     };
   }, [isNative, isCropping, hasPermission]);
-
 
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -60,19 +64,27 @@ export default function Scan() {
       if (Capacitor.isNativePlatform()) {
         const platform = Capacitor.getPlatform();
         if (platform === 'android' || platform === 'ios') {
-          await CameraPreview.start({
-            position: mode === 'environment' ? 'rear' : 'front',
-            toBack: true,
-            enableZoom: mode === 'environment',
-            disableAudio: true,
-            rotateWhenOrientationChanged: true,
-            width: window.innerWidth,
-            height: window.innerHeight,
-          } as any);
+          await CameraView.start({
+            position: mode === 'environment' ? 'back' : 'front',
+            zoomFactor: 1.0,
+          });
           cameraStartedRef.current = true;
           setFlashEnabled(false);
           setHasPermission(true);
           setCameraError(null);
+
+          // Get zoom bounds for back camera
+          if (mode === 'environment') {
+            try {
+              const zoomInfo = await CameraView.getZoom();
+              setMinZoom(zoomInfo.min);
+              setMaxZoom(zoomInfo.max);
+              setZoomLevel(zoomInfo.current);
+            } catch (err) {
+              console.error("Zoom not supported:", err);
+              setMaxZoom(1.0);
+            }
+          }
           return;
         }
       }
@@ -121,8 +133,8 @@ export default function Scan() {
     try {
       if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
         cameraStartedRef.current = false;
-        await CameraPreview.setFlashMode({ flashMode: 'off' }).catch(() => { });
-        await CameraPreview.stop();
+        await CameraView.setTorchMode({ enabled: false }).catch(() => { });
+        await CameraView.stop();
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
@@ -143,7 +155,7 @@ export default function Scan() {
     startCamera(currentFacingModeRef.current);
     return () => {
       // Direct stop on unmount — no need to await, page is leaving
-      CameraPreview.stop().catch(() => { });
+      CameraView.stop().catch(() => { });
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -159,10 +171,7 @@ export default function Scan() {
     if (isFrontCamera) return;
     if (Capacitor.isNativePlatform()) {
       try {
-        const newMode: CameraPreviewFlashMode = flashEnabled ? 'off' : 'torch';
-        // Note: the plugin API might expect an object based on typings, but the docs mention string. 
-        // According to definitions.d.ts, setFlashMode(options: { flashMode: CameraPreviewFlashMode | string }): Promise<void>;
-        await CameraPreview.setFlashMode({ flashMode: newMode } as any);
+        await CameraView.setTorchMode({ enabled: !flashEnabled });
         setFlashEnabled(!flashEnabled);
       } catch (err) {
         console.error("Error toggling native flash", err);
@@ -196,7 +205,7 @@ export default function Scan() {
     const nextMode = currentFacingModeRef.current === 'environment' ? 'user' : 'environment';
     // Turn off flash before switching to prevent front camera crash
     if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
-      await CameraPreview.setFlashMode({ flashMode: 'off' } as any).catch(() => { });
+      await CameraView.setTorchMode({ enabled: false }).catch(() => { });
       setFlashEnabled(false);
     }
     // Stop without resetting the operating ref so startCamera doesn't bail
@@ -210,6 +219,15 @@ export default function Scan() {
     await startCamera(nextMode);
   };
 
+  const handleZoomChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newZoom = parseFloat(e.target.value);
+    setZoomLevel(newZoom);
+    if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
+      await CameraView.setZoom({ level: newZoom, ramp: true }).catch(err => {
+        console.error("Error setting zoom:", err);
+      });
+    }
+  };
 
   const handleCapture = async () => {
     if (cameraOperatingRef.current) return;
@@ -217,32 +235,34 @@ export default function Scan() {
     if (Capacitor.isNativePlatform()) {
       try {
         cameraOperatingRef.current = true;
-        const result = await CameraPreview.capture({
-          quality: 70,
-          storeToFile: true,
-        } as any);
+        const isFront = currentFacingModeRef.current === 'user';
+        const result = await CameraView.capture({
+          quality: isFront ? 50 : 90,
+          saveToFile: true,
+        });
         // Stop camera first, then show cropper
         await stopCamera(false);
         cameraOperatingRef.current = false;
-        // When storeToFile is true, result.value is a file URI — convert to data URL
-        let imageDataUrl: string;
-        if (result.value.startsWith('data:') || result.value.startsWith('/9j')) {
-          // Already base64 or data URL
-          imageDataUrl = result.value.startsWith('data:')
-            ? result.value
-            : `data:image/jpeg;base64,${result.value}`;
-        } else {
-          // File path — fetch and convert to data URL
-          const fileUri = result.value.startsWith('file://') ? result.value : `file://${result.value}`;
-          const response = await fetch(fileUri);
-          const blob = await response.blob();
-          imageDataUrl = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(blob);
-          });
+        
+        const imagePath = result.webPath || (result as any).photo;
+        if (!imagePath) {
+          throw new Error("No photo captured");
         }
-        setImageToCrop(imageDataUrl);
+
+        let imageUrlToProcess = imagePath;
+
+        if (imagePath.startsWith('data:') || imagePath.startsWith('/9j')) {
+          // Already base64 or data URL
+          imageUrlToProcess = imagePath.startsWith('data:')
+            ? imagePath
+            : `data:image/jpeg;base64,${imagePath}`;
+        } else if (Capacitor.isNativePlatform()) {
+          // It's a file path on the device (like file://...). 
+          // We must use Capacitor.convertFileSrc so the WebView can load it.
+          imageUrlToProcess = Capacitor.convertFileSrc(imagePath);
+        }
+
+        setImageToCrop(imageUrlToProcess);
         setIsCropping(true);
       } catch (err) {
         console.error("Error capturing native image:", err);
@@ -632,6 +652,24 @@ export default function Scan() {
 
             {/* Bottom Controls Area (Floating over camera) */}
             <div className={`mt-auto relative z-20 w-full pb-28 pt-12 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
+              
+              {/* Zoom Slider (Only visible on Back Camera if Zoom is supported) */}
+              {isNative && facingMode === 'environment' && maxZoom > 1.0 && (
+                <div className="w-full max-w-xs mb-6 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
+                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
+                  <input
+                    type="range"
+                    min={minZoom}
+                    max={maxZoom}
+                    step="0.1"
+                    value={zoomLevel}
+                    onChange={handleZoomChange}
+                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
+                  />
+                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                </div>
+              )}
+
               <p className="text-text-main/90 text-sm font-medium text-center mb-8 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
                 {t.alignPupil}
               </p>
