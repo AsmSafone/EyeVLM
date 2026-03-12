@@ -6,18 +6,18 @@
   [![Build Android APK](https://github.com/AsmSafone/EyeVLM/actions/workflows/android-build.yml/badge.svg)](https://github.com/AsmSafone/EyeVLM/actions/workflows/android-build.yml)
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![Made with Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/)
-  [![Capacitor v6](https://img.shields.io/badge/Capacitor-v6-blue?logo=capacitor)](https://capacitorjs.com/)
+  [![Capacitor v8](https://img.shields.io/badge/Capacitor-v8-blue?logo=capacitor)](https://capacitorjs.com/)
 </div>
 
 <br />
 
-EyeVLM is a cross-platform, progressive web application engineered to provide early detection of common eye diseases such as Diabetic Retinopathy, Glaucoma, and Cataracts. By leveraging Vision Language Models via the `@google/genai` API, EyeVLM analyzes optical disc images directly from a user's smartphone camera.
+EyeVLM is a cross-platform, progressive web application engineered to provide early detection of common eye diseases such as Cataracts, Pterygium, Conjunctivitis, Keratitis, Uveitis, and Ptosis. By leveraging Vision Language Models via the `@google/genai` API, EyeVLM analyzes optical disc images directly from a user's smartphone camera.
 
 ## ✨ Features
 - **Mobile First Interface**: Engineered in Next.js as a fully responsive Progressive Web App with fluid framer-motion animations.
-- **Native Android APK Integration**: Seamlessly wrapper utilizing Capacitor v6, including native Android hardware API plugins (`@capacitor/camera`, `@capawesome/capacitor-torch`).
-- **Precision Viewfinder**: A highly customized `getUserMedia` web stream tracker that dynamically controls device hardware, pre-crops live video feeds instantly using HTML5 Canvas mathematical coordinate injection, and leverages `react-cropper` to isolate purely the optical disc focus.
-- **Robust Multi-Language System**: Full internal support via Context API translation strings.
+- **Native Android APK Integration**: Seamless wrapper utilizing Capacitor v8, including native Android hardware API plugins (`capacitor-camera-view`).
+- **Precision Viewfinder & Zoom**: A highly customized camera stream tracker that dynamically controls device hardware (including optical/digital zoom capabilities), pre-crops live video feeds instantly using HTML5 Canvas mathematical coordinate injection, and leverages `react-cropper` to isolate purely the optical disc focus.
+- **Robust Multi-Language System**: Full internal support via Context API translation strings (English & Bengali supported out-of-the-box).
 - **Over The Air Updating**: Integrated blocking UI client prompt that intercepts older APK clients by querying the Github action pipelines to require forced application updates. Next.js natively builds dynamic valid `versionCode` variables directly into `<Project>/android/app/build.gradle`.
 - **Hardware Native Navigation**: Dynamic handling of Android hardware back buttons using `@capacitor/app` wrapper injected over `<RootLayout>`, alongside safety-exit hooks powered by `@capacitor/toast`.
 
@@ -31,16 +31,16 @@ This repository maintains a fully customized GitHub Actions CI/CD pipeline!
 ## 💻 Tech Stack
 - **Frontend Framework**: Next.js 15 (App Router), React 19
 - **Design System**: Tailwind CSS v4, Lucide React Icons
-- **Native Wrapper**: Capacitor v6
-- **Device Hardware**: `navigator.mediaDevices.getUserMedia`
-- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`, `@capacitor/toast`
+- **Native Wrapper**: Capacitor v8
+- **Device Hardware**: `navigator.mediaDevices.getUserMedia`, `capacitor-camera-view`
+- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`, `@capacitor/file-transfer`
 
 ## 📦 Local Installation
 
 To run this application locally on your machine, follow these steps:
 
 ### Prerequisites:
-- `Node.js >= 20`
+- `Node.js >= 22`
 - `npm`
 
 1. Clone the repository
