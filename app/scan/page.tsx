@@ -651,24 +651,7 @@ export default function Scan() {
             </div>
 
             {/* Bottom Controls Area (Floating over camera) */}
-            <div className={`mt-auto relative z-20 w-full pb-28 pt-12 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
-              
-              {/* Zoom Slider (Only visible on Back Camera if Zoom is supported) */}
-              {isNative && facingMode === 'environment' && maxZoom > 1.0 && (
-                <div className="w-full max-w-xs mb-6 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
-                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
-                  <input
-                    type="range"
-                    min={minZoom}
-                    max={maxZoom}
-                    step="0.1"
-                    value={zoomLevel}
-                    onChange={handleZoomChange}
-                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
-                  />
-                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
-                </div>
-              )}
+            <div className={`mt-auto relative z-20 w-full pb-20 pt-12 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
 
               <p className="text-text-main/90 text-sm font-medium text-center mb-8 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
                 {t.alignPupil}
@@ -707,6 +690,23 @@ export default function Scan() {
                   <span className={`text-[10px] font-bold tracking-wider uppercase transition-colors ${flashEnabled ? 'text-primary' : 'text-text-secondary group-hover:text-primary'}`}>{t.flash}</span>
                 </button>
               </div>
+
+              {/* Zoom Slider (Only visible on Back Camera if Zoom is supported) */}
+              {isNative && facingMode === 'environment' && maxZoom > 1.0 && (
+                <div className="w-full max-w-xs mt-6 mb-2 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
+                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
+                  <input
+                    type="range"
+                    min={minZoom}
+                    max={maxZoom}
+                    step="0.1"
+                    value={zoomLevel}
+                    onChange={handleZoomChange}
+                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
+                  />
+                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                </div>
+              )}
             </div>
           </>
         )

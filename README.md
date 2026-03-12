@@ -11,7 +11,7 @@
 
 <br />
 
-EyeVLM is a cross-platform, progressive web application engineered to provide early detection of common eye diseases such as Cataracts, Pterygium, Conjunctivitis, Keratitis, Uveitis, and Ptosis. By leveraging Vision Language Models via the `@google/genai` API, EyeVLM analyzes optical disc images directly from a user's smartphone camera.
+EyeVLM is a cross-platform, progressive web application engineered to provide early detection of common eye diseases such as Cataracts, Pterygium, Conjunctivitis, Keratitis, Uveitis, and Ptosis. By leveraging Vision Language Models, EyeVLM analyzes optical disc images directly from a user's smartphone camera.
 
 ## ✨ Features
 - **Mobile First Interface**: Engineered in Next.js as a fully responsive Progressive Web App with fluid framer-motion animations.
@@ -33,7 +33,7 @@ This repository maintains a fully customized GitHub Actions CI/CD pipeline!
 - **Design System**: Tailwind CSS v4, Lucide React Icons
 - **Native Wrapper**: Capacitor v8
 - **Device Hardware**: `navigator.mediaDevices.getUserMedia`, `capacitor-camera-view`
-- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`, `@capacitor/file-transfer`
+- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`
 
 ## 📦 Local Installation
 
