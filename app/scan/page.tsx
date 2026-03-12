@@ -63,8 +63,9 @@ export default function Scan() {
           await CameraPreview.start({
             position: mode === 'environment' ? 'rear' : 'front',
             toBack: true,
-            enableZoom: true,
+            enableZoom: mode === 'environment',
             disableAudio: true,
+            rotateWhenOrientationChanged: true,
             width: window.innerWidth,
             height: window.innerHeight,
           } as any);
@@ -193,6 +194,11 @@ export default function Scan() {
     if (cameraOperatingRef.current) return;
     cameraOperatingRef.current = true;
     const nextMode = currentFacingModeRef.current === 'environment' ? 'user' : 'environment';
+    // Turn off flash before switching to prevent front camera crash
+    if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
+      await CameraPreview.setFlashMode({ flashMode: 'off' } as any).catch(() => { });
+      setFlashEnabled(false);
+    }
     // Stop without resetting the operating ref so startCamera doesn't bail
     await stopCamera(false);
     // Small delay to let hardware release completely
@@ -211,18 +217,38 @@ export default function Scan() {
     if (Capacitor.isNativePlatform()) {
       try {
         cameraOperatingRef.current = true;
-        const result = await CameraPreview.capture({ quality: 90 });
-        const base64Image = `data:image/jpeg;base64,${result.value}`;
-        // Stop camera before showing cropper to release camera resource
+        const result = await CameraPreview.capture({
+          quality: 70,
+          storeToFile: true,
+        } as any);
+        // Stop camera first, then show cropper
         await stopCamera(false);
         cameraOperatingRef.current = false;
-        setImageToCrop(base64Image);
+        // When storeToFile is true, result.value is a file URI — convert to data URL
+        let imageDataUrl: string;
+        if (result.value.startsWith('data:') || result.value.startsWith('/9j')) {
+          // Already base64 or data URL
+          imageDataUrl = result.value.startsWith('data:')
+            ? result.value
+            : `data:image/jpeg;base64,${result.value}`;
+        } else {
+          // File path — fetch and convert to data URL
+          const fileUri = result.value.startsWith('file://') ? result.value : `file://${result.value}`;
+          const response = await fetch(fileUri);
+          const blob = await response.blob();
+          imageDataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+        }
+        setImageToCrop(imageDataUrl);
         setIsCropping(true);
       } catch (err) {
         console.error("Error capturing native image:", err);
         cameraOperatingRef.current = false;
         // Attempt to stop camera if capture failed mid-way
-        await stopCamera().catch(() => {});
+        await stopCamera().catch(() => { });
       }
       return;
     }

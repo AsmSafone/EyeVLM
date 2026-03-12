@@ -34,7 +34,7 @@ export default function PersonalInfo() {
                         </div>
                         <div>
                             <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">{t.email || "Email Address"}</label>
-                            <input type="email" defaultValue="admin@example.com" className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 px-4 py-4 text-text-main placeholder:text-text-secondary/50 focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all font-medium" />
+                            <input type="email" defaultValue="admin@eyevlm.com" className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-surface/50 px-4 py-4 text-text-main placeholder:text-text-secondary/50 focus:ring-1 focus:ring-primary focus:border-primary/50 transition-all font-medium" />
                         </div>
                         <div>
                             <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">{t.phoneNumber || "Phone Number"}</label>
