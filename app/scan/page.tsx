@@ -119,6 +119,28 @@ export default function Scan() {
       setFlashEnabled(false);
       setHasPermission(true);
       setCameraError(null);
+
+      // Get zoom bounds for web camera
+      if (mode === 'environment' || mode === 'user') {
+        const track = stream.getVideoTracks()[0];
+        if (track) {
+          try {
+            const capabilities = track.getCapabilities ? track.getCapabilities() : {} as any;
+            if (capabilities.zoom) {
+              setMinZoom(capabilities.zoom.min);
+              setMaxZoom(capabilities.zoom.max);
+              setZoomLevel(track.getSettings().zoom || capabilities.zoom.min);
+              console.log("Web Zoom supported:", capabilities.zoom);
+            } else {
+              setMinZoom(1.0);
+              setMaxZoom(1.0);
+            }
+          } catch (err) {
+            console.error("Error getting web zoom capabilities:", err);
+            setMaxZoom(1.0);
+          }
+        }
+      }
     } catch (err) {
       console.error("Error accessing camera:", err);
       setHasPermission(false);
@@ -224,8 +246,22 @@ export default function Scan() {
     setZoomLevel(newZoom);
     if (Capacitor.isNativePlatform() && cameraStartedRef.current) {
       await CameraView.setZoom({ level: newZoom, ramp: true }).catch(err => {
-        console.error("Error setting zoom:", err);
+        console.error("Error setting native zoom:", err);
       });
+    } else if (streamRef.current) {
+      const track = streamRef.current.getVideoTracks()[0];
+      if (track) {
+        try {
+          const capabilities = track.getCapabilities ? track.getCapabilities() : {} as any;
+          if (capabilities.zoom) {
+            await track.applyConstraints({
+              advanced: [{ zoom: newZoom } as any]
+            });
+          }
+        } catch (err) {
+          console.error("Error setting web zoom:", err);
+        }
+      }
     }
   };
 
@@ -657,6 +693,23 @@ export default function Scan() {
                 {t.alignPupil}
               </p>
 
+              {/* Zoom Slider (Only visible if Zoom is supported) */}
+              {facingMode === 'environment' && maxZoom > 1.0 && (
+                <div className="w-full max-w-xs mb-8 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
+                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
+                  <input
+                    type="range"
+                    min={minZoom}
+                    max={maxZoom}
+                    step="0.1"
+                    value={zoomLevel}
+                    onChange={handleZoomChange}
+                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
+                  />
+                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                </div>
+              )}
+
               <div className="w-full flex items-center justify-between max-w-sm px-4">
                 {/* Gallery Button */}
                 <button
@@ -691,22 +744,6 @@ export default function Scan() {
                 </button>
               </div>
 
-              {/* Zoom Slider (Only visible on Back Camera if Zoom is supported) */}
-              {isNative && facingMode === 'environment' && maxZoom > 1.0 && (
-                <div className="w-full max-w-xs mt-6 mb-2 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
-                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
-                  <input
-                    type="range"
-                    min={minZoom}
-                    max={maxZoom}
-                    step="0.1"
-                    value={zoomLevel}
-                    onChange={handleZoomChange}
-                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
-                  />
-                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
-                </div>
-              )}
             </div>
           </>
         )
