@@ -19,14 +19,33 @@ export default function Dashboard() {
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * quotes.length));
   const [quoteDir, setQuoteDir] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0); // Cooldown in seconds
 
   useEffect(() => {
     const savedHydration = localStorage.getItem('eyeHydrationLevel');
-    if (savedHydration) {
+    const lastDate = localStorage.getItem('lastHydrationDate');
+    const today = new Date().toISOString().split('T')[0];
+
+    if (lastDate !== today) {
+      // Reset for a new day
+      setHydrationLevel(0);
+      localStorage.setItem('eyeHydrationLevel', '0');
+      localStorage.setItem('lastHydrationDate', today);
+    } else if (savedHydration) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setHydrationLevel(parseInt(savedHydration));
     } else {
       setHydrationLevel(15);
+    }
+
+    // Check for cooldown
+    const lastTimestamp = localStorage.getItem('lastHydrationTimestamp');
+    if (lastTimestamp) {
+      const diff = Date.now() - parseInt(lastTimestamp);
+      const cooldown = 30 * 60 * 1000; // 30 minutes
+      if (diff < cooldown) {
+        setTimeLeft(Math.ceil((cooldown - diff) / 1000));
+      }
     }
 
     const hour = new Date().getHours();
@@ -58,10 +77,27 @@ export default function Dashboard() {
     return () => clearInterval(tick);
   }, [quoteIndex]);
 
+  // Cooldown timer
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
   const handleLogDrink = () => {
+    if (timeLeft > 0) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const now = Date.now();
+
     setHydrationLevel(prev => {
       const newLevel = Math.min(prev + 15, 100);
       localStorage.setItem('eyeHydrationLevel', newLevel.toString());
+      localStorage.setItem('lastHydrationDate', today);
+      localStorage.setItem('lastHydrationTimestamp', now.toString());
+      setTimeLeft(30 * 60); // 30 minutes cooldown
       return newLevel;
     });
   };
@@ -246,9 +282,10 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleLogDrink}
-                      className="bg-cyan-500 text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1">
+                      disabled={timeLeft > 0}
+                      className={`text-white shadow hover:opacity-90 text-xs font-bold px-4 py-1.5 rounded-full transition-all active:scale-95 flex items-center gap-1 ${timeLeft > 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-cyan-500'}`}>
                       <span className="material-symbols-outlined text-[14px]">water_drop</span>
-                      {t.logDrink || "Log Drink"}
+                      {timeLeft > 0 ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s` : (t.logDrink || "Log Drink")}
                     </button>
                   </div>
                 </div>

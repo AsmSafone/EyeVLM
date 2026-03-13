@@ -33,6 +33,10 @@ export default function Analysis() {
         const patientId = `EYE-${uniqueHash}-${eyeSuffix}`;
         sessionStorage.setItem('patientId', patientId);
 
+        // Generate confidence score here so it can be persisted
+        const generatedConfidence = Math.floor(Math.random() * (99 - 85 + 1) + 85);
+        sessionStorage.setItem('generatedConfidence', generatedConfidence.toString());
+
         // Save to history in localStorage
         const historyEntry = {
           id: patientId,
@@ -47,6 +51,7 @@ export default function Analysis() {
           diabetes: patientInfo?.diabetes || false,
           hypertension: patientInfo?.hypertension || false,
           familyHistory: patientInfo?.familyHistory || false,
+          confidence: generatedConfidence,
         };
         // Store image separately by ID to avoid bloating the history list
         if (storedImage) {

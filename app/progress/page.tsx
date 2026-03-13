@@ -8,12 +8,17 @@ import BottomNav from '@/components/BottomNav';
 interface ScanHistoryEntry {
     diseaseName: string;
     severity: string;
+    confidence?: number;
+    date: string;
+    timestamp: number;
 }
 
 export default function ProgressPage() {
     const { t } = useLanguage();
     const [totalScans, setTotalScans] = useState(0);
     const [healthyRate, setHealthyRate] = useState(0);
+    const [chartPath, setChartPath] = useState("M0,80 L340,80");
+    const [chartLabels, setChartLabels] = useState<string[]>([]);
 
     useEffect(() => {
         const raw = localStorage.getItem('scanHistory');
@@ -24,6 +29,35 @@ export default function ProgressPage() {
                 if (history.length > 0) {
                     const healthyCount = history.filter(h => !h.diseaseName || h.diseaseName.toLowerCase() === 'others' || h.diseaseName.toLowerCase() === 'normal' || h.diseaseName.toLowerCase() === 'none').length;
                     setHealthyRate(Math.round((healthyCount / history.length) * 100));
+
+                    // Process chart data (last 6 scans, oldest to newest)
+                    const chartData = [...history].slice(0, 6).reverse();
+                    
+                    if (chartData.length >= 2) {
+                        const points = chartData.map((d, i) => {
+                            const x = (i / (chartData.length - 1)) * 340;
+                            const conf = d.confidence || 85;
+                            // Scale 70-100% to Y axis 80-0
+                            const y = 80 - ((conf - 70) / 30) * 80;
+                            return `${x},${Math.max(0, Math.min(80, y))}`;
+                        });
+                        
+                        // Create a simple smooth curve path
+                        let path = `M${points[0]}`;
+                        for (let i = 0; i < points.length - 1; i++) {
+                            const [x1, y1] = points[i].split(',').map(Number);
+                            const [x2, y2] = points[i+1].split(',').map(Number);
+                            const cx = (x1 + x2) / 2;
+                            path += ` C${cx},${y1} ${cx},${y2} ${x2},${y2}`;
+                        }
+                        setChartPath(path);
+                        setChartLabels(chartData.map(d => d.date.split(',')[0])); // Get "Mar 13" part
+                    } else if (chartData.length === 1) {
+                         const conf = chartData[0].confidence || 85;
+                         const y = 80 - ((conf - 70) / 30) * 80;
+                         setChartPath(`M0,${y} L340,${y}`);
+                         setChartLabels([chartData[0].date.split(',')[0]]);
+                    }
                 }
             } catch (e) {
                 console.error("Error parsing history for progress:", e);
@@ -94,7 +128,7 @@ export default function ProgressPage() {
                                     <div className="absolute left-8 right-0 top-1/2 h-px bg-slate-200 dark:bg-white/5 -translate-y-px"></div>
                                     <div className="absolute left-8 right-0 bottom-0 h-px bg-slate-200 dark:bg-white/10"></div>
 
-                                    {/* SVG Line Chart Mock */}
+                                    {/* SVG Line Chart */}
                                     <svg className="absolute inset-0 left-8 right-0 w-[calc(100%-32px)] h-full overflow-visible" viewBox="0 0 340 80" preserveAspectRatio="none">
                                         <defs>
                                             <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -103,24 +137,32 @@ export default function ProgressPage() {
                                             </linearGradient>
                                         </defs>
                                         <path
-                                            d="M0,80 C40,65 60,30 100,40 C140,50 180,20 220,10 C260,0 300,5 340,15"
+                                            d={chartPath}
                                             fill="none"
                                             stroke="url(#gradientLine)"
                                             strokeWidth="4"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
-                                            className="drop-shadow-[0_4px_12px_rgba(6,182,212,0.4)]"
+                                            className="drop-shadow-[0_4px_12px_rgba(6,182,212,0.4)] transition-all duration-1000 ease-in-out"
                                             vectorEffect="non-scaling-stroke"
                                         />
                                     </svg>
                                 </div>
 
                                 {/* X-axis labels */}
-                                <div className="w-full h-6 flex justify-between items-end pl-8 text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-2 overflow-hidden">
-                                    <span>{t.may}</span>
-                                    <span>{t.jul}</span>
-                                    <span>{t.sep}</span>
-                                    <span>{t.nov}</span>
+                                <div className="w-full h-6 flex justify-between items-end pl-8 text-[10px] text-text-secondary font-bold uppercase tracking-tight mt-2 overflow-hidden">
+                                    {chartLabels.length > 0 ? (
+                                        chartLabels.map((label, i) => (
+                                            <span key={i}>{label}</span>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <span>{t.may}</span>
+                                            <span>{t.jul}</span>
+                                            <span>{t.sep}</span>
+                                            <span>{t.nov}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>

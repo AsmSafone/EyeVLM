@@ -684,31 +684,34 @@ export default function Scan() {
                   <div className="absolute top-0 left-1/2 h-full w-0.5 bg-primary/50 -translate-x-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
                 </div>
               </div>
+
+              {/* Instructions and Zoom Slider (Positioned under the circle) */}
+              <div className="pointer-events-auto flex flex-col items-center mt-8 w-full px-6">
+                <p className="text-text-main/90 text-sm font-medium text-center mb-4 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
+                  {t.alignPupil}
+                </p>
+
+                {/* Zoom Slider (Only visible if Zoom is supported) */}
+                {facingMode === 'environment' && maxZoom > 1.0 && (
+                  <div className="w-full max-w-xs flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
+                    <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
+                    <input
+                      type="range"
+                      min={minZoom}
+                      max={maxZoom}
+                      step="0.1"
+                      value={zoomLevel}
+                      onChange={handleZoomChange}
+                      className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
+                    />
+                    <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Bottom Controls Area (Floating over camera) */}
-            <div className={`mt-auto relative z-20 w-full pb-20 pt-12 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
-
-              <p className="text-text-main/90 text-sm font-medium text-center mb-8 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
-                {t.alignPupil}
-              </p>
-
-              {/* Zoom Slider (Only visible if Zoom is supported) */}
-              {facingMode === 'environment' && maxZoom > 1.0 && (
-                <div className="w-full max-w-xs mb-8 flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
-                  <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
-                  <input
-                    type="range"
-                    min={minZoom}
-                    max={maxZoom}
-                    step="0.1"
-                    value={zoomLevel}
-                    onChange={handleZoomChange}
-                    className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
-                  />
-                  <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
-                </div>
-              )}
+            <div className={`mt-auto relative z-20 w-full pb-10 pt-4 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
 
               <div className="w-full flex items-center justify-between max-w-sm px-4">
                 {/* Gallery Button */}

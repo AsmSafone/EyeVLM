@@ -79,7 +79,12 @@ export default function Results() {
     };
     window.addEventListener('popstate', handlePopState);
 
-    setConfidence(Math.floor(Math.random() * (99 - 85 + 1) + 85));
+    const storedConfidence = sessionStorage.getItem('generatedConfidence');
+    if (storedConfidence) {
+      setConfidence(parseInt(storedConfidence));
+    } else {
+      setConfidence(Math.floor(Math.random() * (99 - 85 + 1) + 85));
+    }
     const storedImage = sessionStorage.getItem('capturedEyeImage');
     if (storedImage) setImageSrc(storedImage);
 

@@ -50,7 +50,7 @@ export const translations = {
     email: "Email Address",
     enterEmail: "name@example.com",
     phoneNumber: "Phone Number",
-    enterPhoneNumber: "+1 (555) 000-0000",
+    enterPhoneNumber: "+880 1XXX-XXXXXX",
     createPassword: "Create Password",
     confirmPassword: "Confirm Password",
     confirmPasswordPlaceholder: "Re-enter your password",
