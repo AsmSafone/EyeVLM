@@ -34,6 +34,19 @@ export default function Scan() {
   const [autoCaptureEnabled, setAutoCaptureEnabled] = useState(false);
   const [autoCaptureStatus, setAutoCaptureStatus] = useState<string>('');
   const [eyeCentered, setEyeCentered] = useState(false);
+  const [autoCropCenter, setAutoCropCenter] = useState<{ x: number, y: number } | null>(null);
+  const [showInstruction, setShowInstruction] = useState(true);
+
+  // Auto-hide instruction in environment mode
+  useEffect(() => {
+    if (facingMode === 'environment') {
+      setShowInstruction(true);
+      const timer = setTimeout(() => setShowInstruction(false), 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowInstruction(true);
+    }
+  }, [facingMode]);
 
   useEffect(() => {
     setIsNative(Capacitor.isNativePlatform());
@@ -65,7 +78,7 @@ export default function Scan() {
   const faceLandmarkerRef = useRef<any>(null);
   const consecutiveStableFramesRef = useRef(0);
   const lastEyeCenterRef = useRef<{ x: number, y: number } | null>(null);
-  const handleCaptureRef = useRef<() => void>(() => {});
+  const handleCaptureRef = useRef<() => void>(() => { });
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     if (cameraOperatingRef.current) return;
@@ -208,7 +221,7 @@ export default function Scan() {
       try {
         if (!autoCaptureEnabled) return;
         if (faceLandmarkerRef.current) return;
-        
+
         setAutoCaptureStatus('Loading AI...');
         const { FaceLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision');
         const vision = await FilesetResolver.forVisionTasks(
@@ -238,7 +251,7 @@ export default function Scan() {
   // Capture loop
   useEffect(() => {
     if (!autoCaptureEnabled || isCropping || !hasPermission) return;
-    
+
     let active = true;
     let timerId: any;
 
@@ -247,90 +260,91 @@ export default function Scan() {
       try {
         let imageDataUrl: string | null = null;
         if (Capacitor.isNativePlatform() && cameraStartedRef.current && !cameraOperatingRef.current) {
-             const result = await CameraView.captureSample({ quality: 20 }).catch(() => null);
-             if (result?.photo) {
-                 imageDataUrl = `data:image/jpeg;base64,${result.photo}`;
-             }
+          const result = await CameraView.captureSample({ quality: 20 }).catch(() => null);
+          if (result?.photo) {
+            imageDataUrl = `data:image/jpeg;base64,${result.photo}`;
+          }
         } else if (videoRef.current && canvasRef.current && !cameraOperatingRef.current) {
-             const video = videoRef.current;
-             const canvas = canvasRef.current;
-             const size = Math.min(video.videoWidth, video.videoHeight);
-             if (size > 0 && video.readyState >= 2) {
-                 canvas.width = size;
-                 canvas.height = size;
-                 const xOffset = (video.videoWidth - size) / 2;
-                 const yOffset = (video.videoHeight - size) / 2;
-                 const context = canvas.getContext('2d', { willReadFrequently: true });
-                 if (context) {
-                     context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
-                     imageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
-                 }
-             }
+          const video = videoRef.current;
+          const canvas = canvasRef.current;
+          const size = Math.min(video.videoWidth, video.videoHeight);
+          if (size > 0 && video.readyState >= 2) {
+            canvas.width = size;
+            canvas.height = size;
+            const xOffset = (video.videoWidth - size) / 2;
+            const yOffset = (video.videoHeight - size) / 2;
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+            if (context) {
+              context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
+              imageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            }
+          }
         }
 
         if (imageDataUrl && active && faceLandmarkerRef.current) {
-            const img = new Image();
-            await new Promise((resolve) => {
-                img.onload = resolve;
-                img.onerror = resolve;
-                img.src = imageDataUrl!;
-            });
+          const img = new Image();
+          await new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+            img.src = imageDataUrl!;
+          });
 
-            if (img.width > 0 && img.height > 0) {
-                 const landmarkerResult = faceLandmarkerRef.current.detect(img);
-                 if (landmarkerResult.faceLandmarks && landmarkerResult.faceLandmarks.length > 0) {
-                      const landmarks = landmarkerResult.faceLandmarks[0];
-                      const eyeIndices = activeEye === 'left' ? [33, 133, 159, 145] : [362, 263, 386, 374];
-                      let sumX = 0, sumY = 0;
-                      for (const idx of eyeIndices) {
-                          sumX += landmarks[idx].x;
-                          sumY += landmarks[idx].y;
-                      }
-                      const cx = sumX / 4;
-                      const cy = sumY / 4;
+          if (img.width > 0 && img.height > 0) {
+            const landmarkerResult = faceLandmarkerRef.current.detect(img);
+            if (landmarkerResult.faceLandmarks && landmarkerResult.faceLandmarks.length > 0) {
+              const landmarks = landmarkerResult.faceLandmarks[0];
+              const eyeIndices = activeEye === 'left' ? [33, 133, 159, 145] : [362, 263, 386, 374];
+              let sumX = 0, sumY = 0;
+              for (const idx of eyeIndices) {
+                sumX += landmarks[idx].x;
+                sumY += landmarks[idx].y;
+              }
+              const cx = sumX / 4;
+              const cy = sumY / 4;
 
-                      const isCentered = Math.abs(cx - 0.5) < 0.15 && Math.abs(cy - 0.5) < 0.15;
-                      setEyeCentered(isCentered);
+              const isCentered = Math.abs(cx - 0.5) < 0.15 && Math.abs(cy - 0.5) < 0.15;
+              setEyeCentered(isCentered);
 
-                      if (isCentered) {
-                          if (lastEyeCenterRef.current) {
-                              const dx = cx - lastEyeCenterRef.current.x;
-                              const dy = cy - lastEyeCenterRef.current.y;
-                              const dist = Math.sqrt(dx*dx + dy*dy);
-                              if (dist < 0.05) { 
-                                  consecutiveStableFramesRef.current++;
-                                  if (consecutiveStableFramesRef.current >= 4) { 
-                                      active = false;
-                                      handleCaptureRef.current();
-                                      return;
-                                  }
-                              } else {
-                                  consecutiveStableFramesRef.current = 0;
-                              }
-                          }
-                          lastEyeCenterRef.current = { x: cx, y: cy };
-                      } else {
-                          consecutiveStableFramesRef.current = 0;
-                          lastEyeCenterRef.current = null;
-                      }
-                 } else {
-                      setEyeCentered(false);
-                      consecutiveStableFramesRef.current = 0;
-                      lastEyeCenterRef.current = null;
-                 }
+              if (isCentered) {
+                if (lastEyeCenterRef.current) {
+                  const dx = cx - lastEyeCenterRef.current.x;
+                  const dy = cy - lastEyeCenterRef.current.y;
+                  const dist = Math.sqrt(dx * dx + dy * dy);
+                  if (dist < 0.05) {
+                    consecutiveStableFramesRef.current++;
+                    if (consecutiveStableFramesRef.current >= 4) {
+                      active = false;
+                      setAutoCropCenter({ x: cx, y: cy });
+                      handleCaptureRef.current();
+                      return;
+                    }
+                  } else {
+                    consecutiveStableFramesRef.current = 0;
+                  }
+                }
+                lastEyeCenterRef.current = { x: cx, y: cy };
+              } else {
+                consecutiveStableFramesRef.current = 0;
+                lastEyeCenterRef.current = null;
+              }
+            } else {
+              setEyeCentered(false);
+              consecutiveStableFramesRef.current = 0;
+              lastEyeCenterRef.current = null;
             }
+          }
         }
       } catch (err) { }
-      
+
       if (active) timerId = setTimeout(captureLoop, 300);
     };
-    
+
     // Only run loop periodically when the landmarker is ready
     if (faceLandmarkerRef.current) {
-        captureLoop();
+      captureLoop();
     } else {
-        // Retry shortly if AI hasn't loaded yet
-        timerId = setTimeout(() => { if (active) captureLoop(); }, 1000);
+      // Retry shortly if AI hasn't loaded yet
+      timerId = setTimeout(() => { if (active) captureLoop(); }, 1000);
     }
 
     return () => {
@@ -632,6 +646,30 @@ export default function Scan() {
                 responsive={true}
                 autoCropArea={0.85}
                 checkOrientation={false}
+                ready={() => {
+                  if (autoCropCenter) {
+                    const cropper = cropperRef.current?.cropper;
+                    if (cropper) {
+                      const imageData = cropper.getImageData();
+                      // Set squared size based on ~35% of the minimum image dimension
+                      const side = Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.35;
+                      const cropX = autoCropCenter.x * imageData.naturalWidth - side / 2;
+                      const cropY = autoCropCenter.y * imageData.naturalHeight - side / 2;
+
+                      // Switch to free aspect ratio
+                      setAspect(undefined);
+                      cropper.setAspectRatio(NaN);
+
+                      // Set coordinates precisely centered at the eye
+                      cropper.setData({
+                        x: cropX,
+                        y: cropY,
+                        width: side,
+                        height: side
+                      });
+                    }
+                  }
+                }}
               />
             </div>
 
@@ -822,7 +860,7 @@ export default function Scan() {
                 </label>
               </div>
 
-              <button 
+              <button
                 onClick={() => setAutoCaptureEnabled(!autoCaptureEnabled)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border transition-all ${autoCaptureEnabled ? 'bg-primary/20 border-primary/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'bg-slate-900/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'}`}
               >
@@ -849,30 +887,35 @@ export default function Scan() {
                 </div>
               </div>
 
-              {/* Instruction Text (Explicitly absolute from vertical center) */}
+              {/* Instruction Text & Zoom Slider (Positioned below the circle) */}
               <div className="absolute top-[calc(50%+164px)] left-0 w-full pointer-events-auto flex justify-center px-6">
-                <p className="text-text-main/90 text-sm font-medium text-center drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
-                  {t.alignPupil}
-                </p>
-              </div>
+                <div className="relative w-full max-w-xs flex justify-center">
 
-              {/* Zoom Slider (Positioned below the instruction text) */}
-              <div className="absolute top-[calc(50%+224px)] left-0 w-full pointer-events-auto flex flex-col items-center px-6">
-                {facingMode === 'environment' && maxZoom > 1.0 && (
-                  <div className="w-full max-w-xs flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
-                    <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
-                    <input
-                      type="range"
-                      min={minZoom}
-                      max={maxZoom}
-                      step="0.1"
-                      value={zoomLevel}
-                      onChange={handleZoomChange}
-                      className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
-                    />
-                    <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                  {/* Instruction Text */}
+                  <div className={`absolute w-full flex justify-center transition-all duration-500 ease-in-out ${showInstruction || facingMode === 'user' ? 'opacity-100 translate-y-0 pointer-events-auto scale-100' : 'opacity-0 translate-y-4 pointer-events-none scale-95'}`}>
+                    <p className="text-text-main/90 text-sm font-medium text-center drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
+                      {t.alignPupil}
+                    </p>
                   </div>
-                )}
+
+                  {/* Zoom Slider (Appears exactly in place of instruction) */}
+                  {facingMode === 'environment' && maxZoom > 1.0 && (
+                    <div className={`absolute w-full flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20 transition-all duration-500 ease-in-out ${!showInstruction ? 'opacity-100 translate-y-0 pointer-events-auto scale-100' : 'opacity-0 -translate-y-4 pointer-events-none scale-95'}`}>
+                      <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>
+                      <input
+                        type="range"
+                        min={minZoom}
+                        max={maxZoom}
+                        step="0.1"
+                        value={zoomLevel}
+                        onChange={handleZoomChange}
+                        className="flex-1 h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full appearance-none outline-none cursor-pointer accent-primary"
+                      />
+                      <span className="material-symbols-outlined text-text-secondary text-sm">add</span>
+                    </div>
+                  )}
+
+                </div>
               </div>
             </div>
 
@@ -893,7 +936,10 @@ export default function Scan() {
 
                 {/* Capture Button */}
                 <button
-                  onClick={handleCapture}
+                  onClick={() => {
+                    setAutoCropCenter(null);
+                    handleCapture();
+                  }}
                   className="w-20 h-20 rounded-full border-2 border-slate-200 dark:border-white/20 flex items-center justify-center relative group active:scale-95 transition-transform"
                 >
                   <div className="absolute inset-0 rounded-full border-2 border-primary/50 animate-pulse shadow-[0_0_20px_rgba(6,182,212,0.4)]"></div>

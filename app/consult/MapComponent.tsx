@@ -23,8 +23,8 @@ interface MapProps {
 }
 
 export default function Map({ doctors, language }: MapProps) {
-    // Center on Dhaka, Bangladesh
-    const center: [number, number] = [23.794, 90.404];
+    // Center on Chattogram, Bangladesh
+    const center: [number, number] = [22.3590, 91.8210];
 
     return (
         <MapContainer center={center} zoom={11} scrollWheelZoom={false} className="w-full h-full rounded-3xl z-0">

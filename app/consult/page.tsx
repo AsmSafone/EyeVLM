@@ -15,86 +15,237 @@ const MapComponent = dynamic(() => import('./MapComponent'), {
     )
 });
 
-const DUMMY_DOCTORS = [
+const ALL_DOCTORS = [
     {
         id: 1,
         name: {
-            en: "Dr. Ayesha Rahman",
-            bn: "ড. আয়েশা রহমান"
+            en: "Dr. Murtuza Nuruddin",
+            bn: "ড. মর্তুজা নুরুদ্দীন"
         },
         specialization: {
-            en: "Retina Specialist",
-            bn: "রেটিনা বিশেষজ্ঞ"
+            en: "Consultant Ophthalmologist and Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও সার্জন"
         },
         clinic: {
-            en: "Vision Care Center",
-            bn: "ভিশন কেয়ার সেন্টার"
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
         },
-        rating: 4.8,
-        reviews: 124,
-        distance: 2.4, // in km
+        rating: 4.9,
+        reviews: 289,
+        distance: 2.1,
         availability: "today",
-        coords: [23.7937, 90.4066] as [number, number]
+        coords: [22.3596, 91.8213] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767277508432_81hqj7_2_1-823x1024.webp"
     },
     {
         id: 2,
         name: {
-            en: "Dr. Tariq Islam",
-            bn: "ড. তারিক ইসলাম"
+            en: "Dr. Golam Mostafa Chy. (Shamim)",
+            bn: "ড. গোলাম মোস্তফা চৌধুরী (শামীম)"
         },
         specialization: {
-            en: "Glaucoma Expert",
-            bn: "গ্লুকোমা বিশেষজ্ঞ"
+            en: "Consultant Ophthalmologist and Phaco Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও ফ্যাকো সার্জন"
         },
         clinic: {
-            en: "Eye Health Hospital",
-            bn: "আই হেলথ হাসপাতাল"
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
         },
-        rating: 4.9,
-        reviews: 310,
-        distance: 4.1,
-        availability: "tomorrow",
-        coords: [23.8105, 90.4126] as [number, number]
+        rating: 4.8,
+        reviews: 245,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3590, 91.8210] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767278718240_3iv4il_2_1.webp"
     },
     {
         id: 3,
         name: {
-            en: "Dr. Sarah Ahmed",
-            bn: "ড. সারাহ আহমেদ"
+            en: "Dr. M A Karim PhD",
+            bn: "ড. এম এ করিম পিএইচডি"
         },
         specialization: {
-            en: "Comprehensive Ophthalmologist",
-            bn: "সার্বিক চক্ষু বিশেষজ্ঞ"
+            en: "Glaucoma Specialist and Phaco Surgeon",
+            bn: "গ্লুকোমা বিশেষজ্ঞ ও ফ্যাকো সার্জন"
         },
         clinic: {
-            en: "City Eye Clinic",
-            bn: "সিটি আই ক্লিনিক"
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
         },
-        rating: 4.6,
-        reviews: 89,
-        distance: 5.5,
-        availability: "today",
-        coords: [23.7461, 90.3742] as [number, number]
+        rating: 4.9,
+        reviews: 312,
+        distance: 2.1,
+        availability: "tomorrow",
+        coords: [22.3592, 91.8212] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/img_1767447992536.webp"
     },
     {
         id: 4,
         name: {
-            en: "Dr. Kamal Hossain",
-            bn: "ড. কামাল হোসেন"
+            en: "Dr. M Delwar Hossain",
+            bn: "ড. এম দেলোয়ার হোসেন"
         },
         specialization: {
-            en: "Pediatric Ophthalmologist",
+            en: "Ophthalmologist and Vitreo Retinal Surgeon",
+            bn: "চক্ষু বিশেষজ্ঞ ও ভিট্রিও রেটিনাল সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.7,
+        reviews: 189,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3588, 91.8208] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767278118743_6ixah4_2_1-823x1024.webp"
+    },
+    {
+        id: 5,
+        name: {
+            en: "Dr. Md Shahadat Hossain",
+            bn: "ড. মো. শাহাদাত হোসেন"
+        },
+        specialization: {
+            en: "Consultant Ophthalmologist and Phaco Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও ফ্যাকো সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.6,
+        reviews: 156,
+        distance: 2.2,
+        availability: "tomorrow",
+        coords: [22.3595, 91.8215] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767278060019_73m3eg_2_1-826x1024.webp"
+    },
+    {
+        id: 6,
+        name: {
+            en: "Dr. Abdul Mannan Sikder",
+            bn: "ড. আব্দুল মান্নান সিকদার"
+        },
+        specialization: {
+            en: "Eye Specialist and Phaco Surgeon",
+            bn: "চক্ষু বিশেষজ্ঞ ও ফ্যাকো সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.8,
+        reviews: 178,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3590, 91.8209] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767277631538_iwkwnx_2_1-825x1024.webp"
+    },
+    {
+        id: 7,
+        name: {
+            en: "Dr. Sumed Dewan",
+            bn: "ড. সুমেধ দেওয়ান"
+        },
+        specialization: {
+            en: "Cornea Specialist",
+            bn: "কর্নিয়া বিশেষজ্ঞ"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.8,
+        reviews: 204,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3585, 91.8205] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1767277552504_io1g1r_2_1-1.webp"
+    },
+    {
+        id: 8,
+        name: {
+            en: "Dr. Wahid Alam",
+            bn: "ড. ওয়াহিদ আলম"
+        },
+        specialization: {
+            en: "Consultant Ophthalmologist and Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.7,
+        reviews: 145,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3592, 91.8210] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/1Zx8QEjK_Dbx3TyY-823x1024.webp"
+    },
+    {
+        id: 9,
+        name: {
+            en: "Dr. Tasmia Tahmid",
+            bn: "ড. তাসমিয়া তাহমিদ"
+        },
+        specialization: {
+            en: "Consultant Ophthalmologist and Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.8,
+        reviews: 134,
+        distance: 2.1,
+        availability: "tomorrow",
+        coords: [22.3591, 91.8211] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/tvfucFC-PS-C_9uJ-824x1024.webp"
+    },
+    {
+        id: 10,
+        name: {
+            en: "Dr. Tonima Roy",
+            bn: "ড. তনিমা রায়"
+        },
+        specialization: {
+            en: "Consultant Ophthalmologist and Surgeon",
+            bn: "কনসালটেন্ট চক্ষু বিশেষজ্ঞ ও সার্জন"
+        },
+        clinic: {
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
+        },
+        rating: 4.6,
+        reviews: 112,
+        distance: 2.1,
+        availability: "today",
+        coords: [22.3590, 91.8212] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/3-Image_-1-640x1024.webp"
+    },
+    {
+        id: 11,
+        name: {
+            en: "Dr. Farhadul Alam",
+            bn: "ড. ফরহাদুল আলম"
+        },
+        specialization: {
+            en: "Paediatric Ophthalmologist",
             bn: "শিশু চক্ষু বিশেষজ্ঞ"
         },
         clinic: {
-            en: "Child Vision Institute",
-            bn: "চাইল্ড ভিশন ইনস্টিটিউট"
+            en: "Chevron Eye Hospital",
+            bn: "শেভরন আই হসপিটাল"
         },
         rating: 4.7,
-        reviews: 215,
-        distance: 7.2,
+        reviews: 132,
+        distance: 2.1,
         availability: "tomorrow",
-        coords: [23.8223, 90.3654] as [number, number]
+        coords: [22.3591, 91.8211] as [number, number],
+        image: "https://chevroneyehospital.org/wp-content/uploads/2026/01/dr.-Farhad-1-819x1024.jpg"
     }
 ];
 
@@ -103,7 +254,7 @@ export default function ConsultPage() {
     const { language, t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredDoctors = DUMMY_DOCTORS.filter(doc =>
+    const filteredDoctors = ALL_DOCTORS.filter(doc =>
         doc.name[language as 'en' | 'bn'].toLowerCase().includes(searchQuery.toLowerCase()) ||
         doc.specialization[language as 'en' | 'bn'].toLowerCase().includes(searchQuery.toLowerCase()) ||
         doc.clinic[language as 'en' | 'bn'].toLowerCase().includes(searchQuery.toLowerCase())
@@ -157,7 +308,12 @@ export default function ConsultPage() {
                                     <div className="flex gap-4 mb-4">
                                         {/* Avatar */}
                                         <div className="size-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0 border border-primary/20 shadow-inner overflow-hidden">
-                                            <span className="material-symbols-outlined text-[32px] text-primary/80">person</span>
+                                            {doc.image ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img src={doc.image} alt={doc.name[language as 'en' | 'bn']} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="material-symbols-outlined text-[32px] text-primary/80">person</span>
+                                            )}
                                         </div>
 
                                         {/* Details */}
@@ -193,14 +349,14 @@ export default function ConsultPage() {
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 mt-1">
-                                            <button className="flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl border border-primary/30 text-primary font-bold text-sm bg-primary/5 hover:bg-primary/10 transition-colors active:scale-95 text-center">
+                                            <a href="tel:+880241355817" className="flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl border border-primary/30 text-primary font-bold text-sm bg-primary/5 hover:bg-primary/10 transition-colors active:scale-95 text-center">
                                                 <span className="material-symbols-outlined text-[18px] shrink-0">call</span>
                                                 <span>{t.callNow}</span>
-                                            </button>
-                                            <button className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 border border-primary/20 text-center">
+                                            </a>
+                                            <a href="https://appointment.chevroneyehospital.org/" target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 border border-primary/20 text-center">
                                                 <span className="material-symbols-outlined text-[18px] shrink-0">event_available</span>
                                                 <span>{t.bookAppointment}</span>
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

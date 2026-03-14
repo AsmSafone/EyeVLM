@@ -111,6 +111,15 @@ export default function Profile() {
           <section>
             <h3 className="px-2 text-xs font-bold uppercase tracking-widest text-text-secondary mb-3 ml-1">{t.helpSupport}</h3>
             <div className="bg-surface/40 backdrop-blur-md rounded-3xl border border-white/5 dark:border-white/5 border-slate-200 overflow-hidden shadow-sm transition-colors duration-300">
+              <Link href="/consult" className="flex items-center gap-4 p-4 hover:bg-surface-highlight transition-colors border-b border-white/5 dark:border-white/5 border-slate-100 group">
+                <div className="size-10 rounded-xl bg-surface-highlight text-text-secondary flex items-center justify-center border border-white/5 dark:border-white/5 border-slate-200 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined">medical_services</span>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-text-main group-hover:text-primary transition-colors">{t.consultDoctor}</p>
+                </div>
+                <span className="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors">chevron_right</span>
+              </Link>
               <Link href="/profile/help" className="flex items-center gap-4 p-4 hover:bg-surface-highlight transition-colors border-b border-white/5 dark:border-white/5 border-slate-100 group">
                 <div className="size-10 rounded-xl bg-surface-highlight text-text-secondary flex items-center justify-center border border-white/5 dark:border-white/5 border-slate-200 group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined">help</span>

@@ -32,7 +32,7 @@ export default function ProgressPage() {
 
                     // Process chart data (last 6 scans, oldest to newest)
                     const chartData = [...history].slice(0, 6).reverse();
-
+                    
                     if (chartData.length >= 2) {
                         const points = chartData.map((d, i) => {
                             const x = (i / (chartData.length - 1)) * 340;
@@ -41,22 +41,22 @@ export default function ProgressPage() {
                             const y = 80 - ((conf - 70) / 30) * 80;
                             return `${x},${Math.max(0, Math.min(80, y))}`;
                         });
-
+                        
                         // Create a simple smooth curve path
                         let path = `M${points[0]}`;
                         for (let i = 0; i < points.length - 1; i++) {
                             const [x1, y1] = points[i].split(',').map(Number);
-                            const [x2, y2] = points[i + 1].split(',').map(Number);
+                            const [x2, y2] = points[i+1].split(',').map(Number);
                             const cx = (x1 + x2) / 2;
                             path += ` C${cx},${y1} ${cx},${y2} ${x2},${y2}`;
                         }
                         setChartPath(path);
                         setChartLabels(chartData.map(d => d.date.split(',')[0])); // Get "Mar 13" part
                     } else if (chartData.length === 1) {
-                        const conf = chartData[0].confidence || 85;
-                        const y = 80 - ((conf - 70) / 30) * 80;
-                        setChartPath(`M0,${y} L340,${y}`);
-                        setChartLabels([chartData[0].date.split(',')[0]]);
+                         const conf = chartData[0].confidence || 85;
+                         const y = 80 - ((conf - 70) / 30) * 80;
+                         setChartPath(`M0,${y} L340,${y}`);
+                         setChartLabels([chartData[0].date.split(',')[0]]);
                     }
                 }
             } catch (e) {
