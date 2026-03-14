@@ -80,6 +80,13 @@
 }
 
 .material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size-adjust: none;
+}
+.material-symbols-outlined {
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
@@ -127,4 +134,7 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--primary);
   border-radius: 10px;
+}
+.leaflet-control-attribution {
+  display: none !important;
 }

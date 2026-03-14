@@ -15,8 +15,8 @@ export default function Splash() {
     // Request native camera permissions upfront
     Camera.requestPermissions().catch(err => console.error(err));
 
-    // Progress animation over 3 seconds
-    const duration = 3000;
+    // Progress animation over a random duration between 2.5s and 4.5s
+    const duration = 2500 + Math.floor(Math.random() * 2000);
     const intervalTime = 30;
     const totalSteps = duration / intervalTime;
     let step = 0;

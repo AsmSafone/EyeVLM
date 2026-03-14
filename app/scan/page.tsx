@@ -301,7 +301,13 @@ export default function Scan() {
             const landmarkerResult = faceLandmarkerRef.current.detect(img);
             if (landmarkerResult.faceLandmarks && landmarkerResult.faceLandmarks.length > 0) {
               const landmarks = landmarkerResult.faceLandmarks[0];
-              const eyeIndices = activeEye === 'left' ? [33, 133, 159, 145] : [362, 263, 386, 374];
+              // MediaPipe landmark indices 33/133/159/145 = face's anatomical left eye (appears on RIGHT side of a non-mirrored photo).
+              // On native, the sample is not mirrored, so the user's left eye is on the right side of the image —
+              // we must use the opposite MediaPipe eye to get the correct spatial location.
+              // On web, the captured image is mirrored (scale -1), so left=left is correct.
+              const sampleIsMirrored = !Capacitor.isNativePlatform() && currentFacingModeRef.current === 'user';
+              const useLeftIndices = sampleIsMirrored ? activeEye === 'left' : activeEye === 'right';
+              const eyeIndices = useLeftIndices ? [33, 133, 159, 145] : [362, 263, 386, 374];
               let sumX = 0, sumY = 0;
               for (const idx of eyeIndices) {
                 sumX += landmarks[idx].x;
@@ -664,34 +670,45 @@ export default function Scan() {
                       const { x: cx, y: cy, sampleWidth: sw, sampleHeight: sh, wasFront } = autoCropCenter;
 
                       // Map normalized ML coords from sample-space to captured-image-space.
-                      // The ML sample may have a different aspect ratio than the captured image.
-                      // Both images show the same camera content, so we map via the common
-                      // "cover" region (the largest rect fitting both aspect ratios, centered).
+                      // Both images show the same scene centered, but may have different aspect ratios
+                      // (e.g. captureSample = 16:9 preview, capture = 4:3 full-res).
+                      // We compute a scale factor for each axis independently, assuming both images
+                      // are letterboxed/pillarboxed versions of a common scene with the same center.
+                      //
+                      // Normalize both to the same width = 1:
+                      //   sample height  = 1 / sampleAspect
+                      //   capture height = 1 / capturedAspect
+                      // The mapping from sample-normalized coords to capture-normalized coords:
+                      //   scaleX = 1 (both span the full width if we normalize to same width)
+                      //   but only the overlap region is shared, so we need the ratio of widths
+                      //   when normalized to the same HEIGHT instead.
+                      //
+                      // Simplest correct model: both cameras see the same scene center.
+                      // For X: fraction of capture width covered by sample = min(1, capturedAspect/sampleAspect)
+                      // For Y: fraction of capture height covered by sample = min(1, sampleAspect/capturedAspect)
                       const sampleAspect = sw / sh;
                       const capturedAspect = natW / natH;
 
-                      let eyeXInCapture: number;
-                      let eyeYInCapture: number;
+                      // How much of the capture's X extent is shared with the sample (centered)
+                      const sharedFractionX = Math.min(1, capturedAspect / sampleAspect);
+                      const xOffsetInCapture = (1 - sharedFractionX) / 2;
+                      // How much of the capture's Y extent is shared with the sample (centered)
+                      const sharedFractionY = Math.min(1, sampleAspect / capturedAspect);
+                      const yOffsetInCapture = (1 - sharedFractionY) / 2;
 
-                      if (Math.abs(sampleAspect - capturedAspect) < 0.01) {
-                        // Same aspect ratio — direct mapping
-                        eyeXInCapture = cx * natW;
-                        eyeYInCapture = cy * natH;
-                      } else if (sampleAspect > capturedAspect) {
-                        // Sample is wider than captured image
-                        // The common vertical region is fully visible in both
-                        // Horizontal: sample shows more width, so part is cropped in captured image
-                        const visibleFractionX = capturedAspect / sampleAspect;
-                        const offsetFractionX = (1 - visibleFractionX) / 2;
-                        eyeXInCapture = ((cx - offsetFractionX) / visibleFractionX) * natW;
-                        eyeYInCapture = cy * natH;
-                      } else {
-                        // Sample is taller than captured image
-                        const visibleFractionY = sampleAspect / capturedAspect;
-                        const offsetFractionY = (1 - visibleFractionY) / 2;
-                        eyeXInCapture = cx * natW;
-                        eyeYInCapture = ((cy - offsetFractionY) / visibleFractionY) * natH;
-                      }
+                      // cx/cy are normalized to sample dimensions. First map cx/cy into the
+                      // shared region (0–1), then into capture space.
+                      const sharedFractionXInSample = Math.min(1, sampleAspect / capturedAspect);
+                      const xOffsetInSample = (1 - sharedFractionXInSample) / 2;
+                      const sharedFractionYInSample = Math.min(1, capturedAspect / sampleAspect);
+                      const yOffsetInSample = (1 - sharedFractionYInSample) / 2;
+
+                      // Remap cx from sample shared region → capture shared region
+                      const cxShared = (cx - xOffsetInSample) / sharedFractionXInSample;
+                      const cyShared = (cy - yOffsetInSample) / sharedFractionYInSample;
+
+                      let eyeXInCapture = (xOffsetInCapture + cxShared * sharedFractionX) * natW;
+                      const eyeYInCapture = (yOffsetInCapture + cyShared * sharedFractionY) * natH;
 
                       // For front camera on web, the capture is horizontally flipped
                       // but the ML sample was not — mirror the x coordinate

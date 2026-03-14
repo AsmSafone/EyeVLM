@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
+import { Language } from '@/app/lib/translations';
 
 export default function Onboarding() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -55,15 +56,23 @@ export default function Onboarding() {
         {/* Top Navigation Bar */}
         <div className="flex items-center justify-between p-6 z-20">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-2xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">visibility</span>
+            <span className="material-symbols-outlined text-primary text-2xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] w-6 h-6 flex items-center justify-center overflow-hidden">visibility</span>
             <h2 className="text-text-main text-lg font-bold leading-tight tracking-wide">EyeVLM</h2>
           </div>
-          <button
-            onClick={handleSkip}
-            className="flex items-center justify-center rounded-full px-3 py-1.5 hover:bg-surface-highlight transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
-          >
-            <p className="text-text-secondary text-sm font-medium leading-normal shrink-0 hover:text-text-main transition-colors">{t.skip}</p>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'bn' : 'en' as Language)}
+              className="flex items-center justify-center rounded-full px-3 py-1.5 hover:bg-surface-highlight transition-colors border border-primary/30 text-primary text-sm font-bold tracking-wide"
+            >
+              {language === 'en' ? 'বাং' : 'EN'}
+            </button>
+            <button
+              onClick={handleSkip}
+              className="flex items-center justify-center rounded-full px-3 py-1.5 hover:bg-surface-highlight transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+            >
+              <p className="text-text-secondary text-sm font-medium leading-normal shrink-0 hover:text-text-main transition-colors">{t.skip}</p>
+            </button>
+          </div>
         </div>
 
         {/* Main Content Area */}
@@ -78,7 +87,7 @@ export default function Onboarding() {
 
             {/* Floating icon badge */}
             <div className="absolute bottom-6 right-6 bg-surface/80 backdrop-blur-md p-4 rounded-2xl shadow-lg z-20 flex items-center justify-center transition-all duration-300 transform translate-y-0 opacity-100 border border-primary/30">
-              <span className="material-symbols-outlined text-primary text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+              <span className="material-symbols-outlined text-primary text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] w-6 h-6 flex items-center justify-center overflow-hidden">
                 {steps[currentStep].icon}
               </span>
             </div>
@@ -116,7 +125,7 @@ export default function Onboarding() {
             className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold h-14 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 group border border-primary/20 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
           >
             {currentStep === steps.length - 1 ? t.getStarted : t.continue}
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform w-6 h-6 flex items-center justify-center overflow-hidden">arrow_forward</span>
           </button>
         </div>
       </div>
