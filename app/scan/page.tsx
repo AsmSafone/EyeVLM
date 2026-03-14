@@ -30,8 +30,12 @@ export default function Scan() {
   const [minZoom, setMinZoom] = useState(1.0);
   const [maxZoom, setMaxZoom] = useState(1.0);
 
+  // Auto Capture States
+  const [autoCaptureEnabled, setAutoCaptureEnabled] = useState(false);
+  const [autoCaptureStatus, setAutoCaptureStatus] = useState<string>('');
+  const [eyeCentered, setEyeCentered] = useState(false);
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsNative(Capacitor.isNativePlatform());
   }, []);
 
@@ -56,6 +60,12 @@ export default function Scan() {
   const cameraOperatingRef = useRef(false);
   const cameraStartedRef = useRef(false);
   const currentFacingModeRef = useRef<'environment' | 'user'>('environment');
+
+  // Auto capture ML refs
+  const faceLandmarkerRef = useRef<any>(null);
+  const consecutiveStableFramesRef = useRef(0);
+  const lastEyeCenterRef = useRef<{ x: number, y: number } | null>(null);
+  const handleCaptureRef = useRef<() => void>(() => {});
 
   const startCamera = useCallback(async (mode: 'environment' | 'user') => {
     if (cameraOperatingRef.current) return;
@@ -185,6 +195,152 @@ export default function Scan() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Sync handleCapture reference for Auto Capture Loop
+  useEffect(() => {
+    handleCaptureRef.current = handleCapture;
+  });
+
+  // Auto Capture ML Setup
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        if (!autoCaptureEnabled) return;
+        if (faceLandmarkerRef.current) return;
+        
+        setAutoCaptureStatus('Loading AI...');
+        const { FaceLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision');
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+        );
+        const landmarker = await FaceLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            delegate: "GPU"
+          },
+          outputFaceBlendshapes: false,
+          runningMode: "IMAGE",
+          numFaces: 1
+        });
+        if (active) {
+          faceLandmarkerRef.current = landmarker;
+          setAutoCaptureStatus('AI Ready');
+        }
+      } catch (err) {
+        if (active) setAutoCaptureStatus('AI Failed');
+        console.error("Failed to load FaceLandmarker", err);
+      }
+    })();
+    return () => { active = false; };
+  }, [autoCaptureEnabled]);
+
+  // Capture loop
+  useEffect(() => {
+    if (!autoCaptureEnabled || isCropping || !hasPermission) return;
+    
+    let active = true;
+    let timerId: any;
+
+    const captureLoop = async () => {
+      if (!active) return;
+      try {
+        let imageDataUrl: string | null = null;
+        if (Capacitor.isNativePlatform() && cameraStartedRef.current && !cameraOperatingRef.current) {
+             const result = await CameraView.captureSample({ quality: 20 }).catch(() => null);
+             if (result?.photo) {
+                 imageDataUrl = `data:image/jpeg;base64,${result.photo}`;
+             }
+        } else if (videoRef.current && canvasRef.current && !cameraOperatingRef.current) {
+             const video = videoRef.current;
+             const canvas = canvasRef.current;
+             const size = Math.min(video.videoWidth, video.videoHeight);
+             if (size > 0 && video.readyState >= 2) {
+                 canvas.width = size;
+                 canvas.height = size;
+                 const xOffset = (video.videoWidth - size) / 2;
+                 const yOffset = (video.videoHeight - size) / 2;
+                 const context = canvas.getContext('2d', { willReadFrequently: true });
+                 if (context) {
+                     context.drawImage(video, xOffset, yOffset, size, size, 0, 0, size, size);
+                     imageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+                 }
+             }
+        }
+
+        if (imageDataUrl && active && faceLandmarkerRef.current) {
+            const img = new Image();
+            await new Promise((resolve) => {
+                img.onload = resolve;
+                img.onerror = resolve;
+                img.src = imageDataUrl!;
+            });
+
+            if (img.width > 0 && img.height > 0) {
+                 const landmarkerResult = faceLandmarkerRef.current.detect(img);
+                 if (landmarkerResult.faceLandmarks && landmarkerResult.faceLandmarks.length > 0) {
+                      const landmarks = landmarkerResult.faceLandmarks[0];
+                      const eyeIndices = activeEye === 'left' ? [33, 133, 159, 145] : [362, 263, 386, 374];
+                      let sumX = 0, sumY = 0;
+                      for (const idx of eyeIndices) {
+                          sumX += landmarks[idx].x;
+                          sumY += landmarks[idx].y;
+                      }
+                      const cx = sumX / 4;
+                      const cy = sumY / 4;
+
+                      const isCentered = Math.abs(cx - 0.5) < 0.15 && Math.abs(cy - 0.5) < 0.15;
+                      setEyeCentered(isCentered);
+
+                      if (isCentered) {
+                          if (lastEyeCenterRef.current) {
+                              const dx = cx - lastEyeCenterRef.current.x;
+                              const dy = cy - lastEyeCenterRef.current.y;
+                              const dist = Math.sqrt(dx*dx + dy*dy);
+                              if (dist < 0.05) { 
+                                  consecutiveStableFramesRef.current++;
+                                  if (consecutiveStableFramesRef.current >= 4) { 
+                                      active = false;
+                                      handleCaptureRef.current();
+                                      return;
+                                  }
+                              } else {
+                                  consecutiveStableFramesRef.current = 0;
+                              }
+                          }
+                          lastEyeCenterRef.current = { x: cx, y: cy };
+                      } else {
+                          consecutiveStableFramesRef.current = 0;
+                          lastEyeCenterRef.current = null;
+                      }
+                 } else {
+                      setEyeCentered(false);
+                      consecutiveStableFramesRef.current = 0;
+                      lastEyeCenterRef.current = null;
+                 }
+            }
+        }
+      } catch (err) { }
+      
+      if (active) timerId = setTimeout(captureLoop, 300);
+    };
+    
+    // Only run loop periodically when the landmarker is ready
+    if (faceLandmarkerRef.current) {
+        captureLoop();
+    } else {
+        // Retry shortly if AI hasn't loaded yet
+        timerId = setTimeout(() => { if (active) captureLoop(); }, 1000);
+    }
+
+    return () => {
+      active = false;
+      clearTimeout(timerId);
+      setEyeCentered(false);
+      consecutiveStableFramesRef.current = 0;
+      lastEyeCenterRef.current = null;
+    };
+  }, [autoCaptureEnabled, isCropping, hasPermission, activeEye]);
 
 
   const isFrontCamera = facingMode === 'user';
@@ -635,8 +791,8 @@ export default function Scan() {
             {/* Vignette Effect */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_30%,rgba(2,6,23,0.8)_100%)]"></div>
 
-            {/* Eye Selection Toggle (Floating at top) */}
-            <div className="relative z-20 w-full px-4 pt-20 flex justify-center">
+            {/* Eye Selection Toggle & AI Auto Capture (Floating at top) */}
+            <div className="relative z-20 w-full px-4 pt-20 flex flex-col items-center gap-4">
               <div className="flex h-12 bg-slate-900/80 backdrop-blur-xl rounded-2xl p-1 shadow-lg border border-primary/30 w-full max-w-xs">
                 <label className="flex-1 cursor-pointer relative group">
                   <input
@@ -665,6 +821,14 @@ export default function Scan() {
                   </div>
                 </label>
               </div>
+
+              <button 
+                onClick={() => setAutoCaptureEnabled(!autoCaptureEnabled)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border transition-all ${autoCaptureEnabled ? 'bg-primary/20 border-primary/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'bg-slate-900/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'}`}
+              >
+                <span className="material-symbols-outlined text-lg">{autoCaptureEnabled ? 'smart_toy' : 'power_off'}</span>
+                <span className="text-xs font-bold tracking-wide uppercase">{autoCaptureEnabled ? (autoCaptureStatus || 'Auto Capture ON') : 'Auto Capture'}</span>
+              </button>
             </div>
 
             {/* Alignment Overlay */}
@@ -675,13 +839,13 @@ export default function Scan() {
               {/* The clear circle guide (Target area) */}
               <div className="relative w-72 h-72 rounded-full border border-primary/30 box-content z-10 flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.1)_inset]">
                 {/* Animated scanning ring */}
-                <div className="absolute inset-0 rounded-full border-2 border-primary/50 border-t-transparent animate-[spin_4s_linear_infinite] shadow-[0_0_15px_rgba(6,182,212,0.3)]"></div>
-                <div className="absolute inset-0 rounded-full border-2 border-primary/30 border-b-transparent animate-[spin_4s_linear_infinite_reverse]"></div>
+                <div className={`absolute inset-0 rounded-full border-2 ${eyeCentered ? 'border-green-400' : 'border-primary/50'} border-t-transparent animate-[spin_4s_linear_infinite] shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-colors duration-300`}></div>
+                <div className={`absolute inset-0 rounded-full border-2 ${eyeCentered ? 'border-green-400' : 'border-primary/30'} border-b-transparent animate-[spin_4s_linear_infinite_reverse] transition-colors duration-300`}></div>
 
                 {/* Crosshair center */}
-                <div className="w-8 h-8 text-primary/80 opacity-80 relative">
-                  <div className="absolute top-1/2 left-0 w-full h-0.5 bg-primary/50 -translate-y-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
-                  <div className="absolute top-0 left-1/2 h-full w-0.5 bg-primary/50 -translate-x-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
+                <div className={`w-8 h-8 ${eyeCentered ? 'text-green-400 opacity-100' : 'text-primary/80 opacity-80'} relative transition-all duration-300`}>
+                  <div className={`absolute top-1/2 left-0 w-full h-0.5 ${eyeCentered ? 'bg-green-400' : 'bg-primary/50'} -translate-y-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)] transition-colors duration-300`}></div>
+                  <div className={`absolute top-0 left-1/2 h-full w-0.5 ${eyeCentered ? 'bg-green-400' : 'bg-primary/50'} -translate-x-1/2 shadow-[0_0_5px_rgba(6,182,212,0.8)] transition-colors duration-300`}></div>
                 </div>
               </div>
 
