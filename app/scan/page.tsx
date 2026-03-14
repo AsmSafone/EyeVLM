@@ -279,7 +279,7 @@ export default function Scan() {
         // Stop camera first, then show cropper
         await stopCamera(false);
         cameraOperatingRef.current = false;
-        
+
         const imagePath = result.webPath || (result as any).photo;
         if (!imagePath) {
           throw new Error("No photo captured");
@@ -685,13 +685,15 @@ export default function Scan() {
                 </div>
               </div>
 
-              {/* Instructions and Zoom Slider (Positioned under the circle) */}
-              <div className="pointer-events-auto flex flex-col items-center mt-8 w-full px-6">
-                <p className="text-text-main/90 text-sm font-medium text-center mb-4 drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
+              {/* Instruction Text (Explicitly absolute from vertical center) */}
+              <div className="absolute top-[calc(50%+164px)] left-0 w-full pointer-events-auto flex justify-center px-6">
+                <p className="text-text-main/90 text-sm font-medium text-center drop-shadow-md tracking-wide bg-surface/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/20">
                   {t.alignPupil}
                 </p>
+              </div>
 
-                {/* Zoom Slider (Only visible if Zoom is supported) */}
+              {/* Zoom Slider (Positioned below the instruction text) */}
+              <div className="absolute top-[calc(50%+224px)] left-0 w-full pointer-events-auto flex flex-col items-center px-6">
                 {facingMode === 'environment' && maxZoom > 1.0 && (
                   <div className="w-full max-w-xs flex items-center justify-center gap-3 bg-surface/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-primary/20">
                     <span className="material-symbols-outlined text-text-secondary text-sm">remove</span>

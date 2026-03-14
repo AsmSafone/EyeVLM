@@ -54,8 +54,8 @@ export default function AboutApp() {
                     </div>
 
                     <p className="text-xs text-text-secondary/50 mt-12 text-center">
-                        &copy; 2026 EyeVLM. All rights reserved.<br />
-                        Developed by Safone.<br />
+                        &copy; {new Date().getFullYear()} EyeVLM. All rights reserved.<br />
+                        Developed by <Link href="https://safone.dev">Safone</Link>.<br />
                         Powered by AI.
                     </p>
                 </div>
