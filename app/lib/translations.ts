@@ -441,7 +441,7 @@ export const translations = {
     medicalHistory: "মেডিকেল ইতিহাস",
     diabetes: "ডায়াবেটিস",
     type1or2: "টাইপ ১ বা টাইপ ২",
-    hypertension: "উচ্চ রক্তচাপ",
+    hypertension: "হাইপারটেনশন",
     highBloodPressure: "উচ্চ রক্তচাপ",
     familyEyeDisease: "পারিবারিক চোখের রোগ",
     familyRisk: "জেনেটিক পূর্বপ্রবণতা",

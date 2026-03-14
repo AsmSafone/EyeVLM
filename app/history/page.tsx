@@ -216,7 +216,7 @@ export default function History() {
                               </div>
                               <div className="flex flex-col">
                                 <h3 className="font-bold text-text-main group-hover:text-primary transition-colors line-clamp-1">
-                                  {item.name || item.diseaseName || 'Unknown'} &middot; {item.activeEye === 'left' ? t.leftEye : t.rightEye}
+                                  {item.name || (item.diseaseName && (t as any)[item.diseaseName]) || item.diseaseName || 'Unknown'} &middot; {item.activeEye === 'left' ? t.leftEye : t.rightEye}
                                 </h3>
                                 <div className="flex items-center gap-2 mt-1">
                                   <span className="text-xs font-medium text-text-secondary font-mono">{item.date}</span>

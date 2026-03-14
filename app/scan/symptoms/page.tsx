@@ -29,7 +29,7 @@ export default function SymptomCheck() {
       } else {
         // Finished
         sessionStorage.setItem('symptomAnswers', JSON.stringify(updatedAnswers));
-        router.push('/scan/analysis');
+        router.replace('/scan/analysis');
       }
     }, 150);
   };
@@ -41,7 +41,7 @@ export default function SymptomCheck() {
     } else {
       // Finished
       sessionStorage.setItem('symptomAnswers', JSON.stringify(answers));
-      router.push('/scan/analysis');
+      router.replace('/scan/analysis');
     }
   };
 
@@ -50,13 +50,13 @@ export default function SymptomCheck() {
       setDirection(-1);
       setCurrentQuestionIndex(prev => prev - 1);
     } else {
-      router.push('/scan/patient-info');
+      router.replace('/scan/patient-info');
     }
   };
 
   const handleSkip = () => {
     sessionStorage.setItem('symptomAnswers', JSON.stringify(answers));
-    router.push('/scan/analysis');
+    router.replace('/scan/analysis');
   };
 
   return (

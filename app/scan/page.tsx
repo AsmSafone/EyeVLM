@@ -34,7 +34,7 @@ export default function Scan() {
   const [autoCaptureEnabled, setAutoCaptureEnabled] = useState(false);
   const [autoCaptureStatus, setAutoCaptureStatus] = useState<string>('');
   const [eyeCentered, setEyeCentered] = useState(false);
-  const [autoCropCenter, setAutoCropCenter] = useState<{ x: number, y: number } | null>(null);
+  const [autoCropCenter, setAutoCropCenter] = useState<{ x: number, y: number, sampleWidth: number, sampleHeight: number, wasFront: boolean } | null>(null);
   const [showInstruction, setShowInstruction] = useState(true);
 
   // Auto-hide instruction in environment mode
@@ -50,6 +50,14 @@ export default function Scan() {
 
   useEffect(() => {
     setIsNative(Capacitor.isNativePlatform());
+  }, []);
+
+  // Clear all scan-flow session data on mount so navigating back here
+  // doesn't leave stale data that could re-open patient-info / results pages.
+  useEffect(() => {
+    ['capturedEyeImage', 'activeEye', 'patientInfo', 'symptomAnswers', 'patientId', 'generatedConfidence'].forEach(
+      key => sessionStorage.removeItem(key)
+    );
   }, []);
 
   useEffect(() => {
@@ -225,11 +233,11 @@ export default function Scan() {
         setAutoCaptureStatus('Loading AI...');
         const { FaceLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision');
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+          "/mediapipe/wasm"
         );
         const landmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
-            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            modelAssetPath: "/mediapipe/models/face_landmarker.task",
             delegate: "GPU"
           },
           outputFaceBlendshapes: false,
@@ -314,7 +322,7 @@ export default function Scan() {
                     consecutiveStableFramesRef.current++;
                     if (consecutiveStableFramesRef.current >= 4) {
                       active = false;
-                      setAutoCropCenter({ x: cx, y: cy });
+                      setAutoCropCenter({ x: cx, y: cy, sampleWidth: img.width, sampleHeight: img.height, wasFront: currentFacingModeRef.current === 'user' });
                       handleCaptureRef.current();
                       return;
                     }
@@ -571,7 +579,7 @@ export default function Scan() {
       if (croppedImage) {
         sessionStorage.setItem('capturedEyeImage', croppedImage);
         sessionStorage.setItem('activeEye', activeEye);
-        router.push('/scan/patient-info');
+        router.replace('/scan/patient-info');
       }
     }
   };
@@ -651,10 +659,49 @@ export default function Scan() {
                     const cropper = cropperRef.current?.cropper;
                     if (cropper) {
                       const imageData = cropper.getImageData();
-                      // Set squared size based on ~35% of the minimum image dimension
-                      const side = Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.35;
-                      const cropX = autoCropCenter.x * imageData.naturalWidth - side / 2;
-                      const cropY = autoCropCenter.y * imageData.naturalHeight - side / 2;
+                      const natW = imageData.naturalWidth;
+                      const natH = imageData.naturalHeight;
+                      const { x: cx, y: cy, sampleWidth: sw, sampleHeight: sh, wasFront } = autoCropCenter;
+
+                      // Map normalized ML coords from sample-space to captured-image-space.
+                      // The ML sample may have a different aspect ratio than the captured image.
+                      // Both images show the same camera content, so we map via the common
+                      // "cover" region (the largest rect fitting both aspect ratios, centered).
+                      const sampleAspect = sw / sh;
+                      const capturedAspect = natW / natH;
+
+                      let eyeXInCapture: number;
+                      let eyeYInCapture: number;
+
+                      if (Math.abs(sampleAspect - capturedAspect) < 0.01) {
+                        // Same aspect ratio — direct mapping
+                        eyeXInCapture = cx * natW;
+                        eyeYInCapture = cy * natH;
+                      } else if (sampleAspect > capturedAspect) {
+                        // Sample is wider than captured image
+                        // The common vertical region is fully visible in both
+                        // Horizontal: sample shows more width, so part is cropped in captured image
+                        const visibleFractionX = capturedAspect / sampleAspect;
+                        const offsetFractionX = (1 - visibleFractionX) / 2;
+                        eyeXInCapture = ((cx - offsetFractionX) / visibleFractionX) * natW;
+                        eyeYInCapture = cy * natH;
+                      } else {
+                        // Sample is taller than captured image
+                        const visibleFractionY = sampleAspect / capturedAspect;
+                        const offsetFractionY = (1 - visibleFractionY) / 2;
+                        eyeXInCapture = cx * natW;
+                        eyeYInCapture = ((cy - offsetFractionY) / visibleFractionY) * natH;
+                      }
+
+                      // For front camera on web, the capture is horizontally flipped
+                      // but the ML sample was not — mirror the x coordinate
+                      if (wasFront && !Capacitor.isNativePlatform()) {
+                        eyeXInCapture = natW - eyeXInCapture;
+                      }
+
+                      const side = Math.min(natW, natH) * 0.35;
+                      const cropX = eyeXInCapture - side / 2;
+                      const cropY = eyeYInCapture - side / 2;
 
                       // Switch to free aspect ratio
                       setAspect(undefined);
@@ -662,8 +709,8 @@ export default function Scan() {
 
                       // Set coordinates precisely centered at the eye
                       cropper.setData({
-                        x: cropX,
-                        y: cropY,
+                        x: Math.max(0, Math.min(cropX, natW - side)),
+                        y: Math.max(0, Math.min(cropY, natH - side)),
                         width: side,
                         height: side
                       });
@@ -920,7 +967,7 @@ export default function Scan() {
             </div>
 
             {/* Bottom Controls Area (Floating over camera) */}
-            <div className={`mt-auto relative z-20 w-full pb-10 pt-4 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
+            <div className={`mt-auto relative z-20 w-full pb-16 pt-4 px-6 flex flex-col items-center justify-end transition-colors duration-300 ${isNative && !isCropping ? 'bg-gradient-to-t from-black/70 via-black/30 to-transparent' : 'bg-gradient-to-t from-background via-background/90 dark:from-slate-950 dark:via-slate-950/90 to-transparent'}`}>
 
               <div className="w-full flex items-center justify-between max-w-sm px-4">
                 {/* Gallery Button */}

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/context/LanguageContext';
 import dynamic from 'next/dynamic';
 
-const MapComponent = dynamic(() => import('./MapComponent'), {
+const MapComponent = dynamic(() => import('@/components/MapComponent'), {
     ssr: false,
     loading: () => (
         <div className="w-full h-full bg-surface-highlight animate-pulse flex items-center justify-center">

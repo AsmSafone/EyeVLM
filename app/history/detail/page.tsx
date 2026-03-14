@@ -9,7 +9,7 @@ import { jsPDF } from 'jspdf';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import { PrescriptionReport } from '@/app/components/PrescriptionReport';
+import { PrescriptionReport } from '@/components/PrescriptionReport';
 import { translations } from '@/app/lib/translations';
 
 interface ScanHistoryEntry {

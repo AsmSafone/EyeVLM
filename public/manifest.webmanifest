@@ -1,4 +1,7 @@
 {
+  "name": "EyeVLM",
+  "short_name": "EyeVLM",
+  "start_url": "/",
   "background_color": "#020617",
   "icons": [
     {
