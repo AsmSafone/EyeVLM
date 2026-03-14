@@ -75,6 +75,7 @@
   button {
     outline: none;
     -webkit-touch-callout: none;
+    -webkit-user-drag: none;
   }
 }
 

@@ -14,11 +14,16 @@
 EyeVLM is a cross-platform, progressive web application engineered to provide early detection of common eye diseases such as Cataracts, Pterygium, Conjunctivitis, Keratitis, Uveitis, and Ptosis. By leveraging Vision Language Models, EyeVLM analyzes optical disc images directly from a user's smartphone camera.
 
 ## ✨ Features
-- **Mobile First Interface**: Engineered in Next.js as a fully responsive Progressive Web App with fluid framer-motion animations.
+- **Mobile First Interface**: Engineered in Next.js as a fully responsive Progressive Web App with fluid `motion` animations.
 - **Native Android APK Integration**: Seamless wrapper utilizing Capacitor v8, including native Android hardware API plugins (`capacitor-camera-view`).
-- **Precision Viewfinder & Zoom**: A highly customized camera stream tracker that dynamically controls device hardware (including optical/digital zoom capabilities), pre-crops live video feeds instantly using HTML5 Canvas mathematical coordinate injection, and leverages `react-cropper` to isolate purely the optical disc focus.
+- **AI Auto-Capture with Offline ML**: Integrates `@mediapipe/tasks-vision` FaceLandmarker for automatic eye detection and shutter triggering. WASM binaries and the face landmark model are bundled locally in the APK — no internet connection required for ML inference.
+- **Precision Viewfinder & Smart Cropping**: A highly customized camera stream tracker that dynamically controls device hardware (including optical/digital zoom capabilities). Leverages `react-cropper` with aspect-ratio-aware, front/rear-camera-aware coordinate mapping to isolate precisely the optical disc from both auto-capture and manual captures.
+- **Full Scan Flow with Safe Navigation**: Multi-step scan workflow (capture → patient info → symptoms → AI analysis → results) uses `router.replace` throughout, keeping the navigation history stack flat so the Android back button always exits the flow cleanly.
+- **PDF Prescription Reports**: Generates downloadable and shareable prescription-style PDF reports via `jspdf` and `html-to-image`, with native share/open support via `@capacitor/share` and `@capacitor-community/file-opener`.
+- **Doctor Finder Map**: Interactive map powered by `react-leaflet` and OpenStreetMap to locate nearby eye care specialists.
+- **Scan History**: Persistent scan history with full-text search, risk-level filtering, and month grouping. Disease names are fully translated via the i18n system.
 - **Robust Multi-Language System**: Full internal support via Context API translation strings (English & Bengali supported out-of-the-box).
-- **Over The Air Updating**: Integrated blocking UI client prompt that intercepts older APK clients by querying the Github action pipelines to require forced application updates. Next.js natively builds dynamic valid `versionCode` variables directly into `<Project>/android/app/build.gradle`.
+- **Over The Air Updating**: Integrated blocking UI client prompt that intercepts older APK clients by querying the GitHub Actions pipelines to require forced application updates. Next.js natively builds dynamic valid `versionCode` variables directly into `<Project>/android/app/build.gradle`.
 - **Hardware Native Navigation**: Dynamic handling of Android hardware back buttons using `@capacitor/app` wrapper injected over `<RootLayout>`, alongside safety-exit hooks powered by `@capacitor/toast`.
 
 ## 🚀 Workflows
@@ -30,10 +35,15 @@ This repository maintains a fully customized GitHub Actions CI/CD pipeline!
 
 ## 💻 Tech Stack
 - **Frontend Framework**: Next.js 15 (App Router), React 19
-- **Design System**: Tailwind CSS v4, Lucide React Icons
+- **Design System**: Tailwind CSS v4, Material Symbols, Lucide React Icons
 - **Native Wrapper**: Capacitor v8
 - **Device Hardware**: `navigator.mediaDevices.getUserMedia`, `capacitor-camera-view`
-- **Dependencies**: `react-cropper`, `framer-motion`, `@capacitor/app`
+- **ML / Computer Vision**: `@mediapipe/tasks-vision` (FaceLandmarker, bundled offline)
+- **Image Processing**: `react-cropper`, `cropperjs`, `html-to-image`
+- **Maps**: `react-leaflet`, `leaflet` (OpenStreetMap)
+- **PDF Generation**: `jspdf`
+- **Animations**: `motion`
+- **Capacitor Plugins**: `@capacitor/app`, `@capacitor/camera`, `@capacitor/filesystem`, `@capacitor/share`, `@capacitor/toast`, `@capacitor-community/file-opener`
 
 ## 📦 Local Installation
 
